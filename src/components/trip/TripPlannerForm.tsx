@@ -18,9 +18,18 @@ import {
   TRAVEL_STYLE_OPTIONS,
 } from "@/lib/constants";
 import { resolveStartCoordinates } from "@/lib/locations";
-import { persistGeneratedTrip } from "@/lib/trips/storage";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { useAuthModal } from "@/components/auth/AuthModalProvider";
+import {
+  getGenerationAccess,
+  hasUsedAnonymousGeneration,
+  markAnonymousGenerationUsed,
+  tripSuccessfullyGenerated,
+} from "@/lib/access/generationAccess";
+import { requestGeneratedTrip } from "@/lib/trips/generateClient";
+import { persistGeneratedTrip, persistLastTripRequest, readLastTripRequest } from "@/lib/trips/storage";
 import { tripRequestSchema } from "@/lib/validation/trip";
-import type { DurationPreset, TransportType, TravelStyle } from "@/types/trip";
+import type { DurationPreset, TransportType, TravelStyle, TripRequest } from "@/types/trip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,6 +56,32 @@ type FormValues = {
   travelStyle: TravelStyle;
   additionalPreferences: string;
 };
+
+function formValuesFromRequest(request: TripRequest): FormValues {
+  const duration = DURATION_OPTIONS.some((item) => item.id === request.durationPreset)
+    ? (request.durationPreset as DurationPreset)
+    : (DURATION_OPTIONS.find((item) => item.days === request.days)?.id ?? "1");
+  const budgetMatch = BUDGET_OPTIONS.find(
+    (item) => typeof item.value === "number" && item.value === request.budget,
+  );
+  const distanceMatch = DISTANCE_OPTIONS.find((item) => item.value === request.maxDistanceKm);
+
+  return {
+    startName: request.startLocation.name,
+    startLatitude: request.startLocation.coordinates?.latitude,
+    startLongitude: request.startLocation.coordinates?.longitude,
+    startDate: request.startDate,
+    durationPreset: duration,
+    numberOfPeople: request.numberOfPeople,
+    budgetPreset: budgetMatch?.id ?? (request.budget ? "custom" : "unlimited"),
+    customBudget: !budgetMatch && request.budget ? String(request.budget) : "",
+    transport: request.transport,
+    maxDistance: distanceMatch?.id ?? "any",
+    interests: request.interests,
+    travelStyle: request.travelStyle,
+    additionalPreferences: request.additionalPreferences ?? "",
+  };
+}
 
 function defaultValues(searchParams: URLSearchParams): FormValues {
   const duration = searchParams.get("duration");
@@ -77,6 +112,8 @@ function defaultValues(searchParams: URLSearchParams): FormValues {
 export function TripPlannerForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user } = useAuth();
+  const { openAuthModal } = useAuthModal();
   const [loading, setLoading] = useState(false);
   const [messageIndex, setMessageIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -84,6 +121,16 @@ export function TripPlannerForm() {
   const form = useForm<FormValues>({
     defaultValues: defaultValues(searchParams),
   });
+
+  useEffect(() => {
+    if (searchParams.get("from") || searchParams.get("date") || searchParams.get("duration")) {
+      return;
+    }
+    const lastRequest = readLastTripRequest();
+    if (lastRequest) {
+      form.reset(formValuesFromRequest(lastRequest));
+    }
+  }, [form, searchParams]);
 
   useEffect(() => {
     if (!loading) {
@@ -140,32 +187,36 @@ export function TripPlannerForm() {
       return;
     }
 
+    persistLastTripRequest(parsed.data);
+    const access = getGenerationAccess(Boolean(user));
+    if (!access.allowed) {
+      openAuthModal({
+        reason: "generation_limit",
+        pendingAction: { type: "generate", request: parsed.data },
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      const response = await fetch("/api/trips/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsed.data),
-      });
-      const data = (await response.json()) as {
-        trip?: import("@/types/trip").GeneratedTrip;
-        error?: string;
-        code?: string;
-      };
-
-      if (!response.ok || !data.trip) {
-        if (data.code === "NOT_ENOUGH_PLACES") {
-          setError("NOT_ENOUGH_PLACES");
-        } else {
-          setError(data.error ?? "GENERATE_FAILED");
-        }
+      const trip = await requestGeneratedTrip(parsed.data);
+      if (!tripSuccessfullyGenerated(trip)) {
+        setError("GENERATE_FAILED");
         return;
       }
 
-      persistGeneratedTrip(data.trip);
-      router.push(`/trip/${data.trip.id}`);
-    } catch {
-      setError("GENERATE_FAILED");
+      persistGeneratedTrip(trip);
+      if (access.mode === "anonymous_free") {
+        markAnonymousGenerationUsed();
+      }
+      router.push(`/trip/${trip.id}`);
+    } catch (generateError) {
+      const code = (generateError as Error & { code?: string }).code;
+      if (code === "NOT_ENOUGH_PLACES") {
+        setError("NOT_ENOUGH_PLACES");
+      } else {
+        setError("GENERATE_FAILED");
+      }
     } finally {
       setLoading(false);
     }
@@ -358,9 +409,21 @@ export function TripPlannerForm() {
           <p className="text-sm text-destructive">{error}</p>
         ) : null}
 
-        <Button type="submit" className="h-12 w-full text-base" disabled={loading}>
-          Napravi mi plan
-        </Button>
+        <div className="space-y-2">
+          <Button type="submit" className="h-12 w-full text-base" disabled={loading}>
+            Napravi mi plan
+          </Button>
+          {!user && !hasUsedAnonymousGeneration() ? (
+            <p className="text-center text-xs text-muted-foreground">
+              Prvi plan možeš da napraviš bez naloga.
+            </p>
+          ) : null}
+          {!user && hasUsedAnonymousGeneration() ? (
+            <p className="text-center text-xs text-muted-foreground">
+              Napravi nalog da menjaš ovaj plan ili napraviš novi.
+            </p>
+          ) : null}
+        </div>
       </form>
     </>
   );

@@ -61,6 +61,22 @@ export interface GeneratedTrip {
   createdAt: string;
   shareSlug?: string;
   isPublic?: boolean;
+  request?: TripRequest;
+  persisted?: boolean;
+  isOwner?: boolean;
+}
+
+export interface SavedTripSummary {
+  id: string;
+  title: string;
+  startLocation: string;
+  startDate: string;
+  days: number;
+  totalDistanceKm?: number;
+  estimatedTotalCost?: number;
+  isPublic: boolean;
+  shareSlug?: string;
+  createdAt: string;
 }
 
 export interface AiItineraryStop {

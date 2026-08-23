@@ -3,9 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Sheet,
   SheetContent,
@@ -22,6 +28,7 @@ const links = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const { user, signOut } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur-md">
@@ -51,9 +58,34 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button variant="ghost" render={<Link href="/login" />}>
-            Prijavi se
-          </Button>
+          {user ? (
+            <Popover>
+              <PopoverTrigger render={<Button variant="ghost" />}>
+                <span className="max-w-36 truncate">{user.email}</span>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-56">
+                <p className="truncate px-2 text-sm text-muted-foreground">{user.email}</p>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  render={<Link href="/saved" />}
+                >
+                  Sačuvano
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  onClick={() => void signOut()}
+                >
+                  Odjavi se
+                </Button>
+              </PopoverContent>
+            </Popover>
+          ) : (
+            <Button variant="ghost" render={<Link href="/login" />}>
+              Prijavi se
+            </Button>
+          )}
           <Button render={<Link href="/plan" />}>Planiraj putovanje</Button>
         </div>
 
@@ -84,9 +116,22 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              <Link href="/login" className="rounded-lg px-3 py-2 text-sm hover:bg-muted">
-                Prijavi se
-              </Link>
+              {user ? (
+                <>
+                  <p className="px-3 pt-3 text-xs text-muted-foreground">{user.email}</p>
+                  <button
+                    type="button"
+                    className="rounded-lg px-3 py-2 text-left text-sm hover:bg-muted"
+                    onClick={() => void signOut()}
+                  >
+                    Odjavi se
+                  </button>
+                </>
+              ) : (
+                <Link href="/login" className="rounded-lg px-3 py-2 text-sm hover:bg-muted">
+                  Prijavi se
+                </Link>
+              )}
               <Button className="mt-3" render={<Link href="/plan" />}>
                 Planiraj putovanje
               </Button>

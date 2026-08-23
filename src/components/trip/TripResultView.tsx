@@ -1,30 +1,35 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
-import { Bookmark, Share2 } from "lucide-react";
 import { TripMapLazy } from "@/components/map/TripMapLazy";
+import { TripActions } from "@/components/trip/TripActions";
 import { TripSummary } from "@/components/trip/TripSummary";
 import { TripTimeline } from "@/components/trip/TripTimeline";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { resolveStartCoordinates } from "@/lib/locations";
 import type { GeneratedTrip } from "@/types/trip";
 
-export function TripResultView({ trip }: { trip: GeneratedTrip }) {
+export function TripResultView({
+  trip,
+  readOnly = false,
+}: {
+  trip: GeneratedTrip;
+  readOnly?: boolean;
+}) {
+  const [currentTrip, setCurrentTrip] = useState(trip);
   const [selectedPlaceId, setSelectedPlaceId] = useState(trip.stops[0]?.placeId);
   const [mobileTab, setMobileTab] = useState("plan");
 
   const points = useMemo(() => {
     const startCoordinates =
-      trip.startCoordinates ?? resolveStartCoordinates(trip.startLocation);
+      currentTrip.startCoordinates ?? resolveStartCoordinates(currentTrip.startLocation);
     const startPoint = startCoordinates
       ? [
           {
             id: "trip-start",
-            name: `Polazak: ${trip.startLocation}`,
+            name: `Polazak: ${currentTrip.startLocation}`,
             coordinates: startCoordinates,
-            description: `Početak rute iz ${trip.startLocation}.`,
+            description: `Početak rute iz ${currentTrip.startLocation}.`,
             kind: "start" as const,
           },
         ]
@@ -32,7 +37,7 @@ export function TripResultView({ trip }: { trip: GeneratedTrip }) {
 
     return [
       ...startPoint,
-      ...trip.stops.map((stop) => ({
+      ...currentTrip.stops.map((stop) => ({
         id: stop.placeId,
         name: stop.place.name,
         coordinates: {
@@ -43,7 +48,7 @@ export function TripResultView({ trip }: { trip: GeneratedTrip }) {
         kind: stop.kind === "lodging" ? ("lodging" as const) : ("stop" as const),
       })),
     ];
-  }, [trip]);
+  }, [currentTrip]);
 
   function showOnMap(placeId: string) {
     setSelectedPlaceId(placeId);
@@ -55,8 +60,8 @@ export function TripResultView({ trip }: { trip: GeneratedTrip }) {
       <div className="sticky top-16 z-30 border-b border-border/70 bg-background/90 backdrop-blur md:hidden">
         <div className="flex items-center justify-between px-4 py-3">
           <div>
-            <p className="text-xs text-muted-foreground">{trip.startLocation}</p>
-            <p className="font-heading text-lg leading-tight">{trip.title}</p>
+            <p className="text-xs text-muted-foreground">{currentTrip.startLocation}</p>
+            <p className="font-heading text-lg leading-tight">{currentTrip.title}</p>
           </div>
           <Tabs value={mobileTab} onValueChange={setMobileTab}>
             <TabsList>
@@ -70,13 +75,13 @@ export function TripResultView({ trip }: { trip: GeneratedTrip }) {
       <div className="md:hidden">
         {mobileTab === "plan" ? (
           <div className="space-y-6 px-4 py-6">
-            <TripSummary trip={trip} />
+            <TripSummary trip={currentTrip} />
             <TripTimeline
-              trip={trip}
+              trip={currentTrip}
               selectedPlaceId={selectedPlaceId}
               onShowOnMap={showOnMap}
             />
-            <TripActions />
+            {readOnly ? null : <TripActions trip={currentTrip} onTripChange={setCurrentTrip} />}
           </div>
         ) : (
           <div className="h-[calc(100vh-8.5rem)]">
@@ -84,7 +89,7 @@ export function TripResultView({ trip }: { trip: GeneratedTrip }) {
               points={points}
               selectedId={selectedPlaceId}
               onSelect={setSelectedPlaceId}
-              routeCoordinates={trip.routeCoordinates}
+              routeCoordinates={currentTrip.routeCoordinates}
               className="h-full"
             />
           </div>
@@ -93,13 +98,13 @@ export function TripResultView({ trip }: { trip: GeneratedTrip }) {
 
       <div className="hidden md:grid md:grid-cols-[45%_55%]">
         <div className="space-y-6 px-6 py-8 lg:px-10">
-          <TripSummary trip={trip} />
+          <TripSummary trip={currentTrip} />
           <TripTimeline
-            trip={trip}
+            trip={currentTrip}
             selectedPlaceId={selectedPlaceId}
             onShowOnMap={setSelectedPlaceId}
           />
-          <TripActions />
+          {readOnly ? null : <TripActions trip={currentTrip} onTripChange={setCurrentTrip} />}
         </div>
         <div className="relative sticky top-16 h-[calc(100vh-4rem)] p-4">
           <p className="pointer-events-none absolute bottom-8 left-8 z-10 rounded-full bg-card/95 px-3 py-1 text-xs text-muted-foreground shadow-sm">
@@ -109,29 +114,11 @@ export function TripResultView({ trip }: { trip: GeneratedTrip }) {
             points={points}
             selectedId={selectedPlaceId}
             onSelect={setSelectedPlaceId}
-            routeCoordinates={trip.routeCoordinates}
+            routeCoordinates={currentTrip.routeCoordinates}
             className="h-full overflow-hidden rounded-2xl"
           />
         </div>
       </div>
-    </div>
-  );
-}
-
-function TripActions() {
-  return (
-    <div className="flex flex-wrap gap-2 pb-8">
-      <Button variant="outline" render={<Link href="/login" />}>
-        <Bookmark data-icon="inline-start" />
-        Sačuvaj
-      </Button>
-      <Button variant="outline" disabled>
-        <Share2 data-icon="inline-start" />
-        Podeli
-      </Button>
-      <Button variant="ghost" render={<Link href="/plan" />}>
-        Izmeni plan
-      </Button>
     </div>
   );
 }

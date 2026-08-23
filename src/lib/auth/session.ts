@@ -1,9 +1,16 @@
-/**
- * Auth helpers for Phase 4. Anonymous visitors can explore and generate
- * temporary trips. Login is required only to save, review, or submit places.
- */
-export async function getCurrentUser() {
-  return null;
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import type { User } from "@supabase/supabase-js";
+
+export async function getCurrentUser(): Promise<User | null> {
+  const supabase = await createServerSupabaseClient();
+  if (!supabase) {
+    return null;
+  }
+  const { data, error } = await supabase.auth.getUser();
+  if (error) {
+    return null;
+  }
+  return data.user ?? null;
 }
 
 export function isAuthRequiredFor(action: "save" | "review" | "submit") {

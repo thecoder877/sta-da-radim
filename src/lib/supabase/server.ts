@@ -1,16 +1,32 @@
-/**
- * Server-only Supabase client. Used by API routes and server components.
- * Service-role access, when needed, stays on the server.
- */
-export function createServerSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import { getSupabasePublicEnv } from "@/lib/supabase/env";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-  if (!url || !anonKey) {
+export async function createServerSupabaseClient(): Promise<SupabaseClient | null> {
+  const env = getSupabasePublicEnv();
+  if (!env) {
     return null;
   }
 
-  return { url, anonKey };
+  const cookieStore = await cookies();
+
+  return createServerClient(env.url, env.anonKey, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        } catch {
+          // Server Components cannot always set cookies; middleware refreshes the session.
+        }
+      },
+    },
+  });
 }
 
 export function getServiceRoleKey() {

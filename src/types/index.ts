@@ -12,6 +12,7 @@ export type {
   AiItineraryStop,
   DurationPreset,
   GeneratedTrip,
+  SavedTripSummary,
   TransportType,
   TravelStyle,
   TripDay,

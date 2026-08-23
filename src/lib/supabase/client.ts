@@ -1,14 +1,16 @@
-/**
- * Browser Supabase client. Wired in Phase 2 / Phase 4.
- * Never import the service-role key here.
- */
-export function createBrowserSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { createBrowserClient } from "@supabase/ssr";
+import { getSupabasePublicEnv } from "@/lib/supabase/env";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-  if (!url || !anonKey) {
+let browserClient: SupabaseClient | null = null;
+
+export function createBrowserSupabaseClient(): SupabaseClient | null {
+  const env = getSupabasePublicEnv();
+  if (!env) {
     return null;
   }
-
-  return { url, anonKey };
+  if (!browserClient) {
+    browserClient = createBrowserClient(env.url, env.anonKey);
+  }
+  return browserClient;
 }

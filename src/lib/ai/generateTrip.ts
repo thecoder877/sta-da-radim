@@ -31,6 +31,7 @@ export async function generateTrip(
 
   await insertLodgingStops(trip, request);
   await attachTripRoute(trip, origin, request.transport);
+  trip.request = request;
   return trip;
 }
 
