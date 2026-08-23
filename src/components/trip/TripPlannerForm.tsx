@@ -34,6 +34,8 @@ import { ErrorState } from "@/components/states/ErrorState";
 
 type FormValues = {
   startName: string;
+  startLatitude?: number;
+  startLongitude?: number;
   startDate: string;
   durationPreset: DurationPreset;
   numberOfPeople: number;
@@ -52,8 +54,13 @@ function defaultValues(searchParams: URLSearchParams): FormValues {
     ? (duration as DurationPreset)
     : "1";
 
+  const lat = Number(searchParams.get("lat"));
+  const lng = Number(searchParams.get("lng"));
+
   return {
-    startName: searchParams.get("from") ?? "Ruma",
+    startName: searchParams.get("from") ?? "",
+    startLatitude: Number.isFinite(lat) ? lat : undefined,
+    startLongitude: Number.isFinite(lng) ? lng : undefined,
     startDate: searchParams.get("date") ?? format(new Date(), "yyyy-MM-dd"),
     durationPreset: preset,
     numberOfPeople: 2,
@@ -105,7 +112,13 @@ export function TripPlannerForm() {
     const payload = {
       startLocation: {
         name: values.startName,
-        coordinates: resolveStartCoordinates(values.startName),
+        coordinates:
+          values.startLatitude !== undefined && values.startLongitude !== undefined
+            ? {
+                latitude: values.startLatitude,
+                longitude: values.startLongitude,
+              }
+            : resolveStartCoordinates(values.startName),
       },
       startDate: values.startDate,
       days: duration?.days ?? 1,
@@ -172,7 +185,12 @@ export function TripPlannerForm() {
           render={({ field }) => (
             <StartLocationField
               value={field.value}
-              onChange={field.onChange}
+              autoDetect={!searchParams.get("from")}
+              onChange={(name, coordinates) => {
+                field.onChange(name);
+                form.setValue("startLatitude", coordinates?.latitude);
+                form.setValue("startLongitude", coordinates?.longitude);
+              }}
               error={form.formState.errors.startName?.message}
             />
           )}

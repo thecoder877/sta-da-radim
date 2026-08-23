@@ -46,7 +46,7 @@ export default async function PlacePage({
 
   return (
     <article>
-      <div className="relative h-[42vw] min-h-64 max-h-[420px] bg-muted">
+      <div className="relative h-[42vw] min-h-64 max-h-[420px] bg-[linear-gradient(160deg,#c45c26_0%,#8a5a32_45%,#3f4a38_100%)]">
         {place.imageUrl ? (
           <Image
             src={place.imageUrl}

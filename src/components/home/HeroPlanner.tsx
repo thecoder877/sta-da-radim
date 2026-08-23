@@ -7,10 +7,13 @@ import { DURATION_OPTIONS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LocationSearch } from "@/components/location/LocationSearch";
+import type { Coordinates } from "@/types/place";
 
 export function HeroPlanner() {
   const router = useRouter();
-  const [from, setFrom] = useState("Ruma");
+  const [from, setFrom] = useState("");
+  const [coordinates, setCoordinates] = useState<Coordinates | undefined>();
   const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [duration, setDuration] = useState("1");
 
@@ -21,6 +24,10 @@ export function HeroPlanner() {
       date,
       duration,
     });
+    if (coordinates) {
+      params.set("lat", String(coordinates.latitude));
+      params.set("lng", String(coordinates.longitude));
+    }
     router.push(`/plan?${params.toString()}`);
   }
 
@@ -29,18 +36,14 @@ export function HeroPlanner() {
       onSubmit={onSubmit}
       className="mt-8 grid gap-3 rounded-2xl bg-card p-4 text-left text-foreground shadow-lg ring-1 ring-foreground/15 sm:grid-cols-2 lg:grid-cols-4"
     >
-      <div className="space-y-1.5">
-        <Label htmlFor="hero-from" className="text-foreground">
-          Odakle krećeš?
-        </Label>
-        <Input
-          id="hero-from"
-          value={from}
-          onChange={(event) => setFrom(event.target.value)}
-          placeholder="Ruma"
-          className="h-10 bg-background text-foreground"
-        />
-      </div>
+      <LocationSearch
+        value={from}
+        onChange={(name, nextCoordinates) => {
+          setFrom(name);
+          setCoordinates(nextCoordinates);
+        }}
+        inputClassName="h-10 bg-background pr-11 text-foreground"
+      />
       <div className="space-y-1.5">
         <Label htmlFor="hero-date" className="text-foreground">
           Kada ideš?

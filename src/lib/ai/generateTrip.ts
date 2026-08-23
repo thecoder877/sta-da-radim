@@ -1,4 +1,6 @@
 import { generateMockTrip } from "@/lib/ai/mockGenerateTrip";
+import { resolveStartCoordinates } from "@/lib/locations";
+import { searchLocations } from "@/lib/providers/geocoding/nominatim";
 import { getPlaceRepository } from "@/lib/providers/places";
 import { tripRequestSchema } from "@/lib/validation/trip";
 import type { GeneratedTrip, TripRequest } from "@/types/trip";
@@ -12,6 +14,13 @@ export async function generateTrip(
   input: TripRequest,
 ): Promise<GeneratedTrip> {
   const request = tripRequestSchema.parse(input);
+
+  if (!request.startLocation.coordinates) {
+    request.startLocation.coordinates =
+      resolveStartCoordinates(request.startLocation.name) ??
+      (await searchLocations(request.startLocation.name, 1))[0]?.coordinates;
+  }
+
   const places = await getPlaceRepository().listPlaces();
   return generateMockTrip(request, places);
 }

@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { PlaceFilters } from "@/components/places/PlaceFilters";
 import { PlaceGrid } from "@/components/places/PlaceGrid";
@@ -27,6 +28,7 @@ export default async function ExplorePage({
     children?: string;
     romantic?: string;
     hidden?: string;
+    page?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -49,14 +51,35 @@ export default async function ExplorePage({
   };
 
   const places = await getPlaceRepository().searchPlaces(filters);
+  const pageSize = 24;
+  const page = Math.max(1, Number(params.page) || 1);
+  const totalPages = Math.max(1, Math.ceil(places.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const pagePlaces = places.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value && key !== "page") {
+      query.set(key, value);
+    }
+  }
+
+  function pageHref(nextPage: number) {
+    const next = new URLSearchParams(query);
+    if (nextPage > 1) {
+      next.set("page", String(nextPage));
+    }
+    const suffix = next.toString();
+    return suffix ? `/explore?${suffix}` : "/explore";
+  }
 
   return (
     <Container className="py-10 sm:py-14">
       <p className="text-sm text-primary">Istraži Srbiju</p>
       <h1 className="mt-1 font-heading text-4xl">Mesta vredna puta</h1>
       <p className="mt-3 max-w-2xl text-muted-foreground">
-        Ovo nije nasumična mapa. Svako mesto ima svoju priču, okvirno vreme
-        posete i procenu troška.
+        Kurirana mesta iz naše baze, plus hiljade lokacija iz otvorene mape
+        Srbije — tvrđave, vidikovci, manastiri i prirodni rezervati.
       </p>
       <div className="mt-8 grid gap-6 lg:grid-cols-[280px_1fr]">
         <Suspense fallback={<LoadingState message="Učitavamo filtere..." />}>
@@ -65,8 +88,27 @@ export default async function ExplorePage({
         <div>
           <p className="mb-4 text-sm text-muted-foreground">
             {places.length} {places.length === 1 ? "mesto" : "mesta"}
+            {totalPages > 1 ? ` · strana ${currentPage} / ${totalPages}` : ""}
           </p>
-          <PlaceGrid places={places} />
+          <PlaceGrid places={pagePlaces} />
+          {totalPages > 1 ? (
+            <nav className="mt-8 flex items-center justify-between gap-3 text-sm" aria-label="Stranice">
+              {currentPage > 1 ? (
+                <Link href={pageHref(currentPage - 1)} className="hover:underline">
+                  Prethodna
+                </Link>
+              ) : (
+                <span />
+              )}
+              {currentPage < totalPages ? (
+                <Link href={pageHref(currentPage + 1)} className="hover:underline">
+                  Sledeća
+                </Link>
+              ) : (
+                <span />
+              )}
+            </nav>
+          ) : null}
         </div>
       </div>
     </Container>

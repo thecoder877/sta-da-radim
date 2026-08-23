@@ -18,7 +18,11 @@ export function PlaceCard({ place }: { place: Place }) {
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 33vw"
             />
-          ) : null}
+          ) : (
+            <div className="flex h-full items-end bg-[linear-gradient(160deg,#c45c26_0%,#8a5a32_45%,#3f4a38_100%)] p-4">
+              <span className="font-heading text-2xl text-white">{place.name}</span>
+            </div>
+          )}
         </div>
       </Link>
       <div className="space-y-3 p-4">
@@ -31,7 +35,7 @@ export function PlaceCard({ place }: { place: Place }) {
             </h3>
             <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
               <MapPin className="size-3.5" aria-hidden />
-              {[place.city, place.region].filter(Boolean).join(" · ")}
+              {[place.city, place.region].filter(Boolean).join(" · ") || "Srbija"}
             </p>
           </div>
           <Badge variant="secondary">{place.category}</Badge>
