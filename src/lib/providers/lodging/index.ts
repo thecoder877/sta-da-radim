@@ -13,6 +13,15 @@ function sortByDistance(origin: Coordinates, places: Place[]): Place[] {
   );
 }
 
+export function pickFallbackLodging(
+  origin: Coordinates,
+  usedIds: Set<string>,
+): Place | null {
+  return (
+    sortByDistance(origin, MOCK_LODGING).find((place) => !usedIds.has(place.id)) ?? null
+  );
+}
+
 export async function findLodgingNearby(
   origin: Coordinates,
   usedIds: Set<string>,

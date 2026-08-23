@@ -1,4 +1,4 @@
-import { findLodgingNearby } from "@/lib/providers/lodging";
+import { findLodgingNearby, pickFallbackLodging } from "@/lib/providers/lodging";
 import { getTripRoute } from "@/lib/providers/routing";
 import type { Coordinates } from "@/types/place";
 import type { GeneratedTrip, TripRequest, TripStop } from "@/types/trip";
@@ -27,8 +27,9 @@ export async function insertLodgingStops(
   const usedIds = new Set<string>();
   let extraCost = 0;
 
-  for (let index = 0; index < trip.daysPlan.length - 1; index += 1) {
-    const day = trip.daysPlan[index];
+  const nightCount = Math.max(0, trip.days - 1);
+  for (let index = 0; index < nightCount; index += 1) {
+    const day = trip.daysPlan[Math.min(index, trip.daysPlan.length - 1)];
     if (day.stops.some((stop) => stop.kind === "lodging")) {
       continue;
     }
@@ -37,15 +38,17 @@ export async function insertLodgingStops(
       continue;
     }
 
-    const lodging = await Promise.race([
-      findLodgingNearby(
-        { latitude: last.place.latitude, longitude: last.place.longitude },
-        usedIds,
-      ),
-      new Promise<null>((resolve) => {
-        setTimeout(() => resolve(null), 8000);
-      }),
-    ]);
+    const near = {
+      latitude: last.place.latitude,
+      longitude: last.place.longitude,
+    };
+    const lodging =
+      (await Promise.race([
+        findLodgingNearby(near, usedIds),
+        new Promise<null>((resolve) => {
+          setTimeout(() => resolve(null), 6000);
+        }),
+      ])) ?? pickFallbackLodging(near, usedIds);
     if (!lodging) {
       continue;
     }
