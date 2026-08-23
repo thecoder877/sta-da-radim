@@ -136,7 +136,8 @@ export function generateMockTrip(
   );
 
   const usable = (ranked.length > 0 ? ranked : rankPlacesForTrip(byDistance, request, origin))
-    .map((item) => item.place);
+    .map((item) => item.place)
+    .filter((place) => place.category !== "Smeštaj");
 
   const count = Math.min(targetStopCount(request), usable.length);
   const selected = orderByNearestNeighbor(origin, usable.slice(0, Math.max(count, 3))).slice(
@@ -203,6 +204,7 @@ export function generateMockTrip(
         durationMinutes: duration,
         reason: buildReason(place, request),
         estimatedCost: cost || undefined,
+        kind: "visit",
       };
 
       dayStops.push(stop);
@@ -234,6 +236,7 @@ export function generateMockTrip(
     estimatedTotalCost: Math.round(totalCost) || undefined,
     stops: allStops,
     daysPlan,
+    startCoordinates: origin,
     createdAt: new Date().toISOString(),
     shareSlug: `${slugify(title)}-${suffix}`,
     isPublic: false,

@@ -2,6 +2,7 @@ import { generateMockTrip } from "@/lib/ai/mockGenerateTrip";
 import { resolveStartCoordinates } from "@/lib/locations";
 import { searchLocations } from "@/lib/providers/geocoding/nominatim";
 import { getPlaceRepository } from "@/lib/providers/places";
+import { attachTripRoute, insertLodgingStops } from "@/lib/tripPlanner/enrichTrip";
 import { tripRequestSchema } from "@/lib/validation/trip";
 import type { GeneratedTrip, TripRequest } from "@/types/trip";
 
@@ -22,7 +23,15 @@ export async function generateTrip(
   }
 
   const places = await getPlaceRepository().listPlaces();
-  return generateMockTrip(request, places);
+  const trip = generateMockTrip(request, places);
+  const origin =
+    request.startLocation.coordinates ??
+    resolveStartCoordinates(request.startLocation.name) ??
+    { latitude: 44.2, longitude: 20.8 };
+
+  await insertLodgingStops(trip, request);
+  await attachTripRoute(trip, origin, request.transport);
+  return trip;
 }
 
 export const AI_PLACE_CONSTRAINT =

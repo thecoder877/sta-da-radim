@@ -95,6 +95,16 @@ function mapCategory(tags: Record<string, string>): { category: string; tags: st
   if (tags.tourism === "zoo" || tags.tourism === "theme_park") {
     return { category: "Porodično", tags: ["porodicno"] };
   }
+  if (
+    tags.tourism === "hotel" ||
+    tags.tourism === "guest_house" ||
+    tags.tourism === "hostel" ||
+    tags.tourism === "motel" ||
+    tags.tourism === "apartment" ||
+    tags.tourism === "chalet"
+  ) {
+    return { category: "Smeštaj", tags: ["hotel", "prenociste"] };
+  }
   if (tags.amenity === "cinema" || tags.amenity === "theatre" || tags.amenity === "arts_centre") {
     return { category: "Istorija", tags: ["kultura"] };
   }
@@ -370,6 +380,34 @@ out center tags;
 
   liveCache.set(key, { places, fetchedAt: Date.now() });
   return places;
+}
+
+export async function searchOverpassLodging(
+  latitude: number,
+  longitude: number,
+  radiusMeters = 12000,
+): Promise<Place[]> {
+  const around = `(around:${Math.round(radiusMeters)},${latitude},${longitude})`;
+  const query = `
+[out:json][timeout:25];
+(
+  nwr["tourism"="hotel"]["name"]${around};
+  nwr["tourism"="guest_house"]["name"]${around};
+  nwr["tourism"="hostel"]["name"]${around};
+  nwr["tourism"="motel"]["name"]${around};
+  nwr["tourism"="apartment"]["name"]${around};
+);
+out center tags;
+`.trim();
+
+  const elements = await overpassQuery(query);
+  return placesFromOverpassElements(elements).map((place) => ({
+    ...place,
+    category: "Smeštaj",
+    tags: [...new Set(["hotel", "prenociste", ...place.tags])],
+    estimatedDurationMinutes: place.estimatedDurationMinutes ?? 720,
+    estimatedCostPerPerson: place.estimatedCostPerPerson ?? 5000,
+  }));
 }
 
 export async function fetchOverpassByOsmId(osmId: number): Promise<Place | null> {

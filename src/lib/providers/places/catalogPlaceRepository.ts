@@ -1,3 +1,4 @@
+import { MOCK_LODGING } from "@/data/mockLodging";
 import { MOCK_PLACES } from "@/data/mockPlaces";
 import { calculateDistanceKm } from "@/lib/geo/distance";
 import { searchExplorePlaces } from "@/lib/places/exploreSearch";
@@ -71,6 +72,10 @@ export const catalogPlaceRepository: PlaceRepository = {
     return listCatalog();
   },
   async getPlaceById(id) {
+    const lodging = MOCK_LODGING.find((place) => place.id === id);
+    if (lodging) {
+      return lodging;
+    }
     const internal = await mockPlaceRepository.getPlaceById(id);
     if (internal) {
       return internal;
@@ -82,6 +87,10 @@ export const catalogPlaceRepository: PlaceRepository = {
     return lookupRememberedOrOsm(id, "id");
   },
   async getPlaceBySlug(slug) {
+    const lodging = MOCK_LODGING.find((place) => place.slug === slug);
+    if (lodging) {
+      return lodging;
+    }
     const internal = await mockPlaceRepository.getPlaceBySlug(slug);
     if (internal) {
       return internal;

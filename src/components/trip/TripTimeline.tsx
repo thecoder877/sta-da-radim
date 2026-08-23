@@ -28,6 +28,18 @@ export function TripTimeline({
               </li>
             ) : null}
             {day.stops.map((stop) => (
+              stop.kind === "lodging" ? (
+              <li key={stop.id} className="space-y-2">
+                <p className="text-xs font-medium uppercase tracking-wide text-primary">
+                  Predlog za noćenje
+                </p>
+                <TripStopCard
+                  stop={stop}
+                  selected={selectedPlaceId === stop.placeId}
+                  onShowOnMap={onShowOnMap}
+                />
+              </li>
+              ) : (
               <li key={stop.id}>
                 <TripStopCard
                   stop={stop}
@@ -35,6 +47,7 @@ export function TripTimeline({
                   onShowOnMap={onShowOnMap}
                 />
               </li>
+              )
             ))}
           </ol>
         </section>

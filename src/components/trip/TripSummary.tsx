@@ -31,7 +31,11 @@ export function TripSummary({ trip }: { trip: GeneratedTrip }) {
       icon: Wallet,
     },
     {
-      label: `${trip.stops.length} lokacija`,
+      label: (() => {
+        const nights = trip.stops.filter((stop) => stop.kind === "lodging").length;
+        const visits = trip.stops.length - nights;
+        return nights > 0 ? `${visits} mesta · ${nights} noćenja` : `${visits} lokacija`;
+      })(),
       icon: Users,
     },
   ];

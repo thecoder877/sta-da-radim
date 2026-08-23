@@ -71,6 +71,7 @@ export const DEMO_TRIP: GeneratedTrip = {
   description:
     "Jednodnevni izlet iz Rume: šuma na Stražilovu, Karlovci, ručak i zalazak na Petrovaradinu. Procene su orijentacione.",
   startLocation: "Ruma",
+  startCoordinates: { latitude: 45.0081, longitude: 19.8222 },
   startDate: "2026-08-29",
   days: 1,
   transport: "car",

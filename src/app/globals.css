@@ -124,3 +124,21 @@
     font-family: var(--font-heading), ui-serif, Georgia, serif;
   }
 }
+
+.maplibregl-map {
+  font: inherit;
+}
+
+.maplibregl-marker,
+.trip-map-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.maplibregl-popup-content {
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 16%);
+}

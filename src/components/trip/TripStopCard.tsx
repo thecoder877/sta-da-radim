@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Clock, Coins } from "lucide-react";
+import { BedDouble, Clock, Coins } from "lucide-react";
 import { formatDurationMinutes, formatRsd } from "@/lib/format";
 import type { TripStop } from "@/types/trip";
 import { Badge } from "@/components/ui/badge";
@@ -39,15 +39,23 @@ export function TripStopCard({
               <p className="text-xs text-muted-foreground">{stop.arrivalTime}</p>
               <h3 className="font-heading text-xl">{stop.place.name}</h3>
             </div>
-            <Badge variant="secondary">{stop.place.category}</Badge>
+            <Badge variant="secondary">
+              {stop.kind === "lodging" ? "Noćenje" : stop.place.category}
+            </Badge>
           </div>
           <p className="text-sm leading-6 text-muted-foreground">
             {stop.reason ?? stop.place.shortDescription}
           </p>
           <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
-              <Clock className="size-3.5" aria-hidden />
-              {formatDurationMinutes(stop.durationMinutes)}
+              {stop.kind === "lodging" ? (
+                <BedDouble className="size-3.5" aria-hidden />
+              ) : (
+                <Clock className="size-3.5" aria-hidden />
+              )}
+              {stop.kind === "lodging"
+                ? "Noćenje"
+                : formatDurationMinutes(stop.durationMinutes)}
             </span>
             <span className="flex items-center gap-1">
               <Coins className="size-3.5" aria-hidden />

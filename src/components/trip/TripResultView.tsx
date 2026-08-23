@@ -8,15 +8,31 @@ import { TripSummary } from "@/components/trip/TripSummary";
 import { TripTimeline } from "@/components/trip/TripTimeline";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { resolveStartCoordinates } from "@/lib/locations";
 import type { GeneratedTrip } from "@/types/trip";
 
 export function TripResultView({ trip }: { trip: GeneratedTrip }) {
   const [selectedPlaceId, setSelectedPlaceId] = useState(trip.stops[0]?.placeId);
   const [mobileTab, setMobileTab] = useState("plan");
 
-  const points = useMemo(
-    () =>
-      trip.stops.map((stop) => ({
+  const points = useMemo(() => {
+    const startCoordinates =
+      trip.startCoordinates ?? resolveStartCoordinates(trip.startLocation);
+    const startPoint = startCoordinates
+      ? [
+          {
+            id: "trip-start",
+            name: `Polazak: ${trip.startLocation}`,
+            coordinates: startCoordinates,
+            description: `Početak rute iz ${trip.startLocation}.`,
+            kind: "start" as const,
+          },
+        ]
+      : [];
+
+    return [
+      ...startPoint,
+      ...trip.stops.map((stop) => ({
         id: stop.placeId,
         name: stop.place.name,
         coordinates: {
@@ -24,9 +40,10 @@ export function TripResultView({ trip }: { trip: GeneratedTrip }) {
           longitude: stop.place.longitude,
         },
         description: stop.place.shortDescription,
+        kind: stop.kind === "lodging" ? ("lodging" as const) : ("stop" as const),
       })),
-    [trip.stops],
-  );
+    ];
+  }, [trip]);
 
   function showOnMap(placeId: string) {
     setSelectedPlaceId(placeId);
@@ -67,6 +84,7 @@ export function TripResultView({ trip }: { trip: GeneratedTrip }) {
               points={points}
               selectedId={selectedPlaceId}
               onSelect={setSelectedPlaceId}
+              routeCoordinates={trip.routeCoordinates}
               className="h-full"
             />
           </div>
@@ -83,11 +101,15 @@ export function TripResultView({ trip }: { trip: GeneratedTrip }) {
           />
           <TripActions />
         </div>
-        <div className="sticky top-16 h-[calc(100vh-4rem)] p-4">
+        <div className="relative sticky top-16 h-[calc(100vh-4rem)] p-4">
+          <p className="pointer-events-none absolute bottom-8 left-8 z-10 rounded-full bg-card/95 px-3 py-1 text-xs text-muted-foreground shadow-sm">
+            A polazak · broj stanica · H noćenje
+          </p>
           <TripMapLazy
             points={points}
             selectedId={selectedPlaceId}
             onSelect={setSelectedPlaceId}
+            routeCoordinates={trip.routeCoordinates}
             className="h-full overflow-hidden rounded-2xl"
           />
         </div>

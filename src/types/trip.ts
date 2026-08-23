@@ -23,6 +23,8 @@ export interface TripRequest {
   additionalPreferences?: string;
 }
 
+export type TripStopKind = "visit" | "lodging" | "start";
+
 export interface TripStop {
   id: string;
   placeId: string;
@@ -32,6 +34,7 @@ export interface TripStop {
   durationMinutes: number;
   reason?: string;
   estimatedCost?: number;
+  kind?: TripStopKind;
 }
 
 export interface TripDay {
@@ -53,6 +56,8 @@ export interface GeneratedTrip {
   estimatedTotalCost?: number;
   stops: TripStop[];
   daysPlan: TripDay[];
+  startCoordinates?: Coordinates;
+  routeCoordinates?: Coordinates[];
   createdAt: string;
   shareSlug?: string;
   isPublic?: boolean;
