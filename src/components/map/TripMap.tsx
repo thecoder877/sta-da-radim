@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SERBIA_CENTER } from "@/lib/constants";
 import { FallbackMap } from "@/components/map/FallbackMap";
 import type { Coordinates } from "@/types/place";
@@ -31,39 +31,41 @@ export function TripMap({
   routeCoordinates,
   className,
 }: TripMapProps) {
-  const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    if (!token || !containerRef.current) {
+    if (!containerRef.current || failed) {
       return;
     }
 
     let cancelled = false;
-    let map: import("mapbox-gl").Map | undefined;
-    let popup: import("mapbox-gl").Popup | undefined;
+    let map: import("maplibre-gl").Map | undefined;
+    let popup: import("maplibre-gl").Popup | undefined;
 
     async function setup() {
-      const mapboxgl = (await import("mapbox-gl")).default;
-      await import("mapbox-gl/dist/mapbox-gl.css");
+      const maplibregl = await import("maplibre-gl");
+      await import("maplibre-gl/dist/maplibre-gl.css");
       if (cancelled || !containerRef.current) {
         return;
       }
 
-      mapboxgl.accessToken = token as string;
-      map = new mapboxgl.Map({
+      const instance = new maplibregl.Map({
         container: containerRef.current,
-        style: "mapbox://styles/mapbox/outdoors-v12",
+        style: "https://tiles.openfreemap.org/styles/liberty",
         center: [SERBIA_CENTER.longitude, SERBIA_CENTER.latitude],
         zoom: 6.2,
       });
+      map = instance;
 
-      map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
-
-      map.on("load", () => {
-        if (!map) {
-          return;
+      instance.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+      instance.on("error", () => {
+        if (!cancelled && !instance.loaded()) {
+          setFailed(true);
         }
+      });
+
+      instance.on("load", () => {
 
         const line =
           routeCoordinates && routeCoordinates.length > 1
@@ -71,7 +73,7 @@ export function TripMap({
             : points.map((point) => point.coordinates);
 
         if (line.length > 1) {
-          map.addSource("trip-route", {
+          instance.addSource("trip-route", {
             type: "geojson",
             data: {
               type: "Feature",
@@ -82,7 +84,7 @@ export function TripMap({
               },
             },
           });
-          map.addLayer({
+          instance.addLayer({
             id: "trip-route-line",
             type: "line",
             source: "trip-route",
@@ -94,7 +96,7 @@ export function TripMap({
           });
         }
 
-        const bounds = new mapboxgl.LngLatBounds();
+        const bounds = new maplibregl.LngLatBounds();
         points.forEach((point, index) => {
           bounds.extend([point.coordinates.longitude, point.coordinates.latitude]);
           const el = document.createElement("button");
@@ -128,20 +130,20 @@ export function TripMap({
                   point.description ? `<div>${point.description}</div>` : ""
                 }`,
               )
-              .addTo(map as import("mapbox-gl").Map);
+              .addTo(instance);
           });
 
-          new mapboxgl.Marker({ element: el })
+          new maplibregl.Marker({ element: el })
             .setLngLat([point.coordinates.longitude, point.coordinates.latitude])
-            .addTo(map as import("mapbox-gl").Map);
+            .addTo(instance);
         });
 
         if (points.length > 0) {
-          map.fitBounds(bounds, { padding: 64, maxZoom: 11, duration: 600 });
+          instance.fitBounds(bounds, { padding: 64, maxZoom: 11, duration: 600 });
         }
       });
 
-      popup = new mapboxgl.Popup({ offset: 16, closeButton: false });
+      popup = new maplibregl.Popup({ offset: 16, closeButton: false });
     }
 
     void setup();
@@ -150,9 +152,9 @@ export function TripMap({
       cancelled = true;
       map?.remove();
     };
-  }, [token, points, selectedId, onSelect, routeCoordinates]);
+  }, [failed, points, selectedId, onSelect, routeCoordinates]);
 
-  if (!token) {
+  if (failed) {
     return (
       <div className={className}>
         <FallbackMap

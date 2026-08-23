@@ -9,8 +9,8 @@ export function Hero() {
     <section className="relative overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=2000&q=80"
-          alt="Planinski vidikovac nad jezerom u Srbiji"
+          src="/images/banjska-stena.jpg"
+          alt="Vidikovac Banjska stena na Tari"
           fill
           priority
           className="object-cover"

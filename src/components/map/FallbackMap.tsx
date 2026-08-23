@@ -12,7 +12,7 @@ function project(point: Coordinates) {
     ((SERBIA_BOUNDS.north - point.latitude) /
       (SERBIA_BOUNDS.north - SERBIA_BOUNDS.south)) *
     100;
-  return { x: Math.min(96, Math.max(4, x)), y: Math.min(96, Math.max(4, y)) };
+  return { x: Math.min(94, Math.max(6, x)), y: Math.min(94, Math.max(6, y)) };
 }
 
 export function FallbackMap({
@@ -25,10 +25,27 @@ export function FallbackMap({
   onSelect?: (id: string) => void;
 }) {
   return (
-    <div className="relative h-full min-h-[320px] overflow-hidden rounded-2xl bg-[#d8c9a8]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.35),transparent_40%),radial-gradient(circle_at_70%_70%,rgba(90,120,70,0.18),transparent_45%)]" />
-      <p className="absolute top-3 left-3 z-10 rounded-full bg-background/90 px-3 py-1 text-xs text-muted-foreground">
-        Mapa Srbije · dodaj Mapbox token za satelitski prikaz
+    <div className="relative h-full min-h-[320px] overflow-hidden rounded-2xl bg-[#d7e3d4]">
+      <svg
+        viewBox="0 0 200 240"
+        className="absolute inset-0 h-full w-full"
+        aria-hidden
+      >
+        <path
+          d="M42 28 L88 18 L118 22 L148 38 L168 72 L176 108 L162 148 L154 188 L132 214 L98 226 L62 210 L38 176 L28 132 L22 88 Z"
+          fill="#b7c9a8"
+          stroke="#7f9272"
+          strokeWidth="2"
+        />
+        <path
+          d="M28 86 C62 78, 96 92, 132 86 C150 98, 168 108, 176 108"
+          fill="none"
+          stroke="#6b8ea8"
+          strokeWidth="3"
+        />
+      </svg>
+      <p className="absolute top-3 left-3 z-10 rounded-full bg-card/95 px-3 py-1 text-xs font-medium text-foreground shadow-sm">
+        Mapa Srbije
       </p>
       {points.map((point, index) => {
         const position = project(point.coordinates);

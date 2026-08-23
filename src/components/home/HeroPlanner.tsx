@@ -27,35 +27,41 @@ export function HeroPlanner() {
   return (
     <form
       onSubmit={onSubmit}
-      className="mt-8 grid gap-3 rounded-2xl bg-background/95 p-4 text-left shadow-lg ring-1 ring-foreground/10 sm:grid-cols-2 lg:grid-cols-4"
+      className="mt-8 grid gap-3 rounded-2xl bg-card p-4 text-left text-foreground shadow-lg ring-1 ring-foreground/15 sm:grid-cols-2 lg:grid-cols-4"
     >
       <div className="space-y-1.5">
-        <Label htmlFor="hero-from">Odakle krećeš?</Label>
+        <Label htmlFor="hero-from" className="text-foreground">
+          Odakle krećeš?
+        </Label>
         <Input
           id="hero-from"
           value={from}
           onChange={(event) => setFrom(event.target.value)}
           placeholder="Ruma"
-          className="h-10"
+          className="h-10 bg-background text-foreground"
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="hero-date">Kada ideš?</Label>
+        <Label htmlFor="hero-date" className="text-foreground">
+          Kada ideš?
+        </Label>
         <Input
           id="hero-date"
           type="date"
           value={date}
           onChange={(event) => setDate(event.target.value)}
-          className="h-10"
+          className="h-10 bg-background text-foreground [color-scheme:light]"
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="hero-duration">Koliko dugo?</Label>
+        <Label htmlFor="hero-duration" className="text-foreground">
+          Koliko dugo?
+        </Label>
         <select
           id="hero-duration"
           value={duration}
           onChange={(event) => setDuration(event.target.value)}
-          className="h-10 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+          className="h-10 w-full rounded-lg border border-input bg-background px-2.5 text-sm text-foreground"
         >
           {DURATION_OPTIONS.map((option) => (
             <option key={option.id} value={option.id}>

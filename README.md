@@ -7,7 +7,7 @@ Phase 1 is a complete local MVP: homepage, trip planner, mock Serbian place cata
 ## Stack
 
 - Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui
-- Mapbox GL JS (optional in Phase 1; a fallback map is shown without a token)
+- MapLibre + OpenFreeMap for maps (no token required; Mapbox remains optional later)
 - Zod + React Hook Form
 - Prepared adapters for Supabase, OpenAI, routing, geocoding, and weather
 
