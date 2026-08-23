@@ -8,6 +8,14 @@ import type { Coordinates } from "@/types/place";
 
 export type { MapPoint } from "@/components/map/mapTypes";
 
+function downsampleRoute(points: Coordinates[], maxPoints = 240): Coordinates[] {
+  if (points.length <= maxPoints) {
+    return points;
+  }
+  const step = (points.length - 1) / (maxPoints - 1);
+  return Array.from({ length: maxPoints }, (_, index) => points[Math.round(index * step)]);
+}
+
 interface TripMapProps {
   points: MapPoint[];
   selectedId?: string;
@@ -28,10 +36,10 @@ export function TripMap({
 
   const line = useMemo(() => {
     if (routeCoordinates && routeCoordinates.length > 1) {
-      return routeCoordinates;
+      return downsampleRoute(routeCoordinates);
     }
     if (fetchedRoute && fetchedRoute.length > 1) {
-      return fetchedRoute;
+      return downsampleRoute(fetchedRoute);
     }
     return points.map((point) => point.coordinates);
   }, [routeCoordinates, fetchedRoute, points]);

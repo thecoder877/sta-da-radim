@@ -127,7 +127,6 @@ export function LeafletTripMap({
         ).addTo(group);
       }
 
-      const bounds = L.latLngBounds([]);
       let stopNumber = 0;
 
       points.forEach((point) => {
@@ -148,12 +147,14 @@ export function LeafletTripMap({
           `<strong>${point.name}</strong>${point.description ? `<div>${point.description}</div>` : ""}`,
         );
         marker.addTo(group);
-        bounds.extend([point.coordinates.latitude, point.coordinates.longitude]);
       });
 
       if (points.length === 1) {
         map.setView([points[0].coordinates.latitude, points[0].coordinates.longitude], 11);
-      } else if (points.length > 1 && bounds.isValid()) {
+      } else if (points.length > 1) {
+        const bounds = L.latLngBounds(
+          points.map((point) => [point.coordinates.latitude, point.coordinates.longitude]),
+        );
         map.fitBounds(bounds, { padding: [56, 56], maxZoom: 12 });
       }
       map.invalidateSize();
