@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { SharedTripClient } from "@/app/trip/share/[shareSlug]/SharedTripClient";
 import { APP_NAME } from "@/lib/constants";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getPublicTripByShareSlug } from "@/lib/trips/repository";
 import type { GeneratedTrip } from "@/types/trip";
@@ -54,5 +56,8 @@ export default async function SharedTripPage({
 }) {
   const { shareSlug } = await params;
   const trip = await loadSharedTrip(shareSlug);
+  if (!trip && isSupabaseConfigured()) {
+    notFound();
+  }
   return <SharedTripClient slug={shareSlug} initialTrip={trip} />;
 }
