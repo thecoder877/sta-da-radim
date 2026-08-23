@@ -266,12 +266,16 @@ function scorePlace(
   if (place.verified) {
     score += 4;
   }
+  const genericName = name === "bazen" || name === "restoran" || name === "kafic" || name === "park";
   if (name === foldedQuery) {
-    score += 80;
+    score += genericName ? 4 : 80;
   } else if (name.includes(foldedQuery) && foldedQuery.length > 2) {
     score += 28;
   } else if (textBlob(place).includes(foldedQuery) && foldedQuery.length > 2) {
     score += 8;
+  }
+  if (genericName) {
+    score -= 20;
   }
   if (center) {
     const distance = calculateDistanceKm(center, {
@@ -400,11 +404,7 @@ export async function searchExplorePlaces(
   );
 
   const center = location?.coordinates;
-  merged.sort(
-    (a, b) =>
-      scorePlace(b, parsed.locationQuery || query, center) -
-      scorePlace(a, parsed.locationQuery || query, center),
-  );
+  merged.sort((a, b) => scorePlace(b, query, center) - scorePlace(a, query, center));
 
   rememberPlaces(merged);
 

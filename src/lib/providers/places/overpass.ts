@@ -384,8 +384,11 @@ out center tags;
 
 async function loadBundledSnapshot(): Promise<Place[]> {
   try {
-    const snapshot = (await import("@/data/osmPlaces.json")).default as Place[];
-    return snapshot;
+    const { readFile } = await import("node:fs/promises");
+    const path = await import("node:path");
+    const filePath = path.join(process.cwd(), "src/data/osmPlaces.json");
+    const raw = await readFile(filePath, "utf8");
+    return JSON.parse(raw) as Place[];
   } catch {
     return [];
   }
