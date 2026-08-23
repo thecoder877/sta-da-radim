@@ -72,7 +72,7 @@ export function SavedPageClient() {
     try {
       const next = await updateTripSharing(trip.id, !trip.isPublic);
       setTrips((current) =>
-        current.map((item) =>
+        (current ?? []).map((item) =>
           item.id === trip.id
             ? {
                 ...item,
@@ -103,7 +103,7 @@ export function SavedPageClient() {
     setBusyId(deleteId);
     try {
       await deleteTripFromAccount(deleteId);
-      setTrips((current) => current.filter((item) => item.id !== deleteId));
+      setTrips((current) => (current ?? []).filter((item) => item.id !== deleteId));
       setDeleteId(null);
     } catch {
       setMessage("Putovanje nije obrisano.");
