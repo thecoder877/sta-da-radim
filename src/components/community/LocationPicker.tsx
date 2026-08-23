@@ -4,6 +4,19 @@ import { useEffect, useRef } from "react";
 import { SERBIA_CENTER } from "@/lib/constants";
 import type { Coordinates } from "@/types/place";
 
+function pickerIcon(L: typeof import("leaflet")) {
+  return L.divIcon({
+    className: "place-picker-marker",
+    html: `<span style="
+      display:block;width:22px;height:22px;border-radius:999px;
+      border:2px solid #fff;background:#c45c26;
+      box-shadow:0 2px 8px rgba(0,0,0,.28);
+    "></span>`,
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+  });
+}
+
 export function LocationPicker({
   value,
   onChange,
@@ -22,7 +35,8 @@ export function LocationPicker({
       return;
     }
     let cancelled = false;
-    let map: { remove: () => void } | null = null;
+    let map: import("leaflet").Map | null = null;
+    let observer: ResizeObserver | null = null;
     const start = value ?? SERBIA_CENTER;
 
     void import("leaflet").then((leaflet) => {
@@ -36,26 +50,61 @@ export function LocationPicker({
       );
       L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
         attribution: "&copy; OpenStreetMap &copy; CARTO",
+        subdomains: "abcd",
+        maxZoom: 19,
       }).addTo(instance);
-      const marker = L.marker([start.latitude, start.longitude], { draggable: true }).addTo(instance);
-      marker.on("dragend", () => {
-        const next = marker.getLatLng();
-        onChangeRef.current({ latitude: next.lat, longitude: next.lng });
-      });
+
+      let marker: import("leaflet").Marker | null = value
+        ? L.marker([value.latitude, value.longitude], { draggable: true, icon: pickerIcon(L) }).addTo(instance)
+        : null;
+
+      function placeMarker(lat: number, lng: number) {
+        if (marker) {
+          marker.setLatLng([lat, lng]);
+        } else {
+          marker = L.marker([lat, lng], { draggable: true, icon: pickerIcon(L) }).addTo(instance);
+          marker.on("dragend", () => {
+            const next = marker?.getLatLng();
+            if (next) {
+              onChangeRef.current({ latitude: next.lat, longitude: next.lng });
+            }
+          });
+        }
+        onChangeRef.current({ latitude: lat, longitude: lng });
+      }
+
+      if (marker) {
+        marker.on("dragend", () => {
+          const next = marker?.getLatLng();
+          if (next) {
+            onChangeRef.current({ latitude: next.lat, longitude: next.lng });
+          }
+        });
+      }
+
       instance.on("click", (event: { latlng: { lat: number; lng: number } }) => {
-        marker.setLatLng(event.latlng);
-        onChangeRef.current({ latitude: event.latlng.lat, longitude: event.latlng.lng });
+        placeMarker(event.latlng.lat, event.latlng.lng);
       });
+
       map = instance;
+      requestAnimationFrame(() => instance.invalidateSize());
+      observer = new ResizeObserver(() => instance.invalidateSize());
+      observer.observe(containerRef.current);
     });
 
     return () => {
       cancelled = true;
+      observer?.disconnect();
       map?.remove();
     };
     // Initialize once; later updates come from map events.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div ref={containerRef} className={className ?? "h-72 w-full overflow-hidden rounded-2xl"} />;
+  return (
+    <div
+      ref={containerRef}
+      className={className ?? "h-72 w-full overflow-hidden rounded-2xl bg-muted ring-1 ring-foreground/10"}
+    />
+  );
 }
