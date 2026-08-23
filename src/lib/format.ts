@@ -65,17 +65,21 @@ const CYRILLIC_TO_LATIN: Record<string, string> = {
   ч: "c", џ: "dz", ш: "s",
 };
 
-export function slugify(value: string): string {
-  const latin = value
+export function foldSerbian(value: string): string {
+  return value
     .toLowerCase()
     .split("")
     .map((char) => CYRILLIC_TO_LATIN[char] ?? char)
-    .join("");
-
-  return latin
+    .join("")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "dj")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "") || "mesto";
+    .replace(/đ/g, "dj");
+}
+
+export function slugify(value: string): string {
+  return (
+    foldSerbian(value)
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "") || "mesto"
+  );
 }

@@ -38,6 +38,7 @@ export function PlaceFilters() {
     } else {
       params.delete(key);
     }
+    params.delete("page");
     router.push(`/explore?${params.toString()}`);
   }
 
@@ -48,6 +49,7 @@ export function PlaceFilters() {
     } else {
       params.set(key, "1");
     }
+    params.delete("page");
     router.push(`/explore?${params.toString()}`);
   }
 
@@ -58,7 +60,7 @@ export function PlaceFilters() {
         <Input
           id="explore-search"
           value={query}
-          placeholder="Tara, manastir, jezero..."
+          placeholder="Ruma, Beograd, bazen, manastir..."
           className="h-10"
           onChange={(event) => setQuery(event.target.value)}
         />

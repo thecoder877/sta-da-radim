@@ -2,12 +2,21 @@ import type { Place } from "@/types/place";
 import { PlaceCard } from "@/components/places/PlaceCard";
 import { EmptyState } from "@/components/states/EmptyState";
 
-export function PlaceGrid({ places }: { places: Place[] }) {
+export function PlaceGrid({
+  places,
+  emptyDescription,
+}: {
+  places: Place[];
+  emptyDescription?: string;
+}) {
   if (places.length === 0) {
     return (
       <EmptyState
         title="Nema mesta za ovu pretragu"
-        description="Promeni kategoriju, ukloni filtere ili potraži drugi deo Srbije."
+        description={
+          emptyDescription ??
+          "Promeni kategoriju, ukloni filtere ili potraži drugi deo Srbije."
+        }
       />
     );
   }

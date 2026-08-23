@@ -10,11 +10,16 @@ export interface GeocodeSuggestion {
   coordinates: Coordinates;
 }
 
-interface NominatimSearchItem {
+export interface NominatimSearchItem {
   lat: string;
   lon: string;
   display_name: string;
   name?: string;
+  class?: string;
+  type?: string;
+  addresstype?: string;
+  osm_type?: "node" | "way" | "relation";
+  osm_id?: number;
   address?: {
     city?: string;
     town?: string;
@@ -26,6 +31,49 @@ interface NominatimSearchItem {
     suburb?: string;
     country?: string;
   };
+}
+
+const SETTLEMENT_TYPES = new Set([
+  "city",
+  "town",
+  "village",
+  "municipality",
+  "suburb",
+  "neighbourhood",
+  "hamlet",
+  "isolated_dwelling",
+  "quarter",
+  "city_district",
+  "county",
+  "state",
+  "region",
+  "province",
+  "administrative",
+]);
+
+export function isNominatimSettlement(item: NominatimSearchItem): boolean {
+  const kind = item.addresstype ?? item.type ?? "";
+  if (item.class === "boundary" && item.type === "administrative") {
+    return true;
+  }
+  if (item.class === "place" && SETTLEMENT_TYPES.has(item.type ?? "")) {
+    return true;
+  }
+  return SETTLEMENT_TYPES.has(kind);
+}
+
+export function settlementRadiusKm(item: NominatimSearchItem): number {
+  const kind = item.addresstype ?? item.type ?? "";
+  if (kind === "city" || kind === "state" || kind === "county" || kind === "region") {
+    return 28;
+  }
+  if (kind === "town" || kind === "municipality") {
+    return 14;
+  }
+  if (kind === "suburb" || kind === "city_district" || kind === "quarter") {
+    return 8;
+  }
+  return 10;
 }
 
 function formatSuggestion(item: NominatimSearchItem): GeocodeSuggestion {
@@ -74,6 +122,13 @@ export async function searchLocations(
   query: string,
   limit = 7,
 ): Promise<GeocodeSuggestion[]> {
+  return (await searchNominatimDetailed(query, limit)).map(formatSuggestion);
+}
+
+export async function searchNominatimDetailed(
+  query: string,
+  limit = 8,
+): Promise<NominatimSearchItem[]> {
   const trimmed = query.trim();
   if (trimmed.length < 2) {
     return [];
@@ -87,8 +142,7 @@ export async function searchLocations(
     limit: String(limit),
   });
 
-  const data = (await nominatimGet(`/search?${params.toString()}`)) as NominatimSearchItem[];
-  return data.map(formatSuggestion);
+  return (await nominatimGet(`/search?${params.toString()}`)) as NominatimSearchItem[];
 }
 
 export async function reverseGeocode(

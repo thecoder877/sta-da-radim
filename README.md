@@ -39,7 +39,7 @@ Never commit real secrets. Never expose the OpenAI key or Supabase service-role 
 2. Fill the planner form and click **Napravi mi plan**.
 3. Review the itinerary, estimates, and map on `/trip/[id]`.
 4. Open `/trip/demo` for a sample Fruška gora / Novi Sad day.
-5. Browse `/explore` and individual `/place/[slug]` pages.
+5. Browse `/explore` and individual `/place/[slug]` pages. Search works like a map: type a city (`Ruma`, `Beograd`), a kind of place (`bazen`, `manastir`), or a specific name. City searches show nearby places, not only names that contain the word.
 
 Generated trips are stored in `sessionStorage` until a database is connected.
 

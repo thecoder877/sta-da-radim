@@ -1,7 +1,14 @@
 import { MOCK_PLACES } from "@/data/mockPlaces";
 import { calculateDistanceKm } from "@/lib/geo/distance";
+import { searchExplorePlaces } from "@/lib/places/exploreSearch";
+import {
+  extractOsmNumericId,
+  recallPlaceById,
+  recallPlaceBySlug,
+  rememberPlaces,
+} from "@/lib/places/placeMemory";
 import { mockPlaceRepository } from "@/lib/providers/places/mockPlaceRepository";
-import { fetchOverpassPlaces } from "@/lib/providers/places/overpass";
+import { fetchOverpassByOsmId, fetchOverpassPlaces } from "@/lib/providers/places/overpass";
 import type { PlaceRepository } from "@/lib/providers/types";
 import type { Place, PlaceFilters } from "@/types/place";
 
@@ -42,58 +49,21 @@ async function listCatalog(): Promise<Place[]> {
   return merged;
 }
 
-function matchesFilters(place: Place, filters: PlaceFilters): boolean {
-  if (filters.query) {
-    const q = filters.query.toLowerCase();
-    const blob = `${place.name} ${place.city ?? ""} ${place.region ?? ""} ${place.shortDescription} ${place.tags.join(" ")}`.toLowerCase();
-    if (!blob.includes(q)) {
-      return false;
-    }
+async function lookupRememberedOrOsm(value: string, by: "id" | "slug"): Promise<Place | null> {
+  const remembered = by === "id" ? recallPlaceById(value) : recallPlaceBySlug(value);
+  if (remembered) {
+    return remembered;
   }
 
-  if (filters.category && place.category.toLowerCase() !== filters.category.toLowerCase()) {
-    return false;
+  const osmId = extractOsmNumericId(value);
+  if (!osmId) {
+    return null;
   }
-
-  if (filters.region && place.region !== filters.region) {
-    return false;
+  const fromOsm = await fetchOverpassByOsmId(osmId);
+  if (fromOsm) {
+    rememberPlaces([fromOsm]);
   }
-
-  if (filters.freeOnly && (place.estimatedCostPerPerson ?? 0) > 0) {
-    return false;
-  }
-
-  if (filters.paidOnly && (place.estimatedCostPerPerson ?? 0) === 0) {
-    return false;
-  }
-
-  if (filters.environment && place.environment !== filters.environment && place.environment !== "mixed") {
-    return false;
-  }
-
-  if (filters.suitableForChildren && !place.suitableForChildren) {
-    return false;
-  }
-
-  if (filters.romantic && !place.romantic) {
-    return false;
-  }
-
-  if (filters.hiddenGem && !place.hiddenGem) {
-    return false;
-  }
-
-  if (filters.maxDistanceKm && filters.from) {
-    const distance = calculateDistanceKm(filters.from, {
-      latitude: place.latitude,
-      longitude: place.longitude,
-    });
-    if (distance > filters.maxDistanceKm) {
-      return false;
-    }
-  }
-
-  return true;
+  return fromOsm;
 }
 
 export const catalogPlaceRepository: PlaceRepository = {
@@ -105,16 +75,29 @@ export const catalogPlaceRepository: PlaceRepository = {
     if (internal) {
       return internal;
     }
-    return (await listCatalog()).find((place) => place.id === id) ?? null;
+    const catalog = (await listCatalog()).find((place) => place.id === id);
+    if (catalog) {
+      return catalog;
+    }
+    return lookupRememberedOrOsm(id, "id");
   },
   async getPlaceBySlug(slug) {
     const internal = await mockPlaceRepository.getPlaceBySlug(slug);
     if (internal) {
       return internal;
     }
-    return (await listCatalog()).find((place) => place.slug === slug) ?? null;
+    const catalog = (await listCatalog()).find((place) => place.slug === slug);
+    if (catalog) {
+      return catalog;
+    }
+    return lookupRememberedOrOsm(slug, "slug");
   },
   async searchPlaces(filters) {
-    return (await listCatalog()).filter((place) => matchesFilters(place, filters));
+    const result = await searchExplorePlaces(await listCatalog(), filters);
+    return result.places;
   },
 };
+
+export async function searchCatalogExplore(filters: PlaceFilters) {
+  return searchExplorePlaces(await listCatalog(), filters);
+}

@@ -5,8 +5,10 @@ import { Container } from "@/components/layout/Container";
 import { PlaceFilters } from "@/components/places/PlaceFilters";
 import { PlaceGrid } from "@/components/places/PlaceGrid";
 import { LoadingState } from "@/components/states/LoadingState";
-import { getPlaceRepository } from "@/lib/providers/places";
+import { searchCatalogExplore } from "@/lib/providers/places";
 import type { PlaceEnvironment, PlaceFilters as Filters } from "@/types/place";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Istraži Srbiju",
@@ -50,7 +52,7 @@ export default async function ExplorePage({
     hiddenGem: params.hidden === "1",
   };
 
-  const places = await getPlaceRepository().searchPlaces(filters);
+  const { places, aroundLabel } = await searchCatalogExplore(filters);
   const pageSize = 24;
   const page = Math.max(1, Number(params.page) || 1);
   const totalPages = Math.max(1, Math.ceil(places.length / pageSize));
@@ -78,8 +80,9 @@ export default async function ExplorePage({
       <p className="text-sm text-primary">Istraži Srbiju</p>
       <h1 className="mt-1 font-heading text-4xl">Mesta vredna puta</h1>
       <p className="mt-3 max-w-2xl text-muted-foreground">
-        Kurirana mesta iz naše baze, plus hiljade lokacija iz otvorene mape
-        Srbije — tvrđave, vidikovci, manastiri i prirodni rezervati.
+        Pretraži kao na mapi: ukucaj grad (Ruma, Beograd), vrstu mesta
+        (bazen, manastir, jezero) ili tačan naziv. Rezultati dolaze iz naše
+        baze i otvorene mape Srbije.
       </p>
       <div className="mt-8 grid gap-6 lg:grid-cols-[280px_1fr]">
         <Suspense fallback={<LoadingState message="Učitavamo filtere..." />}>
@@ -88,9 +91,13 @@ export default async function ExplorePage({
         <div>
           <p className="mb-4 text-sm text-muted-foreground">
             {places.length} {places.length === 1 ? "mesto" : "mesta"}
+            {aroundLabel ? ` u okolini — ${aroundLabel}` : ""}
             {totalPages > 1 ? ` · strana ${currentPage} / ${totalPages}` : ""}
           </p>
-          <PlaceGrid places={pagePlaces} />
+          <PlaceGrid
+            places={pagePlaces}
+            emptyDescription="Probaj grad (Ruma, Beograd), vrstu mesta (bazen, manastir, jezero) ili tačan naziv."
+          />
           {totalPages > 1 ? (
             <nav className="mt-8 flex items-center justify-between gap-3 text-sm" aria-label="Stranice">
               {currentPage > 1 ? (
