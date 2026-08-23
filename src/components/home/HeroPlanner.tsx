@@ -1,0 +1,74 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { format } from "date-fns";
+import { DURATION_OPTIONS } from "@/lib/constants";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+export function HeroPlanner() {
+  const router = useRouter();
+  const [from, setFrom] = useState("Ruma");
+  const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [duration, setDuration] = useState("1");
+
+  function onSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    const params = new URLSearchParams({
+      from,
+      date,
+      duration,
+    });
+    router.push(`/plan?${params.toString()}`);
+  }
+
+  return (
+    <form
+      onSubmit={onSubmit}
+      className="mt-8 grid gap-3 rounded-2xl bg-background/95 p-4 text-left shadow-lg ring-1 ring-foreground/10 sm:grid-cols-2 lg:grid-cols-4"
+    >
+      <div className="space-y-1.5">
+        <Label htmlFor="hero-from">Odakle krećeš?</Label>
+        <Input
+          id="hero-from"
+          value={from}
+          onChange={(event) => setFrom(event.target.value)}
+          placeholder="Ruma"
+          className="h-10"
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="hero-date">Kada ideš?</Label>
+        <Input
+          id="hero-date"
+          type="date"
+          value={date}
+          onChange={(event) => setDate(event.target.value)}
+          className="h-10"
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="hero-duration">Koliko dugo?</Label>
+        <select
+          id="hero-duration"
+          value={duration}
+          onChange={(event) => setDuration(event.target.value)}
+          className="h-10 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+        >
+          {DURATION_OPTIONS.map((option) => (
+            <option key={option.id} value={option.id}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="flex items-end">
+        <Button type="submit" className="h-10 w-full">
+          Nastavi plan
+        </Button>
+      </div>
+    </form>
+  );
+}
