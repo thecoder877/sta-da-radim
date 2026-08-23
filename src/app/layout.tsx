@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import { AuthModalProvider } from "@/components/auth/AuthModalProvider";
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { CompleteUsername } from "@/components/auth/CompleteUsername";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { APP_NAME } from "@/lib/constants";
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <AuthProvider>
           <AuthModalProvider>
             <Navbar />
+            <CompleteUsername />
             <main className="flex-1">{children}</main>
             <Footer />
           </AuthModalProvider>

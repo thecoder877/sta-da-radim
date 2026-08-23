@@ -24,6 +24,11 @@ export async function resumePendingProtectedAction(
       return true;
     }
 
+    if (pending.type === "community") {
+      navigate(pending.href);
+      return true;
+    }
+
     const saved = await saveTripToAccount(pending.trip);
     persistGeneratedTrip(saved);
     navigate(`/trip/${saved.id}`);

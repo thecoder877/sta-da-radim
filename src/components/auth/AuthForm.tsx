@@ -20,6 +20,7 @@ export function AuthForm({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -37,6 +38,10 @@ export function AuthForm({
 
     if (!email.trim() || password.length < 6) {
       setError("Unesi ispravan email i lozinku od najmanje 6 karaktera.");
+      return;
+    }
+    if (mode === "register" && !/^[a-z0-9_]{3,30}$/.test(username.trim().toLowerCase())) {
+      setError("Korisničko ime: 3–30 karaktera, slova, brojevi i donja crta.");
       return;
     }
 
@@ -61,6 +66,7 @@ export function AuthForm({
         options: {
           data: {
             display_name: displayName.trim() || undefined,
+            username: username.trim().toLowerCase() || undefined,
           },
         },
       });
@@ -85,7 +91,21 @@ export function AuthForm({
     <form onSubmit={onSubmit} className="space-y-4">
       {mode === "register" ? (
         <div className="space-y-1.5">
-          <Label htmlFor="auth-name">Ime</Label>
+          <Label htmlFor="auth-username">Korisničko ime</Label>
+          <Input
+            id="auth-username"
+            autoComplete="username"
+            className="h-11"
+            value={username}
+            onChange={(event) => setUsername(event.target.value.toLowerCase())}
+            placeholder="npr. njegos"
+            required
+          />
+        </div>
+      ) : null}
+      {mode === "register" ? (
+        <div className="space-y-1.5">
+          <Label htmlFor="auth-name">Ime (opciono)</Label>
           <Input
             id="auth-name"
             autoComplete="name"

@@ -1,6 +1,8 @@
+import Link from "next/link";
 import type { Place } from "@/types/place";
 import { PlaceCard } from "@/components/places/PlaceCard";
 import { EmptyState } from "@/components/states/EmptyState";
+import { Button } from "@/components/ui/button";
 
 export function PlaceGrid({
   places,
@@ -16,6 +18,11 @@ export function PlaceGrid({
         description={
           emptyDescription ??
           "Promeni kategoriju, ukloni filtere ili potraži drugi deo Srbije."
+        }
+        action={
+          <Button render={<Link href="/add-place" />}>
+            + Dodaj mesto
+          </Button>
         }
       />
     );

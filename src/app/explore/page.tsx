@@ -5,6 +5,7 @@ import { Container } from "@/components/layout/Container";
 import { PlaceFilters } from "@/components/places/PlaceFilters";
 import { PlaceGrid } from "@/components/places/PlaceGrid";
 import { LoadingState } from "@/components/states/LoadingState";
+import { Button } from "@/components/ui/button";
 import { searchCatalogExplore } from "@/lib/providers/places";
 import type { PlaceEnvironment, PlaceFilters as Filters } from "@/types/place";
 
@@ -79,11 +80,16 @@ export default async function ExplorePage({
     <Container className="py-10 sm:py-14">
       <p className="text-sm text-primary">Istraži Srbiju</p>
       <h1 className="mt-1 font-heading text-4xl">Mesta vredna puta</h1>
-      <p className="mt-3 max-w-2xl text-muted-foreground">
-        Pretraži kao na mapi: ukucaj grad (Ruma, Beograd), vrstu mesta
-        (bazen, manastir, jezero) ili tačan naziv. Rezultati dolaze iz naše
-        baze i otvorene mape Srbije.
-      </p>
+      <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
+        <p className="max-w-2xl text-muted-foreground">
+          Pretraži kao na mapi: ukucaj grad (Ruma, Beograd), vrstu mesta
+          (bazen, manastir, jezero) ili tačan naziv. Rezultati dolaze iz naše
+          baze i otvorene mape Srbije.
+        </p>
+        <Button render={<Link href="/add-place" />} size="sm">
+          + Dodaj mesto
+        </Button>
+      </div>
       <div className="mt-8 grid gap-6 lg:grid-cols-[280px_1fr]">
         <Suspense fallback={<LoadingState message="Učitavamo filtere..." />}>
           <PlaceFilters />

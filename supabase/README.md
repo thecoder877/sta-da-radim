@@ -127,3 +127,73 @@ supabase db push
 ```
 
 The project ref is in **Project Settings → General**.
+
+## 9. v0.3 community migration
+
+After `0001_init.sql` has been applied, run the community schema:
+
+1. Open **SQL Editor → New query**.
+2. Paste the full contents of [`migrations/0002_community.sql`](migrations/0002_community.sql).
+3. Click **Run**.
+
+That script adds:
+
+- `profiles.username`, `profiles.bio`, `profiles.role` (`user` | `admin`)
+- unique case-insensitive username index
+- `is_admin()` and role-protection trigger
+- `places` (canonical overlay + community listings)
+- `reviews`, `review_photos`, `review_votes`, `review_replies`
+- `place_submissions`, `place_submission_photos`
+- `place_edit_requests`, `place_edit_suggestions`
+- `place_photos`, `reports`
+- RLS, indexes, moderation-field protection
+- Storage buckets: `avatars`, `review-photos`, `place-submission-photos`
+
+If a bucket already exists, the `insert ... on conflict do nothing` is safe.
+
+### Make an existing account admin
+
+In SQL Editor, after that user has a profile/username:
+
+```sql
+update public.profiles
+set role = 'admin'
+where username = 'your_username';
+```
+
+Or by Auth user id:
+
+```sql
+update public.profiles
+set role = 'admin'
+where id = '00000000-0000-0000-0000-000000000000';
+```
+
+Do this only for your own account. Role cannot be changed from the client.
+
+### Existing users without a username
+
+Login still works. The app shows **Još samo jedan korak / Odaberi korisničko ime**. Community write actions require a username.
+
+### Storage policies
+
+Buckets and policies are created by `0002_community.sql`. If Storage policies fail because the `storage.objects` policy names already exist, drop those names in **Storage → Policies** and re-run the storage section of the file.
+
+Paths:
+
+- `avatars/{userId}/{uuid}.ext`
+- `review-photos/{userId}/{reviewId}/{uuid}.ext`
+- `place-submission-photos/{userId}/{submissionId}/{uuid}.ext`
+
+Limits: avatar 5 MB; review/place photos 10 MB; JPG/PNG/WebP.
+
+### How to test community RLS
+
+1. Register two users. Neither email should appear in reviews, profiles, or trips.
+2. As user A, write a review. It should appear immediately.
+3. As user B, vote helpful, then not helpful. Count should change, not duplicate.
+4. Submit a new place. Explore must not show it until admin approval.
+5. Suggest an opening-hours edit. Canonical place stays unchanged until approval.
+6. Report a review. It stays visible.
+7. Open `/admin` as a normal user. Expected: 404.
+8. Promote one account to admin, approve the place, then confirm it appears in Explore.

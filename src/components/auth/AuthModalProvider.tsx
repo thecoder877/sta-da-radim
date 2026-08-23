@@ -46,6 +46,11 @@ const COPY: Record<AuthModalReason, { title: string; description: string }> = {
     description:
       "Prvi plan možeš da napraviš bez naloga. Napravi besplatan nalog da generišeš nove planove, menjaš postojeće i sačuvaš svoja putovanja.",
   },
+  community: {
+    title: "Prijavi se da doprineseš",
+    description:
+      "Nalog treba za recenzije, predloge izmena, glasove i nova mesta. Email ostaje privatan.",
+  },
 };
 
 export function AuthModalProvider({ children }: { children: React.ReactNode }) {

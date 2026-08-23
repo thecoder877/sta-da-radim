@@ -5,6 +5,7 @@ export interface UserProfile {
   username: string | null;
   displayName: string | null;
   avatarUrl: string | null;
+  bio?: string | null;
   role?: UserRole;
   createdAt: string;
   updatedAt: string;

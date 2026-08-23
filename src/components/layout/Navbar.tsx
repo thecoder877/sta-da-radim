@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { profileLabel } from "@/lib/community/identity";
 import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,9 @@ const links = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
+  const label = profileLabel(profile);
+  const isAdmin = profile?.role === "admin";
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur-md">
@@ -47,36 +50,58 @@ export function Navbar() {
               href={link.href}
               className={cn(
                 "text-sm transition-colors hover:text-foreground",
-                pathname === link.href
-                  ? "font-medium text-foreground"
-                  : "text-muted-foreground",
+                pathname === link.href ? "font-medium text-foreground" : "text-muted-foreground",
               )}
             >
               {link.label}
             </Link>
           ))}
+          <Link
+            href="/add-place"
+            className={cn(
+              "text-sm transition-colors hover:text-foreground",
+              pathname === "/add-place" ? "font-medium text-foreground" : "text-muted-foreground",
+            )}
+          >
+            Dodaj mesto
+          </Link>
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
           {user ? (
             <Popover>
               <PopoverTrigger render={<Button variant="ghost" />}>
-                <span className="max-w-36 truncate">{user.email}</span>
+                {profile?.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={profile.avatarUrl} alt="" className="mr-2 size-6 rounded-full object-cover" />
+                ) : null}
+                <span className="max-w-36 truncate">{label}</span>
               </PopoverTrigger>
               <PopoverContent align="end" className="w-56">
-                <p className="truncate px-2 text-sm text-muted-foreground">{user.email}</p>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start"
-                  render={<Link href="/saved" />}
-                >
-                  Sačuvano
+                <p className="truncate px-2 text-sm font-medium">{label}</p>
+                {profile?.username ? (
+                  <p className="truncate px-2 text-xs text-muted-foreground">@{profile.username}</p>
+                ) : null}
+                {profile?.username ? (
+                  <Button variant="ghost" className="w-full justify-start" render={<Link href={`/user/${profile.username}`} />}>
+                    Moj profil
+                  </Button>
+                ) : null}
+                <Button variant="ghost" className="w-full justify-start" render={<Link href="/saved" />}>
+                  Moja putovanja
                 </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start"
-                  onClick={() => void signOut()}
-                >
+                <Button variant="ghost" className="w-full justify-start" render={<Link href="/contributions" />}>
+                  Moji doprinosi
+                </Button>
+                <Button variant="ghost" className="w-full justify-start" render={<Link href="/settings" />}>
+                  Podešavanja
+                </Button>
+                {isAdmin ? (
+                  <Button variant="ghost" className="w-full justify-start" render={<Link href="/admin" />}>
+                    Moderacija
+                  </Button>
+                ) : null}
+                <Button variant="ghost" className="w-full justify-start" onClick={() => void signOut()}>
                   Odjavi se
                 </Button>
               </PopoverContent>
@@ -92,12 +117,7 @@ export function Navbar() {
         <Sheet>
           <SheetTrigger
             render={
-              <Button
-                variant="outline"
-                size="icon"
-                className="md:hidden"
-                aria-label="Otvori meni"
-              />
+              <Button variant="outline" size="icon" className="md:hidden" aria-label="Otvori meni" />
             }
           >
             <Menu />
@@ -108,17 +128,35 @@ export function Navbar() {
             </SheetHeader>
             <nav className="flex flex-col gap-1 px-4" aria-label="Mobilna navigacija">
               {links.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="rounded-lg px-3 py-2 text-sm hover:bg-muted"
-                >
+                <Link key={link.href} href={link.href} className="rounded-lg px-3 py-2 text-sm hover:bg-muted">
                   {link.label}
                 </Link>
               ))}
+              <Link href="/add-place" className="rounded-lg px-3 py-2 text-sm hover:bg-muted">
+                Dodaj mesto
+              </Link>
               {user ? (
                 <>
-                  <p className="px-3 pt-3 text-xs text-muted-foreground">{user.email}</p>
+                  <p className="px-3 pt-3 text-sm font-medium">{label}</p>
+                  {profile?.username ? (
+                    <Link href={`/user/${profile.username}`} className="rounded-lg px-3 py-2 text-sm hover:bg-muted">
+                      Moj profil
+                    </Link>
+                  ) : null}
+                  <Link href="/saved" className="rounded-lg px-3 py-2 text-sm hover:bg-muted">
+                    Moja putovanja
+                  </Link>
+                  <Link href="/contributions" className="rounded-lg px-3 py-2 text-sm hover:bg-muted">
+                    Moji doprinosi
+                  </Link>
+                  <Link href="/settings" className="rounded-lg px-3 py-2 text-sm hover:bg-muted">
+                    Podešavanja
+                  </Link>
+                  {isAdmin ? (
+                    <Link href="/admin" className="rounded-lg px-3 py-2 text-sm hover:bg-muted">
+                      Moderacija
+                    </Link>
+                  ) : null}
                   <button
                     type="button"
                     className="rounded-lg px-3 py-2 text-left text-sm hover:bg-muted"

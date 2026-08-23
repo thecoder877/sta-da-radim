@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Bookmark, Clock, MapPin, Plus } from "lucide-react";
+import { Clock, MapPin } from "lucide-react";
+import { PlaceCommunity } from "@/components/community/PlaceCommunity";
 import { Container } from "@/components/layout/Container";
 import { TripMapLazy } from "@/components/map/TripMapLazy";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { getCurrentUser } from "@/lib/auth/session";
+import { listReviewsForPlace } from "@/lib/community/reviews";
 import { formatDurationMinutes, formatRsd } from "@/lib/format";
+import { getPlaceRowByKey, listVisiblePlacePhotos, overlayFacts } from "@/lib/places/canonical";
 import { getPlaceRepository } from "@/lib/providers/places";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function generateMetadata({
   params,
@@ -43,6 +46,14 @@ export default async function PlacePage({
   if (!place) {
     notFound();
   }
+
+  const supabase = await createServerSupabaseClient();
+  const user = await getCurrentUser();
+  const row = supabase ? await getPlaceRowByKey(supabase, place.id) : null;
+  const community = supabase
+    ? await listReviewsForPlace(supabase, place.id, user?.id)
+    : { reviews: [], summary: { average: 0, count: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } } };
+  const photos = supabase ? await listVisiblePlacePhotos(supabase, place.id) : [];
 
   return (
     <article>
@@ -98,23 +109,13 @@ export default async function PlacePage({
                 </dd>
               </div>
             </dl>
-            <div className="mt-6 flex flex-wrap gap-2">
-              <Button render={<Link href="/login" />}>
-                <Bookmark data-icon="inline-start" />
-                Sačuvaj
-              </Button>
-              <Button variant="outline" render={<Link href="/plan" />}>
-                <Plus data-icon="inline-start" />
-                Dodaj u putovanje
-              </Button>
-            </div>
-            <section className="mt-10 border-t border-border pt-8">
-              <h2 className="font-heading text-2xl">Uskoro ovde</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Recenzije, fotografije posetilaca, obližnja mesta i saveti
-                ljudi koji su već bili ovde.
-              </p>
-            </section>
+            <PlaceCommunity
+              place={place}
+              overlay={row ? overlayFacts(row) : {}}
+              reviews={community.reviews}
+              summary={community.summary}
+              photos={photos}
+            />
           </div>
 
           <div className="h-[420px]">
