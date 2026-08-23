@@ -7,7 +7,8 @@ Phase 1 is a complete local MVP: homepage, trip planner, mock Serbian place cata
 ## Stack
 
 - Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui
-- MapLibre + OpenFreeMap for maps (no token required)
+- Leaflet + CARTO/OSM tiles for trip maps (pins and road routes, no token)
+- MapLibre remains available for place-page fallbacks if needed
 - Official Google Maps Platform APIs when `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` / `GOOGLE_MAPS_API_KEY` are set (map tiles, Directions, lodging). This is the supported Google integration — not scraping.
 - Zod + React Hook Form
 - Prepared adapters for Supabase, OpenAI, routing, geocoding, and weather

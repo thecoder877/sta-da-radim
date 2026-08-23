@@ -43,6 +43,20 @@ export function FallbackMap({
           stroke="#6b8ea8"
           strokeWidth="3"
         />
+        {points.length > 1 ? (
+          <polyline
+            fill="none"
+            stroke="#c45c26"
+            strokeWidth="2.5"
+            strokeLinejoin="round"
+            points={points
+              .map((point) => {
+                const position = project(point.coordinates);
+                return `${(position.x / 100) * 200},${(position.y / 100) * 240}`;
+              })
+              .join(" ")}
+          />
+        ) : null}
       </svg>
       <p className="absolute top-3 left-3 z-10 rounded-full bg-card/95 px-3 py-1 text-xs font-medium text-foreground shadow-sm">
         Mapa Srbije

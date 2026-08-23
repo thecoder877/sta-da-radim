@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -125,20 +126,19 @@
   }
 }
 
-.maplibregl-map {
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  background: #e7efe4;
   font: inherit;
 }
 
-.maplibregl-marker,
-.trip-map-marker {
-  position: absolute;
-  top: 0;
-  left: 0;
+.trip-leaflet-marker {
+  background: transparent;
+  border: none;
 }
 
-.maplibregl-popup-content {
-  padding: 10px 12px;
-  border-radius: 12px;
+.leaflet-popup-content {
+  margin: 10px 12px;
   font-size: 13px;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 16%);
 }
