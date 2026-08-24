@@ -1,4 +1,5 @@
 import { createBrowserClient } from "@supabase/ssr";
+import { supabaseCookieOptions } from "@/lib/security/cookies";
 import { getSupabasePublicEnv } from "@/lib/supabase/env";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -10,7 +11,9 @@ export function createBrowserSupabaseClient(): SupabaseClient | null {
     return null;
   }
   if (!browserClient) {
-    browserClient = createBrowserClient(env.url, env.anonKey);
+    browserClient = createBrowserClient(env.url, env.anonKey, {
+      cookieOptions: supabaseCookieOptions(),
+    });
   }
   return browserClient;
 }

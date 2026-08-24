@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { deleteCanonicalPlace, setPlacePublished } from "@/lib/admin/places";
 import { communityResponse, requireAdmin } from "@/lib/community/apiAuth";
+import { sanitizeSearch } from "@/lib/security/search";
 
 export async function GET(request: Request) {
   try {
     const { supabase } = await requireAdmin();
     const { searchParams } = new URL(request.url);
-    const q = searchParams.get("q")?.trim();
+    const q = sanitizeSearch(searchParams.get("q"));
     const published = searchParams.get("published") ?? "true";
     let query = supabase
       .from("places")

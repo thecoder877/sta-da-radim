@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { communityResponse, requireAdmin } from "@/lib/community/apiAuth";
+import { sanitizeSearch } from "@/lib/security/search";
 
 export async function GET(request: Request) {
   try {
     const { supabase } = await requireAdmin();
-    const q = new URL(request.url).searchParams.get("q")?.trim().toLowerCase();
+    const q = sanitizeSearch(new URL(request.url).searchParams.get("q")).toLowerCase();
     let query = supabase
       .from("profiles")
       .select("id, username, display_name, avatar_url, role, created_at")

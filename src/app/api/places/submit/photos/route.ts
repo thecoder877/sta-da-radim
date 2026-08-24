@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireUsername } from "@/lib/auth/profile";
 import { ALLOWED_IMAGE_TYPES, MAX_SUBMISSION_PHOTOS, PHOTO_MAX_BYTES } from "@/lib/community/constants";
+import { isAllowedImageFile } from "@/lib/security/files";
 import { communityResponse, requireAuthed } from "@/lib/community/apiAuth";
 
 export async function POST(request: Request) {
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
     if ((count ?? 0) >= MAX_SUBMISSION_PHOTOS) {
       return NextResponse.json({ error: "Možeš dodati najviše 6 fotografija.", code: "PHOTO_LIMIT" }, { status: 400 });
     }
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type) || !(await isAllowedImageFile(file))) {
       return NextResponse.json({ error: "Dozvoljeni su JPG, PNG i WebP.", code: "FILE_TYPE" }, { status: 400 });
     }
     if (file.size > PHOTO_MAX_BYTES) {

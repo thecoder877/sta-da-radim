@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { updateOwnProfile } from "@/lib/auth/profile";
 import { ALLOWED_IMAGE_TYPES, AVATAR_MAX_BYTES } from "@/lib/community/constants";
 import { communityResponse, requireAuthed } from "@/lib/community/apiAuth";
+import { isAllowedImageFile } from "@/lib/security/files";
 
 export async function POST(request: Request) {
   try {
@@ -11,7 +12,7 @@ export async function POST(request: Request) {
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "Izaberi sliku.", code: "INVALID_REQUEST" }, { status: 400 });
     }
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type) || !(await isAllowedImageFile(file))) {
       return NextResponse.json({ error: "Dozvoljeni su JPG, PNG i WebP.", code: "FILE_TYPE" }, { status: 400 });
     }
     if (file.size > AVATAR_MAX_BYTES) {

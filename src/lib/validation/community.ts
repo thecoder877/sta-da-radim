@@ -7,11 +7,13 @@ export const usernameSchema = z
   .toLowerCase()
   .regex(USERNAME_PATTERN, "Korisničko ime: 3–30 karaktera, slova, brojevi i donja crta.");
 
-export const profileUpdateSchema = z.object({
-  username: usernameSchema.optional(),
-  displayName: z.string().trim().max(80).optional(),
-  bio: z.string().trim().max(400).optional(),
-});
+export const profileUpdateSchema = z
+  .object({
+    username: usernameSchema.optional(),
+    displayName: z.string().trim().max(80).optional(),
+    bio: z.string().trim().max(400).optional(),
+  })
+  .strict();
 
 export const reviewInputSchema = z.object({
   placeKey: z.string().min(2),
@@ -49,7 +51,7 @@ export const placeSubmissionSchema = z.object({
   category: z.string().trim().min(2).max(60),
   openingHours: z.string().trim().max(200).optional(),
   phone: z.string().trim().max(40).optional(),
-  website: z.string().trim().max(240).optional(),
+  website: z.union([z.string().trim().url().max(240), z.literal("")]).optional(),
   instagram: z.string().trim().max(120).optional(),
   facebook: z.string().trim().max(240).optional(),
   priceInfo: z.string().trim().max(200).optional(),
@@ -65,16 +67,35 @@ export const placeSubmissionSchema = z.object({
 });
 
 export const placeEditSchema = z.object({
-  placeKey: z.string().min(2),
+  placeKey: z.string().min(2).max(160),
   sourceNote: z.string().trim().max(400).optional(),
   fields: z
     .array(
       z.object({
-        fieldName: z.string().min(2),
+        fieldName: z.enum([
+          "opening_hours",
+          "phone",
+          "website",
+          "instagram",
+          "facebook",
+          "address",
+          "price_info",
+          "parking_info",
+          "estimated_duration_minutes",
+          "description",
+          "short_description",
+          "category",
+          "family_friendly",
+          "pet_friendly",
+          "accessibility_notes",
+          "latitude",
+          "longitude",
+        ]),
         newValue: z.unknown(),
       }),
     )
-    .min(1),
+    .min(1)
+    .max(20),
 });
 
 export const reportInputSchema = z.object({

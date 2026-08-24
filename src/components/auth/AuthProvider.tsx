@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { User } from "@supabase/supabase-js";
-import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { UserProfile } from "@/types/user";
 
@@ -24,64 +23,39 @@ const AuthContext = createContext<AuthContextValue>({
   signOut: async () => undefined,
 });
 
+function asUser(id: string): User {
+  return { id } as User;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const configured = isSupabaseConfigured();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [ready, setReady] = useState(!configured);
 
-  async function loadProfile() {
-    const response = await fetch("/api/profile");
-    if (!response.ok) {
-      setProfile(null);
-      return;
-    }
-    const data = (await response.json()) as { profile?: UserProfile | null };
-    setProfile(data.profile ?? null);
-  }
-
   async function refresh() {
-    const supabase = createBrowserSupabaseClient();
-    if (!supabase) {
+    if (!configured) {
       setUser(null);
       setProfile(null);
       setReady(true);
       return;
     }
-    const { data } = await supabase.auth.getUser();
-    setUser(data.user ?? null);
-    if (data.user) {
-      await loadProfile();
-    } else {
+    const response = await fetch("/api/auth/me", { cache: "no-store" });
+    if (!response.ok) {
+      setUser(null);
       setProfile(null);
+      setReady(true);
+      return;
     }
+    const data = (await response.json()) as { user?: { id: string } | null; profile?: UserProfile | null };
+    setUser(data.user?.id ? asUser(data.user.id) : null);
+    setProfile(data.profile ?? null);
     setReady(true);
   }
 
   useEffect(() => {
-    const supabase = createBrowserSupabaseClient();
-    if (!supabase) {
-      return;
-    }
-
-    void supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null);
-      if (data.session?.user) {
-        void loadProfile();
-      }
-      setReady(true);
-    });
-    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        void loadProfile();
-      } else {
-        setProfile(null);
-      }
-      setReady(true);
-    });
-    return () => data.subscription.unsubscribe();
-  }, []);
+    void refresh();
+  }, [configured]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -91,8 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       configured,
       refresh,
       async signOut() {
-        const supabase = createBrowserSupabaseClient();
-        await supabase?.auth.signOut();
+        await fetch("/api/auth/logout", { method: "POST" });
         setUser(null);
         setProfile(null);
       },

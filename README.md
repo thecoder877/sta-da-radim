@@ -39,7 +39,7 @@ GOOGLE_MAPS_API_KEY=
 OPENAI_API_KEY=
 ```
 
-`NEXT_PUBLIC_SUPABASE_*` are safe to expose to the browser. Never put `SUPABASE_SERVICE_ROLE_KEY` in a `NEXT_PUBLIC_` variable.
+`NEXT_PUBLIC_SUPABASE_*` are the public anon keys. Never put `SUPABASE_SERVICE_ROLE_KEY` or `OPENAI_API_KEY` in a `NEXT_PUBLIC_` variable. `.env.local` is gitignored. Passwords are hashed by Supabase Auth. Community writes go through server auth, Zod validation, and RLS.
 
 ## What works now
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { MapPoint } from "@/components/map/mapTypes";
+import { escapeHtml } from "@/lib/security/escapeHtml";
 import { SERBIA_CENTER } from "@/lib/constants";
 import type { Coordinates } from "@/types/place";
 
@@ -144,7 +145,7 @@ export function LeafletTripMap({
         });
         marker.on("click", () => onSelectRef.current?.(point.id));
         marker.bindPopup(
-          `<strong>${point.name}</strong>${point.description ? `<div>${point.description}</div>` : ""}`,
+          `<strong>${escapeHtml(point.name)}</strong>${point.description ? `<div>${escapeHtml(point.description)}</div>` : ""}`,
         );
         marker.addTo(group);
       });

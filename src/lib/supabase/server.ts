@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { supabaseCookieOptions } from "@/lib/security/cookies";
 import { getSupabasePublicEnv } from "@/lib/supabase/env";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -12,6 +13,7 @@ export async function createServerSupabaseClient(): Promise<SupabaseClient | nul
   const cookieStore = await cookies();
 
   return createServerClient(env.url, env.anonKey, {
+    cookieOptions: supabaseCookieOptions(),
     cookies: {
       getAll() {
         return cookieStore.getAll();
@@ -29,6 +31,4 @@ export async function createServerSupabaseClient(): Promise<SupabaseClient | nul
   });
 }
 
-export function getServiceRoleKey() {
-  return process.env.SUPABASE_SERVICE_ROLE_KEY;
-}
+export { getServiceRoleKey } from "@/lib/security/env";

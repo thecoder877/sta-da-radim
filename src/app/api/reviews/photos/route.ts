@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireUsername } from "@/lib/auth/profile";
 import { ALLOWED_IMAGE_TYPES, PHOTO_MAX_BYTES } from "@/lib/community/constants";
+import { isAllowedImageFile } from "@/lib/security/files";
 import { communityResponse, requireAuthed } from "@/lib/community/apiAuth";
 import { addReviewPhoto, getOwnReviewId } from "@/lib/community/reviews";
 
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
     if (!placeKey || !(file instanceof File)) {
       return NextResponse.json({ error: "Nedostaje fotografija.", code: "INVALID_REQUEST" }, { status: 400 });
     }
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type) || !(await isAllowedImageFile(file))) {
       return NextResponse.json({ error: "Dozvoljeni su JPG, PNG i WebP.", code: "FILE_TYPE" }, { status: 400 });
     }
     if (file.size > PHOTO_MAX_BYTES) {

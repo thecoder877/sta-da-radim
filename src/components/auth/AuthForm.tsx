@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { createBrowserSupabaseClient } from "@/lib/supabase/client";
+import { useMemo, useState } from "react";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { HoneypotFields } from "@/components/security/HoneypotFields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,10 +18,13 @@ export function AuthForm({
   onSuccess?: () => void;
   onModeChange?: (mode: AuthFormMode) => void;
 }) {
+  const { refresh } = useAuth();
+  const startedAt = useMemo(() => Date.now(), []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
+  const [company, setCompany] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -29,12 +33,6 @@ export function AuthForm({
     event.preventDefault();
     setError(null);
     setInfo(null);
-
-    const supabase = createBrowserSupabaseClient();
-    if (!supabase) {
-      setError("Supabase nije podešen. Dodaj URL i anon ključ u .env.local.");
-      return;
-    }
 
     if (!email.trim() || password.length < 6) {
       setError("Unesi ispravan email i lozinku od najmanje 6 karaktera.");
@@ -47,38 +45,29 @@ export function AuthForm({
 
     setLoading(true);
     try {
-      if (mode === "login") {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
+      const response = await fetch(mode === "login" ? "/api/auth/login" : "/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           email: email.trim(),
           password,
-        });
-        if (signInError) {
-          setError("Pogrešan email ili lozinka.");
-          return;
-        }
-        onSuccess?.();
-        return;
-      }
-
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          data: {
-            display_name: displayName.trim() || undefined,
-            username: username.trim().toLowerCase() || undefined,
-          },
-        },
+          username: username.trim().toLowerCase() || undefined,
+          displayName: displayName.trim() || undefined,
+          company,
+          startedAt,
+        }),
       });
-      if (signUpError) {
-        setError(signUpError.message.includes("already") ? "Ovaj email je već registrovan." : "Nalog nije napravljen. Pokušaj ponovo.");
+      const data = (await response.json()) as { error?: string; needsConfirm?: boolean };
+      if (!response.ok) {
+        setError(data.error ?? "Prijava trenutno nije dostupna.");
         return;
       }
-      if (!data.session) {
+      if (data.needsConfirm) {
         setInfo("Nalog je uspešno napravljen. Proveri email da potvrdiš adresu, pa se prijavi.");
         return;
       }
-      setInfo("Nalog je uspešno napravljen.");
+      await refresh();
+      setInfo(mode === "register" ? "Nalog je uspešno napravljen." : null);
       onSuccess?.();
     } catch {
       setError("Prijava trenutno nije dostupna.");
@@ -88,7 +77,15 @@ export function AuthForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={onSubmit} className="relative space-y-4">
+      <HoneypotFields startedAt={startedAt} />
+      <input
+        className="hidden"
+        tabIndex={-1}
+        autoComplete="off"
+        value={company}
+        onChange={(event) => setCompany(event.target.value)}
+      />
       {mode === "register" ? (
         <div className="space-y-1.5">
           <Label htmlFor="auth-username">Korisničko ime</Label>

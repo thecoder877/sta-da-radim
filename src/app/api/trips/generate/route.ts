@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { generateTrip } from "@/lib/ai/generateTrip";
+import { clientIp, limitResponse, rateLimit } from "@/lib/security/rateLimit";
 import { tripRequestSchema } from "@/lib/validation/trip";
 
 export async function POST(request: Request) {
+  const limited = rateLimit(`generate:${clientIp(request)}`, 20, 60 * 1000);
+  if (!limited.ok) {
+    return limitResponse(limited.retryAfterSec);
+  }
   try {
     const body: unknown = await request.json();
     const parsed = tripRequestSchema.safeParse(body);
