@@ -24,6 +24,7 @@ export function BudgetSelector({
             <button
               key={option.id}
               type="button"
+              aria-pressed={selected}
               onClick={() => onPresetChange(option.id)}
               className={cn(
                 "rounded-full border px-3 py-1.5 text-sm",

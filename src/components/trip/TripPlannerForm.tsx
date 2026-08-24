@@ -281,6 +281,7 @@ export function TripPlannerForm() {
                   <button
                     key={option.id}
                     type="button"
+                    aria-pressed={field.value === option.id}
                     onClick={() => field.onChange(option.id)}
                     className={`rounded-full border px-3 py-1.5 text-sm ${
                       field.value === option.id
@@ -326,6 +327,7 @@ export function TripPlannerForm() {
                   <button
                     key={option.id}
                     type="button"
+                    aria-pressed={field.value === option.id}
                     onClick={() => field.onChange(option.id)}
                     className={`rounded-full border px-3 py-1.5 text-sm ${
                       field.value === option.id
@@ -363,6 +365,7 @@ export function TripPlannerForm() {
                   <button
                     key={option.id}
                     type="button"
+                    aria-pressed={field.value === option.id}
                     onClick={() => field.onChange(option.id)}
                     className={`rounded-2xl border p-4 text-left ${
                       field.value === option.id
