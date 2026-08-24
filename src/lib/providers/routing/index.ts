@@ -1,3 +1,4 @@
+import { sanitizeTravelMinutes } from "@/lib/geo/travelTime";
 import { getGoogleRoute } from "@/lib/providers/routing/google";
 import { getOsrmRoute } from "@/lib/providers/routing/osrm";
 import type { RouteGeometry, RoutingProvider } from "@/lib/providers/types";
@@ -16,7 +17,7 @@ export function routingProfile(
   return "driving";
 }
 
-export async function getTripRoute(
+async function fetchRouteGeometry(
   points: Coordinates[],
   transport: TransportType,
 ): Promise<RouteGeometry | null> {
@@ -31,6 +32,41 @@ export async function getTripRoute(
   }
 
   return getOsrmRoute(points, profile);
+}
+
+function withSanitizedDuration(
+  route: RouteGeometry,
+  transport: TransportType,
+): RouteGeometry {
+  return {
+    ...route,
+    durationMinutes: sanitizeTravelMinutes(
+      route.distanceKm,
+      route.durationMinutes,
+      transport,
+    ),
+  };
+}
+
+export async function getTripRoute(
+  points: Coordinates[],
+  transport: TransportType,
+): Promise<RouteGeometry | null> {
+  const route = await fetchRouteGeometry(points, transport);
+  if (route) {
+    return withSanitizedDuration(route, transport);
+  }
+
+  // Keep a road line for the map if foot/bike routing is down, but never
+  // keep the car clock — that is what produced "6h 30m hoda" on 350 km.
+  if (transport === "walk" || transport === "bike") {
+    const driving = await fetchRouteGeometry(points, "car");
+    if (driving) {
+      return withSanitizedDuration(driving, transport);
+    }
+  }
+
+  return null;
 }
 
 export const routingProvider: RoutingProvider = {

@@ -9,6 +9,7 @@ import {
 import { rememberPlaces } from "@/lib/places/placeMemory";
 import {
   isNominatimSettlement,
+  rankNominatimResults,
   searchNominatimDetailed,
   settlementRadiusKm,
   type NominatimSearchItem,
@@ -319,7 +320,10 @@ async function resolveLocation(
   }
 
   try {
-    const hits = await searchNominatimDetailed(nominatimQuery, 8);
+    const hits = rankNominatimResults(
+      await searchNominatimDetailed(nominatimQuery, 15),
+      nominatimQuery,
+    );
     const settlement = hits.find(isNominatimSettlement);
     const venues = hits.map(nominatimToPlace).filter((place): place is Place => place !== null);
     return {

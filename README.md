@@ -13,6 +13,7 @@ v0.3 adds community reviews, usernames, place submissions, factual edit suggesti
 - Supabase Storage for avatars, review photos, and place-submission photos
 - Zod + React Hook Form
 - Deterministic planner (no OpenAI yet)
+- Walking and cycling times use foot/bike routing and a pace model (~4.5 km/h walk, ~14 km/h bike). A car OSRM duration is never shown as walking time.
 
 ## Run locally
 

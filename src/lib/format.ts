@@ -14,12 +14,20 @@ export function formatDistance(km: number): string {
 }
 
 export function formatDurationMinutes(minutes: number): string {
-  if (minutes < 60) {
-    return `${minutes} min`;
+  const total = Math.max(0, Math.round(minutes));
+  if (total < 60) {
+    return `${total} min`;
   }
 
-  const hours = Math.floor(minutes / 60);
-  const remaining = minutes % 60;
+  const days = Math.floor(total / (60 * 24));
+  const hours = Math.floor((total % (60 * 24)) / 60);
+  const remaining = total % 60;
+
+  if (days > 0) {
+    const dayLabel = days === 1 ? "1 dan" : `${days} dana`;
+    return hours > 0 ? `${dayLabel} ${hours}h` : dayLabel;
+  }
+
   if (remaining === 0) {
     return `${hours}h`;
   }

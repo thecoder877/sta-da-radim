@@ -1,5 +1,5 @@
-import { START_CITIES } from "@/lib/constants";
 import type { Coordinates } from "@/types/place";
+import { START_CITIES } from "./constants.ts";
 
 export function resolveStartCoordinates(
   name: string,

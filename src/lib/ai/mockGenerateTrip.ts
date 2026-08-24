@@ -1,6 +1,10 @@
 import { addDays, format, parseISO } from "date-fns";
 import { SERBIA_CENTER } from "@/lib/constants";
 import { calculateDistanceKm, estimateTravelMinutes } from "@/lib/geo/distance";
+import {
+  dailyTravelBudgetKm,
+  effectiveSearchRadiusKm,
+} from "@/lib/geo/travelTime";
 import { resolveStartCoordinates } from "@/lib/locations";
 import { slugify } from "@/lib/format";
 import {
@@ -32,6 +36,12 @@ function targetStopCount(request: TripRequest): number {
     base = 13;
   }
 
+  if (request.transport === "walk") {
+    base = Math.min(base, request.days * 3);
+  } else if (request.transport === "bike") {
+    base = Math.min(base, request.days * 4);
+  }
+
   if (request.travelStyle === "relaxed") {
     return Math.max(2, base - 2);
   }
@@ -39,6 +49,35 @@ function targetStopCount(request: TripRequest): number {
     return base + 2;
   }
   return base;
+}
+
+function trimPlacesToPathBudget(
+  origin: Coordinates,
+  places: Place[],
+  budgetKm: number,
+): Place[] {
+  if (!Number.isFinite(budgetKm) || budgetKm <= 0 || places.length <= 2) {
+    return places;
+  }
+
+  const kept: Place[] = [];
+  let current = origin;
+  let used = 0;
+
+  for (const place of places) {
+    const hop = calculateDistanceKm(current, {
+      latitude: place.latitude,
+      longitude: place.longitude,
+    });
+    if (kept.length >= 2 && used + hop > budgetKm) {
+      break;
+    }
+    kept.push(place);
+    used += hop;
+    current = { latitude: place.latitude, longitude: place.longitude };
+  }
+
+  return kept.length >= 2 ? kept : places.slice(0, 2);
 }
 
 function orderByNearestNeighbor(
@@ -121,11 +160,32 @@ export function generateMockTrip(
     resolveStartCoordinates(request.startLocation.name) ??
     SERBIA_CENTER;
 
-  const byDistance = filterPlacesByDistance(
-    catalog,
-    origin,
+  const searchRadiusKm = effectiveSearchRadiusKm(
+    request.transport,
     request.maxDistanceKm,
+    request.days,
   );
+  let byDistance = filterPlacesByDistance(catalog, origin, searchRadiusKm);
+  let expandedRadius = searchRadiusKm;
+  const expandCap =
+    request.transport === "walk" ? 30 : request.transport === "bike" ? 80 : 80;
+  while (
+    byDistance.length < 4 &&
+    expandedRadius != null &&
+    expandedRadius < expandCap &&
+    (request.maxDistanceKm == null || expandedRadius < request.maxDistanceKm)
+  ) {
+    const nextRadius = Math.min(
+      expandCap,
+      request.maxDistanceKm ?? expandCap,
+      Math.round(expandedRadius * 2),
+    );
+    if (nextRadius <= expandedRadius) {
+      break;
+    }
+    expandedRadius = nextRadius;
+    byDistance = filterPlacesByDistance(catalog, origin, expandedRadius);
+  }
   const byBudget = filterPlacesByBudget(
     byDistance,
     request.budget,
@@ -140,9 +200,12 @@ export function generateMockTrip(
     .filter((place) => place.category !== "Smeštaj");
 
   const count = Math.min(targetStopCount(request), usable.length);
-  const selected = orderByNearestNeighbor(origin, usable.slice(0, Math.max(count, 3))).slice(
-    0,
-    count,
+  const dailyBudget = dailyTravelBudgetKm(request.transport);
+  const pathBudgetKm = dailyBudget != null ? dailyBudget * request.days : undefined;
+  const selected = trimPlacesToPathBudget(
+    origin,
+    orderByNearestNeighbor(origin, usable.slice(0, Math.max(count, 3))).slice(0, count),
+    pathBudgetKm ?? Number.POSITIVE_INFINITY,
   );
 
   if (selected.length < 2) {
@@ -226,7 +289,14 @@ export function generateMockTrip(
   return {
     id: `${slugify(title)}-${suffix}`,
     title,
-    description: `Plan sastavljen prema polasku iz ${request.startLocation.name}, sa fokusom na ${request.interests.slice(0, 3).join(", ") || "mešovita interesovanja"}. Procene cene i vremena su orijentacione.`,
+    description: [
+      `Plan sastavljen prema polasku iz ${request.startLocation.name}, sa fokusom na ${request.interests.slice(0, 3).join(", ") || "mešovita interesovanja"}.`,
+      request.transport === "walk"
+        ? "Vreme hoda je računato pešačkim tempom (~4,5 km/h), ne automobilom."
+        : request.transport === "bike"
+          ? "Vreme na biciklu je računato ~14 km/h, ne automobilom."
+          : "Procene cene i vremena su orijentacione.",
+    ].join(" "),
     startLocation: request.startLocation.name,
     startDate,
     days,

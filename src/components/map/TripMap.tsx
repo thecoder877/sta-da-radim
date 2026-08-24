@@ -5,6 +5,7 @@ import { GoogleTripMap } from "@/components/map/GoogleTripMap";
 import { LeafletTripMap } from "@/components/map/LeafletTripMap";
 import type { MapPoint } from "@/components/map/mapTypes";
 import type { Coordinates } from "@/types/place";
+import type { TransportType } from "@/types/trip";
 
 export type { MapPoint } from "@/components/map/mapTypes";
 
@@ -21,6 +22,7 @@ interface TripMapProps {
   selectedId?: string;
   onSelect?: (id: string) => void;
   routeCoordinates?: Coordinates[];
+  transport?: TransportType;
   className?: string;
 }
 
@@ -29,6 +31,7 @@ export function TripMap({
   selectedId,
   onSelect,
   routeCoordinates,
+  transport = "car",
   className,
 }: TripMapProps) {
   const googleKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -58,7 +61,7 @@ export function TripMap({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         points: points.map((point) => point.coordinates),
-        transport: "car",
+        transport,
       }),
       signal: controller.signal,
     })
@@ -71,7 +74,7 @@ export function TripMap({
       .catch(() => undefined);
 
     return () => controller.abort();
-  }, [points, routeCoordinates]);
+  }, [points, routeCoordinates, transport]);
 
   if (googleKey) {
     return (

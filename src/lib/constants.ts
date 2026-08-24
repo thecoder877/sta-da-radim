@@ -82,6 +82,7 @@ export const TRANSPORT_OPTIONS: {
 ];
 
 export const DISTANCE_OPTIONS = [
+  { id: "10", label: "10 km", value: 10 },
   { id: "25", label: "25 km", value: 25 },
   { id: "50", label: "50 km", value: 50 },
   { id: "100", label: "100 km", value: 100 },

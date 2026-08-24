@@ -1,12 +1,10 @@
 import type { Coordinates } from "@/types/place";
 import type { RouteGeometry } from "@/lib/providers/types";
 
-const OSRM_URLS = [
-  "https://router.project-osrm.org",
-  "https://routing.openstreetmap.de",
-];
+const FOSSGIS_OSRM = "https://routing.openstreetmap.de";
+const PROJECT_OSRM = "https://router.project-osrm.org";
 
-function profilePath(profile: "driving" | "walking" | "cycling"): string {
+function fossgisProfile(profile: "driving" | "walking" | "cycling"): "car" | "foot" | "bike" {
   if (profile === "walking") {
     return "foot";
   }
@@ -14,6 +12,36 @@ function profilePath(profile: "driving" | "walking" | "cycling"): string {
     return "bike";
   }
   return "car";
+}
+
+/**
+ * FOSSGIS exposes walk/bike as /routed-foot and /routed-bike.
+ * router.project-osrm.org is car-only — calling /route/v1/foot there 404s
+ * and the client used to fall through to a driving duration.
+ */
+export function osrmRouteUrl(
+  base: string,
+  profile: "driving" | "walking" | "cycling",
+  coords: string,
+): string | null {
+  const root = base.replace(/\/$/, "");
+  if (root.includes("routing.openstreetmap.de")) {
+    const routed = fossgisProfile(profile);
+    return `${root}/routed-${routed}/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+  }
+
+  if (profile !== "driving") {
+    return null;
+  }
+
+  return `${root}/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+}
+
+function osrmBases(profile: "driving" | "walking" | "cycling"): string[] {
+  if (profile === "driving") {
+    return [PROJECT_OSRM, FOSSGIS_OSRM];
+  }
+  return [FOSSGIS_OSRM];
 }
 
 export async function getOsrmRoute(
@@ -28,11 +56,15 @@ export async function getOsrmRoute(
     .slice(0, 25)
     .map((point) => `${point.longitude},${point.latitude}`)
     .join(";");
-  const path = `/route/v1/${profilePath(profile)}/${coords}?overview=full&geometries=geojson`;
 
-  for (const base of OSRM_URLS) {
+  for (const base of osrmBases(profile)) {
+    const url = osrmRouteUrl(base, profile, coords);
+    if (!url) {
+      continue;
+    }
+
     try {
-      const response = await fetch(`${base}${path}`, {
+      const response = await fetch(url, {
         headers: { Accept: "application/json" },
         cache: "no-store",
       });

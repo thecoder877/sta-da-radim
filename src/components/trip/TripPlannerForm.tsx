@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Controller,
@@ -121,6 +121,22 @@ export function TripPlannerForm() {
   const form = useForm<FormValues>({
     defaultValues: defaultValues(searchParams),
   });
+  const transport = useWatch({ control: form.control, name: "transport" });
+  const previousTransport = useRef(transport);
+
+  useEffect(() => {
+    if (previousTransport.current === transport) {
+      return;
+    }
+    previousTransport.current = transport;
+    const current = form.getValues("maxDistance");
+    if (transport === "walk" && ["100", "150", "250", "any"].includes(current)) {
+      form.setValue("maxDistance", "25");
+    }
+    if (transport === "bike" && ["150", "250", "any"].includes(current)) {
+      form.setValue("maxDistance", "50");
+    }
+  }, [form, transport]);
 
   useEffect(() => {
     if (searchParams.get("from") || searchParams.get("date") || searchParams.get("duration")) {
@@ -317,6 +333,13 @@ export function TripPlannerForm() {
 
         <fieldset className="space-y-3">
           <legend className="text-sm font-medium">Maksimalna udaljenost</legend>
+          <p className="text-xs text-muted-foreground">
+            {transport === "walk"
+              ? "Hod se računa ~4,5 km/h. 350 km je više dana hoda, ne 6 sati — zato biramo mesta koja se stignu peške."
+              : transport === "bike"
+                ? "Bicikl se računa ~14 km/h, ne automobilskim vremenom."
+                : "Koliko daleko od starta smeju biti stanice."}
+          </p>
           <Controller
             control={form.control}
             name="maxDistance"
