@@ -104,8 +104,7 @@ function placeFromStop(stop: TripStopRow): Place {
       metadata.source === "osm" ||
       metadata.source === "google" ||
       metadata.source === "internal" ||
-      metadata.source === "community" ||
-      metadata.source === "mapbox"
+      metadata.source === "community"
         ? metadata.source
         : "internal",
     verified: Boolean(metadata.verified),

@@ -32,25 +32,3 @@ export const tripRequestSchema = z.object({
 });
 
 export type TripRequestInput = z.infer<typeof tripRequestSchema>;
-
-export const aiItinerarySchema = z.object({
-  title: z.string().min(2),
-  summary: z.string().min(2),
-  days: z
-    .array(
-      z.object({
-        dayNumber: z.number().int().min(1),
-        stops: z
-          .array(
-            z.object({
-              placeId: z.string().min(1),
-              arrivalTime: z.string().min(4),
-              durationMinutes: z.number().int().positive(),
-              reason: z.string().optional(),
-            }),
-          )
-          .min(1),
-      }),
-    )
-    .min(1),
-});

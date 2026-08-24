@@ -1,5 +1,5 @@
+import { fetchWithTimeout } from "@/lib/providers/http";
 import type { Coordinates } from "@/types/place";
-import type { GeocodingProvider } from "@/lib/providers/types";
 
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org";
 const USER_AGENT = "StaDaRadim/1.0 (serbia travel planner)";
@@ -102,7 +102,7 @@ function formatSuggestion(item: NominatimSearchItem): GeocodeSuggestion {
 }
 
 async function nominatimGet(path: string): Promise<unknown> {
-  const response = await fetch(`${NOMINATIM_URL}${path}`, {
+  const response = await fetchWithTimeout(`${NOMINATIM_URL}${path}`, {
     headers: {
       Accept: "application/json",
       "User-Agent": USER_AGENT,
@@ -162,7 +162,3 @@ export async function reverseGeocode(
   }
   return formatSuggestion(data);
 }
-
-export const nominatimGeocodingProvider: GeocodingProvider = {
-  search: searchLocations,
-};

@@ -1,4 +1,5 @@
 import { slugify } from "@/lib/format";
+import { fetchWithTimeout } from "@/lib/providers/http";
 import type { AmenityKind } from "@/lib/places/amenityKeywords";
 import type { Place, PlaceEnvironment, PlaceSource } from "@/types/place";
 
@@ -275,15 +276,21 @@ function amenitySelectors(amenity?: AmenityKind, includeLocalFood = false): stri
 async function overpassQuery(query: string): Promise<OverpassElement[]> {
   for (const url of OVERPASS_URLS) {
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-          "User-Agent": "StaDaRadim/1.0 (serbia travel planner)",
+      const response = await fetchWithTimeout(
+        url,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "User-Agent": "StaDaRadim/1.0 (serbia travel planner)",
+          },
+          body: `data=${encodeURIComponent(query)}`,
+          cache: "no-store",
         },
-        body: `data=${encodeURIComponent(query)}`,
-        cache: "no-store",
-      });
+        // Overpass QL queries carry their own server-side timeout (25-90s); give
+        // the network call generous headroom before we abort and try a mirror.
+        95_000,
+      );
       if (response.ok) {
         const payload = (await response.json()) as OverpassResponse;
         return payload.elements ?? [];

@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from "@/lib/providers/http";
 import type { Coordinates } from "@/types/place";
 import type { RouteGeometry } from "@/lib/providers/types";
 
@@ -69,7 +70,7 @@ export async function getGoogleRoute(
     params.set("waypoints", waypoints.map(toLatLng).join("|"));
   }
 
-  const response = await fetch(
+  const response = await fetchWithTimeout(
     `https://maps.googleapis.com/maps/api/directions/json?${params.toString()}`,
     { cache: "no-store" },
   );

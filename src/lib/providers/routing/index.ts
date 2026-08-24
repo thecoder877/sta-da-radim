@@ -1,6 +1,6 @@
 import { getGoogleRoute } from "@/lib/providers/routing/google";
 import { getOsrmRoute } from "@/lib/providers/routing/osrm";
-import type { RouteGeometry, RoutingProvider } from "@/lib/providers/types";
+import type { RouteGeometry } from "@/lib/providers/types";
 import type { Coordinates } from "@/types/place";
 import type { TransportType } from "@/types/trip";
 
@@ -32,9 +32,3 @@ export async function getTripRoute(
 
   return getOsrmRoute(points, profile);
 }
-
-export const routingProvider: RoutingProvider = {
-  getRoute(points, profile) {
-    return getOsrmRoute(points, profile);
-  },
-};

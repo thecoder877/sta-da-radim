@@ -32,7 +32,16 @@ function isNearDuplicate(candidate: Place, existing: Place): boolean {
   );
 }
 
+// Merging MOCK_PLACES with the OSM snapshot is O(n*m); cache the result so
+// repeated trip generations and Explore searches do not rebuild it every call.
+const CATALOG_CACHE_MS = 1000 * 60 * 60 * 12;
+let catalogCache: { places: Place[]; fetchedAt: number } | null = null;
+
 async function listCatalog(): Promise<Place[]> {
+  if (catalogCache && Date.now() - catalogCache.fetchedAt < CATALOG_CACHE_MS) {
+    return catalogCache.places;
+  }
+
   let osmPlaces: Place[] = [];
   try {
     osmPlaces = await fetchOverpassPlaces();
@@ -47,6 +56,8 @@ async function listCatalog(): Promise<Place[]> {
       merged.push(place);
     }
   }
+
+  catalogCache = { places: merged, fetchedAt: Date.now() };
   return merged;
 }
 

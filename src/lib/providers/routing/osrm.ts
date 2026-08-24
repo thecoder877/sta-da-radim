@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from "@/lib/providers/http";
 import type { Coordinates } from "@/types/place";
 import type { RouteGeometry } from "@/lib/providers/types";
 
@@ -32,7 +33,7 @@ export async function getOsrmRoute(
 
   for (const base of OSRM_URLS) {
     try {
-      const response = await fetch(`${base}${path}`, {
+      const response = await fetchWithTimeout(`${base}${path}`, {
         headers: { Accept: "application/json" },
         cache: "no-store",
       });

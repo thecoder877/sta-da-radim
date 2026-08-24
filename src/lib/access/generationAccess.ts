@@ -79,13 +79,6 @@ export function getGenerationAccess(
   return { allowed: false, reason: "AUTH_REQUIRED" };
 }
 
-export function requireGenerationAccess(
-  isAuthenticated: boolean,
-  store: GenerationAccessStore | null = browserStore(),
-): GenerationAccess {
-  return getGenerationAccess(isAuthenticated, store);
-}
-
 export function tripSuccessfullyGenerated(trip: {
   id?: string;
   daysPlan?: unknown[];
