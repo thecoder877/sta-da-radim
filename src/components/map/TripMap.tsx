@@ -36,6 +36,10 @@ export function TripMap({
 }: TripMapProps) {
   const googleKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const [fetchedRoute, setFetchedRoute] = useState<Coordinates[] | undefined>();
+  const drivePoints = useMemo(
+    () => points.filter((point) => point.kind !== "lodging"),
+    [points],
+  );
 
   const line = useMemo(() => {
     if (routeCoordinates && routeCoordinates.length > 1) {
@@ -44,14 +48,14 @@ export function TripMap({
     if (fetchedRoute && fetchedRoute.length > 1) {
       return downsampleRoute(fetchedRoute);
     }
-    return points.map((point) => point.coordinates);
-  }, [routeCoordinates, fetchedRoute, points]);
+    return drivePoints.map((point) => point.coordinates);
+  }, [routeCoordinates, fetchedRoute, drivePoints]);
 
   useEffect(() => {
     if (routeCoordinates && routeCoordinates.length > 1) {
       return;
     }
-    if (points.length < 2) {
+    if (drivePoints.length < 2) {
       return;
     }
 
@@ -60,7 +64,7 @@ export function TripMap({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        points: points.map((point) => point.coordinates),
+        points: drivePoints.map((point) => point.coordinates),
         transport,
       }),
       signal: controller.signal,
@@ -74,7 +78,7 @@ export function TripMap({
       .catch(() => undefined);
 
     return () => controller.abort();
-  }, [points, routeCoordinates, transport]);
+  }, [drivePoints, routeCoordinates, transport]);
 
   if (googleKey) {
     return (

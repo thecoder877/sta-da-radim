@@ -410,10 +410,6 @@ out center tags;
       tags: [...new Set(["hotel", "prenociste", ...place.tags])],
       estimatedDurationMinutes: place.estimatedDurationMinutes ?? 720,
       estimatedCostPerPerson: place.estimatedCostPerPerson ?? 5000,
-      imageUrl:
-        place.imageUrl && !place.imageUrl.includes("images.unsplash.com")
-          ? place.imageUrl
-          : undefined,
     }),
   );
 }

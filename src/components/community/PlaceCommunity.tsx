@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Bookmark, Plus } from "lucide-react";
+import { PlaceAddPhoto } from "@/components/community/PlaceAddPhoto";
 import { PlaceFacts } from "@/components/community/PlaceFacts";
 import { PlaceEditDialog } from "@/components/community/PlaceEditDialog";
 import { PlaceReviews } from "@/components/community/PlaceReviews";
@@ -46,17 +47,7 @@ export function PlaceCommunity({
           setEditOpen(true);
         }}
       />
-      {photos.length ? (
-        <section className="mt-8">
-          <h2 className="font-heading text-2xl">Fotografije</h2>
-          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {photos.map((photo) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={photo.id} src={photo.publicUrl} alt={photo.caption ?? place.name} className="h-32 w-full rounded-xl object-cover" />
-            ))}
-          </div>
-        </section>
-      ) : null}
+      <PlaceAddPhoto place={place} initialPhotos={photos} />
       <PlaceReviews place={place} initialReviews={reviews} initialSummary={summary} />
       <PlaceEditDialog
         place={place}

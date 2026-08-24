@@ -23,7 +23,11 @@ export function TripStopCard({
     >
       <div className="grid sm:grid-cols-[140px_1fr]">
         <div className="relative min-h-36 bg-muted">
-          <PlacePhoto place={stop.place} sizes="140px" />
+          <PlacePhoto
+            place={stop.place}
+            sizes="140px"
+            addHref={`/place/${stop.place.slug}#fotografije`}
+          />
         </div>
         <div className="space-y-3 p-4">
           <div className="flex items-start justify-between gap-3">

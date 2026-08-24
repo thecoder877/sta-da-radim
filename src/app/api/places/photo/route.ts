@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
   const key = googleMapsKey();
   if (!key) {
-    return NextResponse.redirect(new URL("/globe.svg", request.url));
+    return NextResponse.json({ error: "Fotografija nije dostupna." }, { status: 404 });
   }
 
   const params = new URLSearchParams({

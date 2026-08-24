@@ -1,0 +1,51 @@
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
+import { authenticImageUrl, imageFromOsmTags, isAuthenticPlaceImage, withPlaceImage } from "./placeImage.ts";
+import type { Place } from "../../types/place.ts";
+
+function place(imageUrl?: string): Place {
+  return {
+    id: "osm-node-1",
+    name: "Jazak",
+    slug: "jazak",
+    shortDescription: "Selo",
+    latitude: 45.1,
+    longitude: 19.7,
+    category: "Priroda",
+    tags: ["priroda"],
+    imageUrl,
+    source: "osm",
+    verified: false,
+  };
+}
+
+describe("place images", () => {
+  it("rejects Unsplash stock covers", () => {
+    assert.equal(
+      isAuthenticPlaceImage("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format"),
+      false,
+    );
+  });
+
+  it("rejects missing local marketing images", () => {
+    assert.equal(isAuthenticPlaceImage("/images/krusedol.jpg"), false);
+  });
+
+  it("keeps Wikimedia and Google photo proxy URLs", () => {
+    assert.equal(
+      isAuthenticPlaceImage("https://commons.wikimedia.org/wiki/Special:FilePath/Foo.jpg?width=1200"),
+      true,
+    );
+    assert.equal(isAuthenticPlaceImage("/api/places/photo?ref=abc"), true);
+  });
+
+  it("strips stock URLs from a place", () => {
+    assert.equal(authenticImageUrl(place("https://images.unsplash.com/photo-x")), undefined);
+    assert.equal(withPlaceImage(place("https://images.unsplash.com/photo-x")).imageUrl, undefined);
+  });
+
+  it("reads an OSM File: tag as Wikimedia", () => {
+    const url = imageFromOsmTags({ wikimedia_commons: "File:Manastir_Jazak.jpg" });
+    assert.ok(url?.includes("commons.wikimedia.org"));
+  });
+});

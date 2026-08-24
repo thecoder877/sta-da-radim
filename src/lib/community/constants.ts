@@ -67,6 +67,7 @@ export const STATUS_LABELS: Record<string, string> = {
 };
 
 export const MAX_REVIEW_PHOTOS = 5;
+export const MAX_PLACE_PHOTOS = 8;
 export const MAX_SUBMISSION_PHOTOS = 6;
 export const AVATAR_MAX_BYTES = 5 * 1024 * 1024;
 export const PHOTO_MAX_BYTES = 10 * 1024 * 1024;

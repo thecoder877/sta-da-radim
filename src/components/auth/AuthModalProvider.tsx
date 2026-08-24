@@ -49,7 +49,7 @@ const COPY: Record<AuthModalReason, { title: string; description: string }> = {
   community: {
     title: "Prijavi se da doprineseš",
     description:
-      "Nalog treba za recenzije, predloge izmena, glasove i nova mesta. Email ostaje privatan.",
+      "Nalog treba za recenzije, fotografije mesta, predloge izmena, glasove i nova mesta. Email ostaje privatan.",
   },
 };
 

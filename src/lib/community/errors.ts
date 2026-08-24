@@ -17,7 +17,7 @@ export function publicError(code: string): { error: string; code: string; status
     USERNAME_REQUIRED: { error: "Odaberi korisničko ime.", status: 400 },
     INVALID_REQUEST: { error: "Neispravan zahtev.", status: 400 },
     REVIEW_EXISTS: { error: "Već imaš recenziju za ovo mesto. Možeš je izmeniti.", status: 409 },
-    PHOTO_LIMIT: { error: "Možeš dodati najviše 5 fotografija.", status: 400 },
+    PHOTO_LIMIT: { error: "Dostignut je limit fotografija.", status: 400 },
     FILE_TOO_LARGE: { error: "Fajl je prevelik.", status: 400 },
     FILE_TYPE: { error: "Dozvoljeni su JPG, PNG i WebP.", status: 400 },
     DUPLICATE_REPORT: { error: "Već si prijavio ovaj sadržaj.", status: 409 },

@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { slugify } from "@/lib/format";
+import { authenticImageUrl } from "@/lib/places/placeImage";
 import type { Place, PlaceSource } from "@/types/place";
 
 export interface PlaceRow {
@@ -51,7 +52,7 @@ export function placeFromRow(row: PlaceRow): Place {
     tags: row.tags ?? [],
     estimatedDurationMinutes: row.estimated_duration_minutes ?? undefined,
     estimatedCostPerPerson: row.estimated_cost_per_person ?? undefined,
-    imageUrl: row.image_url ?? undefined,
+    imageUrl: authenticImageUrl({ imageUrl: row.image_url ?? undefined }),
     website: row.website ?? undefined,
     openingHours: row.opening_hours ?? undefined,
     source: row.source,
@@ -82,7 +83,7 @@ export function applyPlaceOverlay(place: Place, row: PlaceRow | null): Place {
     openingHours: row.opening_hours || place.openingHours,
     estimatedDurationMinutes: row.estimated_duration_minutes ?? place.estimatedDurationMinutes,
     estimatedCostPerPerson: row.estimated_cost_per_person ?? place.estimatedCostPerPerson,
-    imageUrl: row.image_url || place.imageUrl,
+    imageUrl: authenticImageUrl({ imageUrl: row.image_url ?? undefined }) ?? authenticImageUrl(place),
     suitableForChildren: row.family_friendly ?? place.suitableForChildren,
   };
 }
@@ -149,7 +150,7 @@ export async function ensureCanonicalPlace(
       environment: place.environment ?? null,
       family_friendly: place.suitableForChildren ?? null,
       tags: place.tags,
-      image_url: place.imageUrl ?? null,
+      image_url: authenticImageUrl(place) ?? null,
       is_published: true,
       created_by: userId ?? null,
     })
@@ -166,6 +167,10 @@ export async function ensureCanonicalPlace(
   return data as PlaceRow;
 }
 
+function photoPublicUrl(supabase: SupabaseClient, storagePath: string): string {
+  return supabase.storage.from("place-submission-photos").getPublicUrl(storagePath).data.publicUrl;
+}
+
 export async function listVisiblePlacePhotos(
   supabase: SupabaseClient,
   placeKey: string,
@@ -178,9 +183,28 @@ export async function listVisiblePlacePhotos(
     .order("is_primary", { ascending: false });
   return ((data ?? []) as Record<string, unknown>[]).map((row) => ({
     id: row.id as string,
-    publicUrl: supabase.storage.from("place-submission-photos").getPublicUrl(row.storage_path as string).data.publicUrl,
+    publicUrl: photoPublicUrl(supabase, row.storage_path as string),
     caption: (row.caption as string | null) ?? undefined,
   }));
+}
+
+export async function listVisibleCoverUrls(
+  supabase: SupabaseClient,
+): Promise<Map<string, string>> {
+  const { data } = await supabase
+    .from("place_photos")
+    .select("place_key, storage_path, is_primary")
+    .eq("status", "visible")
+    .order("is_primary", { ascending: false })
+    .limit(800);
+  const covers = new Map<string, string>();
+  for (const row of (data ?? []) as { place_key: string; storage_path: string }[]) {
+    if (covers.has(row.place_key)) {
+      continue;
+    }
+    covers.set(row.place_key, photoPublicUrl(supabase, row.storage_path));
+  }
+  return covers;
 }
 
 export function overlayFacts(row: PlaceRow) {

@@ -14,6 +14,8 @@ v0.3 adds community reviews, usernames, place submissions, factual edit suggesti
 - Zod + React Hook Form
 - Deterministic planner (no OpenAI yet)
 - Walking and cycling times use foot/bike routing and a pace model (~4.5 km/h walk, ~14 km/h bike). A car OSRM duration is never shown as walking time.
+- Place photos are real images of that location (OSM/Wikimedia, Google lodging photos, or community uploads). Missing photos stay empty — no stock Unsplash covers. Logged-in users can add a photo on the place page.
+- Multi-day driving totals follow the visit-to-visit road path. Overnight hotels are local suggestions and do not add extra legs across the country.
 
 ## Run locally
 
@@ -49,7 +51,7 @@ OPENAI_API_KEY=
 3. After that first success, further generate/regenerate actions open an auth modal.
 4. Register with email, password, username, and optional display name.
 5. Save trips, share public links, or delete them. Email is never shown publicly.
-6. Write reviews, vote helpful / not helpful, reply once, and report content.
+6. Write reviews, add place photos, vote helpful / not helpful, reply once, and report content.
 7. Submit a new place or suggest a factual edit. Both wait for admin approval.
 8. Admins moderate submissions, edits, reviews, photos, and reports at `/admin`.
 

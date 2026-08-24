@@ -2,9 +2,12 @@ import { MOCK_LODGING } from "@/data/mockLodging";
 import { calculateDistanceKm } from "@/lib/geo/distance";
 import { withPlaceImage } from "@/lib/places/placeImage";
 import { searchGoogleLodging } from "@/lib/providers/lodging/googleLodging";
+import { isLodgingWithinStayRadius, MAX_LODGING_DISTANCE_KM } from "@/lib/providers/lodging/stayRadius";
 import { searchOverpassLodging } from "@/lib/providers/places/overpass";
 import { rememberPlaces } from "@/lib/places/placeMemory";
 import type { Coordinates, Place } from "@/types/place";
+
+export { MAX_LODGING_DISTANCE_KM };
 
 function sortByDistance(origin: Coordinates, places: Place[]): Place[] {
   return [...places].sort(
@@ -19,7 +22,9 @@ export function pickFallbackLodging(
   usedIds: Set<string>,
 ): Place | null {
   const place =
-    sortByDistance(origin, MOCK_LODGING).find((item) => !usedIds.has(item.id)) ?? null;
+    sortByDistance(origin, MOCK_LODGING).find(
+      (item) => !usedIds.has(item.id) && isLodgingWithinStayRadius(origin, item),
+    ) ?? null;
   return place ? withPlaceImage(place) : null;
 }
 
@@ -57,16 +62,10 @@ export async function findLodgingNearby(
   }
 
   const ranked = sortByDistance(origin, [...unique.values()]).filter(
-    (place) =>
-      !usedIds.has(place.id) &&
-      calculateDistanceKm(origin, {
-        latitude: place.latitude,
-        longitude: place.longitude,
-      }) <= 40,
+    (place) => !usedIds.has(place.id) && isLodgingWithinStayRadius(origin, place),
   );
 
-  const fallback = sortByDistance(origin, MOCK_LODGING).find((place) => !usedIds.has(place.id));
-  const chosen = ranked[0] ?? fallback ?? null;
+  const chosen = ranked[0] ?? pickFallbackLodging(origin, usedIds);
   if (chosen) {
     const withPhoto = withPlaceImage(chosen);
     rememberPlaces([withPhoto]);

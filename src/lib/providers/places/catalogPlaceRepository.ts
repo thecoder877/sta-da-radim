@@ -7,6 +7,7 @@ import {
   getPlaceRowByKey,
   getPlaceRowBySlug,
   listPublishedCommunityPlaces,
+  listVisibleCoverUrls,
   placeFromRow,
 } from "@/lib/places/canonical";
 import { searchExplorePlaces } from "@/lib/places/exploreSearch";
@@ -60,12 +61,12 @@ async function withOverlay(place: Place | null): Promise<Place | null> {
   try {
     const supabase = await createServerSupabaseClient();
     if (!supabase) {
-      return place;
+      return withPlaceImage(place);
     }
     const row = await getPlaceRowByKey(supabase, place.id);
-    return applyPlaceOverlay(place, row);
+    return withPlaceImage(applyPlaceOverlay(place, row));
   } catch {
-    return place;
+    return withPlaceImage(place);
   }
 }
 
@@ -91,7 +92,19 @@ async function listCatalog(): Promise<Place[]> {
       merged.push(place);
     }
   }
-  return merged.map(withPlaceImage);
+  const stripped = merged.map(withPlaceImage);
+  try {
+    const supabase = await createServerSupabaseClient();
+    if (!supabase) {
+      return stripped;
+    }
+    const covers = await listVisibleCoverUrls(supabase);
+    return stripped.map((place) =>
+      place.imageUrl ? place : { ...place, imageUrl: covers.get(place.id) },
+    );
+  } catch {
+    return stripped;
+  }
 }
 
 async function lookupRememberedOrOsm(value: string, by: "id" | "slug"): Promise<Place | null> {

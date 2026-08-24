@@ -10,7 +10,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { listReviewsForPlace } from "@/lib/community/reviews";
 import { formatDurationMinutes } from "@/lib/format";
 import { getPlaceRowByKey, listVisiblePlacePhotos, overlayFacts } from "@/lib/places/canonical";
-import { withPlaceImage } from "@/lib/places/placeImage";
+import { authenticImageUrl, withPlaceImage } from "@/lib/places/placeImage";
 import { resolvePlacePrice } from "@/lib/places/price";
 import { getPlaceRepository } from "@/lib/providers/places";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -32,7 +32,7 @@ export async function generateMetadata({
     openGraph: {
       title: `${place.name} · Šta da radim?`,
       description: place.shortDescription,
-      images: place.imageUrl ? [{ url: place.imageUrl }] : undefined,
+      images: authenticImageUrl(place) ? [{ url: authenticImageUrl(place) as string }] : undefined,
     },
   };
 }
@@ -57,17 +57,25 @@ export default async function PlacePage({
     : { reviews: [], summary: { average: 0, count: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } } };
   const photos = supabase ? await listVisiblePlacePhotos(supabase, place.id) : [];
   const overlay = row ? overlayFacts(row) : {};
+  const catalogImage = authenticImageUrl({
+    imageUrl: row?.image_url || place.imageUrl,
+  });
   const displayPlace = withPlaceImage({
     ...place,
-    imageUrl: row?.image_url || place.imageUrl,
+    imageUrl: catalogImage ?? photos[0]?.publicUrl,
   });
   const price = resolvePlacePrice(place, overlay);
 
   return (
     <article>
       <div className="relative h-[42vw] min-h-64 max-h-[420px] bg-[linear-gradient(160deg,#c45c26_0%,#8a5a32_45%,#3f4a38_100%)]">
-        <PlacePhoto place={displayPlace} sizes="100vw" priority />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+        <PlacePhoto
+          place={displayPlace}
+          sizes="100vw"
+          priority
+          addHref="#fotografije"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
       </div>
 
       <Container className="-mt-16 pb-16">

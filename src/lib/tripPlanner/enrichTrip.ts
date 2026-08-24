@@ -1,5 +1,6 @@
 import { findLodgingNearby, pickFallbackLodging } from "@/lib/providers/lodging";
 import { getTripRoute } from "@/lib/providers/routing";
+import { drivingWaypoints } from "@/lib/trips/routeWaypoints";
 import type { Coordinates } from "@/types/place";
 import type { GeneratedTrip, TripRequest, TripStop } from "@/types/trip";
 
@@ -89,21 +90,12 @@ export async function attachTripRoute(
 ): Promise<GeneratedTrip> {
   trip.startCoordinates = origin;
 
-  const waypoints: Coordinates[] = [origin];
-  for (const day of trip.daysPlan) {
-    for (const stop of day.stops) {
-      waypoints.push({
-        latitude: stop.place.latitude,
-        longitude: stop.place.longitude,
-      });
-    }
-  }
-
+  const waypoints = drivingWaypoints(trip, origin);
   const route = await getTripRoute(waypoints, transport);
   if (route) {
     trip.routeCoordinates = route.coordinates;
     trip.totalDistanceKm = Number(route.distanceKm.toFixed(1));
-    trip.totalTravelMinutes = route.durationMinutes;
+    trip.totalTravelMinutes = Math.round(route.durationMinutes);
   } else {
     trip.routeCoordinates = waypoints;
   }

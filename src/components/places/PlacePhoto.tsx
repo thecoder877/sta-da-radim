@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { fallbackPlaceImage } from "@/lib/places/placeImage";
+import Link from "next/link";
+import { Camera } from "lucide-react";
+import { authenticImageUrl } from "@/lib/places/placeImage";
 import type { Place } from "@/types/place";
 
 export function PlacePhoto({
@@ -11,42 +13,43 @@ export function PlacePhoto({
   sizes,
   priority = false,
   className = "object-cover",
+  addHref,
 }: {
   place: Place;
   alt?: string;
   sizes: string;
   priority?: boolean;
   className?: string;
+  addHref?: string;
 }) {
-  const primary = place.imageUrl;
-  const fallback = fallbackPlaceImage(place);
-  const [src, setSrc] = useState(primary ?? fallback);
+  const authentic = authenticImageUrl(place);
   const [failed, setFailed] = useState(false);
 
-  if (failed) {
+  if (!authentic || failed) {
     return (
-      <div className="flex h-full w-full items-end bg-[linear-gradient(160deg,#c45c26_0%,#8a5a32_45%,#3f4a38_100%)] p-4">
-        <span className="font-heading text-xl text-white">{place.name}</span>
+      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-2 bg-muted px-4 text-center">
+        <Camera className="size-6 text-muted-foreground" aria-hidden />
+        {addHref ? (
+          <Link href={addHref} className="text-sm font-medium text-primary hover:underline">
+            Dodaj fotografiju
+          </Link>
+        ) : (
+          <span className="text-sm text-muted-foreground">Nema fotografije</span>
+        )}
       </div>
     );
   }
 
   return (
     <Image
-      src={src}
+      src={authentic}
       alt={alt ?? place.name}
       fill
       priority={priority}
       className={className}
       sizes={sizes}
-      unoptimized={src.startsWith("/api/") || src.includes("wikimedia.org")}
-      onError={() => {
-        if (src !== fallback) {
-          setSrc(fallback);
-          return;
-        }
-        setFailed(true);
-      }}
+      unoptimized={authentic.startsWith("/api/") || authentic.includes("wikimedia.org")}
+      onError={() => setFailed(true)}
     />
   );
 }

@@ -53,7 +53,7 @@ export function TripSummary({ trip }: { trip: GeneratedTrip }) {
           </p>
         ) : null}
         <p className="mt-2 text-xs text-muted-foreground">
-          Cene, vreme i kilometraža su procena, ne tačan obračun.
+          Kilometraža i vreme su vožnja između poseta, bez obilazaka do smeštaja. Cene su procena.
         </p>
       </div>
       <dl className="grid grid-cols-2 gap-2 sm:grid-cols-5">
