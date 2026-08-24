@@ -10,7 +10,7 @@ const COVERS = {
   ],
   istorija: [
     "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1524492412937-b28074a5d7c7?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80",
     "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80",
   ],
   smestaj: [

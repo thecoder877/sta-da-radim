@@ -157,7 +157,7 @@ export const POPULAR_DESTINATIONS = [
     slug: "fruska-gora",
     region: "Srem",
     imageUrl:
-      "https://images.unsplash.com/photo-1524492412937-b28074a5d7c7?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80",
     description: "Manastiri, vidikovci i vinogradi nad Sremom.",
   },
   {
