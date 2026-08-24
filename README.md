@@ -67,7 +67,32 @@ Registered accounts get **3 new plans per month** and **3 edits per plan**. Afte
 - `src/lib/supabase` — browser, server, and middleware clients
 - `src/lib/tripPlanner` — distance filtering and scoring (no AI)
 - `src/components/map` — Leaflet trip map
-- `supabase/migrations` — 0001 accounts/trips, 0002 community/RLS/storage
+- `supabase/migrations` — 0001 accounts/trips, 0002 community/RLS/storage, 0003 admin, 0004 plan quota
+
+## GitHub + Vercel
+
+The app is a standard Next.js project. Create an empty GitHub repo, push `main`, then import that repo in [Vercel](https://vercel.com/new).
+
+```bash
+git remote add github https://github.com/<tvoj-nalog>/sta-da-radim.git
+git push -u github main
+```
+
+In the Vercel project, set these environment variables (same values as `.env.local`):
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (server-only, optional for some admin paths)
+- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` / `GOOGLE_MAPS_API_KEY` (optional)
+
+After the first deploy, add the Vercel URL in Supabase **Authentication → URL Configuration**:
+
+- Site URL: `https://<projekat>.vercel.app`
+- Redirect URLs: `https://<projekat>.vercel.app/**`
+
+Also run `supabase/migrations/0004_plan_quota.sql` in the Supabase SQL Editor if you have not already.
+
+`.env.local` is gitignored and must never be committed.
 
 ## Later phases
 
