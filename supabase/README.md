@@ -153,23 +153,41 @@ If a bucket already exists, the `insert ... on conflict do nothing` is safe.
 
 ### Make an existing account admin
 
-In SQL Editor, after that user has a profile/username:
+If `0003_admin_bootstrap.sql` is not applied yet, a trigger will silently keep `role = 'user'` when you run SQL in the dashboard. Apply [`migrations/0003_admin_bootstrap.sql`](migrations/0003_admin_bootstrap.sql), **or** disable the trigger for one update.
+
+See who exists:
 
 ```sql
-update public.profiles
-set role = 'admin'
-where username = 'your_username';
+select id, username, display_name, role
+from public.profiles;
 ```
 
-Or by Auth user id:
+Then promote yourself (pick one):
 
 ```sql
+alter table public.profiles disable trigger profiles_protect_role;
+
+-- by username
 update public.profiles
 set role = 'admin'
-where id = '00000000-0000-0000-0000-000000000000';
+where username = 'njegos';
+
+-- or by email
+update public.profiles p
+set role = 'admin'
+from auth.users u
+where p.id = u.id
+  and u.email = 'tvoj@email.com';
+
+alter table public.profiles enable trigger profiles_protect_role;
+
+select id, username, display_name, role
+from public.profiles;
 ```
 
-Do this only for your own account. Role cannot be changed from the client.
+The last `select` must show `role = admin`. Then refresh the app (hard reload). **Moderacija** appears in the user menu. `/admin` stays 404 until that role is actually `admin`.
+
+Role cannot be changed from the browser. Do this only for your own account.
 
 ### Existing users without a username
 

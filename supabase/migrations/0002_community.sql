@@ -67,7 +67,11 @@ returns trigger
 language plpgsql
 as $$
 begin
-  if new.role is distinct from old.role and not public.is_admin() then
+  -- SQL Editor / migrations have no JWT, so auth.uid() is null. RLS still
+  -- blocks anonymous clients from updating profiles.
+  if new.role is distinct from old.role
+     and auth.uid() is not null
+     and not public.is_admin() then
     new.role := old.role;
   end if;
   if new.username is not null then
