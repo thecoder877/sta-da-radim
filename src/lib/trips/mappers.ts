@@ -203,6 +203,7 @@ export function mapDatabaseTripToGeneratedTrip(
     });
 
   const allStops = daysPlan.flatMap((day) => day.stops);
+  const isOwner = Boolean(options?.currentUserId && options.currentUserId === trip.user_id);
 
   return {
     id: trip.id,
@@ -225,9 +226,11 @@ export function mapDatabaseTripToGeneratedTrip(
     createdAt: trip.created_at,
     shareSlug: trip.share_slug ?? undefined,
     isPublic: trip.is_public,
-    request: trip.request_snapshot ?? undefined,
+    // Only expose the raw request snapshot (which can contain free-text
+    // preferences / PII) to the trip owner. Public and cross-user views omit it.
+    request: isOwner ? trip.request_snapshot ?? undefined : undefined,
     persisted: true,
-    isOwner: Boolean(options?.currentUserId && options.currentUserId === trip.user_id),
+    isOwner,
   };
 }
 

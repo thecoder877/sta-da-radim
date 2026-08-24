@@ -2,7 +2,10 @@ import type { Coordinates } from "@/types/place";
 import type { RouteGeometry } from "@/lib/providers/types";
 
 function googleMapsKey(): string | undefined {
-  return process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  // Server-only key. Never fall back to the NEXT_PUBLIC_ key here: doing so
+  // would turn this server route into an unauthenticated billing vector for
+  // whoever can read the public bundle.
+  return process.env.GOOGLE_MAPS_API_KEY;
 }
 
 function toLatLng(point: Coordinates): string {

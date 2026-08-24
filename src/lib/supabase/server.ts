@@ -28,7 +28,3 @@ export async function createServerSupabaseClient(): Promise<SupabaseClient | nul
     },
   });
 }
-
-export function getServiceRoleKey() {
-  return process.env.SUPABASE_SERVICE_ROLE_KEY;
-}

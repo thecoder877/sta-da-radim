@@ -44,8 +44,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    void supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null);
+    // getUser() validates the JWT with the Supabase server rather than
+    // trusting the locally stored session.
+    void supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user ?? null);
       setReady(true);
     });
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
