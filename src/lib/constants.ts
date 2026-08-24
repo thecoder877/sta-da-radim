@@ -148,64 +148,56 @@ export const POPULAR_DESTINATIONS = [
     name: "Novi Sad",
     slug: "novi-sad",
     region: "Vojvodina",
-    imageUrl:
-      "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: "/images/petrovaradin.jpg",
     description: "Petrovaradin, Dunav i šetnja kroz stari centar.",
   },
   {
     name: "Fruška gora",
     slug: "fruska-gora",
     region: "Srem",
-    imageUrl:
-      "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: "/images/jazak.jpg",
     description: "Manastiri, vidikovci i vinogradi nad Sremom.",
   },
   {
     name: "Tara",
     slug: "tara",
     region: "Zapadna Srbija",
-    imageUrl:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: "/images/banjska-stena.jpg",
     description: "Kanjoni, jezero i jedan od najlepših vidikovaca u zemlji.",
   },
   {
     name: "Zlatibor",
     slug: "zlatibor",
     region: "Zapadna Srbija",
-    imageUrl:
-      "https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: "/images/zlatibor.jpg",
     description: "Prostrani pašnjaci, pećine i lagani izleti.",
   },
   {
     name: "Beograd",
     slug: "beograd",
     region: "Beograd",
-    imageUrl:
-      "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: "/images/beograd.jpg",
     description: "Kalemegdan, Ada i ritam glavnog grada.",
   },
   {
     name: "Đerdap",
     slug: "djerdap",
     region: "Istočna Srbija",
-    imageUrl:
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: "/images/golubac.jpg",
     description: "Dunavska klisura, Golubac i Lepenski Vir.",
   },
   {
     name: "Kopaonik",
     slug: "kopaonik",
     region: "Južna Srbija",
-    imageUrl:
-      "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: "/images/kopaonik.jpg",
     description: "Planinski vrhovi, šetnje i vazduh koji bistri glavu.",
   },
   {
     name: "Subotica",
     slug: "subotica",
     region: "Severna Bačka",
-    imageUrl:
-      "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: "/images/subotica.jpg",
     description: "Secesija, Palićko jezero i slatki ritam severa.",
   },
 ] as const;
