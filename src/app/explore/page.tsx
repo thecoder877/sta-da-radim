@@ -77,18 +77,20 @@ export default async function ExplorePage({
   }
 
   return (
-    <Container className="py-10 sm:py-12">
-      <p className="text-sm font-medium text-primary">Istraži Srbiju</p>
-      <h1 className="mt-1 font-heading text-4xl tracking-tight">Mesta vredna puta</h1>
+    <Container className="py-10 sm:py-14">
+      <p className="text-sm text-primary">Istraži Srbiju</p>
+      <h1 className="mt-1 font-heading text-4xl">Mesta vredna puta</h1>
       <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
-        <p className="max-w-2xl text-base leading-7 text-muted-foreground">
-          Ukucaj grad, vrstu mesta ili tačan naziv. Rezultati dolaze iz naše baze i otvorene mape Srbije.
+        <p className="max-w-2xl text-muted-foreground">
+          Pretraži kao na mapi: ukucaj grad (Ruma, Beograd), vrstu mesta
+          (bazen, manastir, jezero) ili tačan naziv. Rezultati dolaze iz naše
+          baze i otvorene mape Srbije.
         </p>
-        <Button render={<Link href="/add-place" />} variant="outline">
-          Dodaj mesto
+        <Button render={<Link href="/add-place" />} size="sm">
+          + Dodaj mesto
         </Button>
       </div>
-      <div className="mt-8 grid gap-8 lg:grid-cols-[16.5rem_minmax(0,1fr)]">
+      <div className="mt-8 grid gap-6 lg:grid-cols-[280px_1fr]">
         <Suspense fallback={<LoadingState message="Učitavamo filtere..." />}>
           <PlaceFilters />
         </Suspense>

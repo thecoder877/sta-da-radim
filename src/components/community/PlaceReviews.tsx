@@ -385,7 +385,7 @@ function ReviewCard({
   }
 
   return (
-    <article className="rounded-2xl border border-border bg-card p-4">
+    <article className="rounded-2xl bg-card p-4 ring-1 ring-foreground/8">
       <div className="flex items-start justify-between gap-3">
         <div className="flex gap-3">
           {review.author.avatarUrl ? (

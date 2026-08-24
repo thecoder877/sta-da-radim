@@ -52,7 +52,7 @@ export function TripSummary({ trip }: { trip: GeneratedTrip }) {
             {trip.description}
           </p>
         ) : null}
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="mt-2 text-xs text-muted-foreground">
           Kilometraža i vreme su vožnja između poseta, bez obilazaka do smeštaja. Cene su procena.
         </p>
       </div>
@@ -60,7 +60,7 @@ export function TripSummary({ trip }: { trip: GeneratedTrip }) {
         {metrics.map((metric) => (
           <div
             key={metric.label}
-            className="rounded-xl border border-border bg-card px-3 py-3"
+            className="rounded-xl bg-card px-3 py-3 ring-1 ring-foreground/8"
           >
             <metric.icon className="mb-2 size-4 text-primary" aria-hidden />
             <dd className="text-sm font-medium">{metric.label}</dd>

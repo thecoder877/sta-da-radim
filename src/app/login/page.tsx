@@ -14,7 +14,7 @@ export default function LoginPage() {
       <p className="mt-3 text-sm text-muted-foreground">
         Prijavi se da sačuvaš planove, deliš rute i praviš nove itinerere.
       </p>
-      <div className="mt-8 rounded-2xl border border-border bg-card p-6">
+      <div className="mt-8 rounded-2xl bg-card p-6 ring-1 ring-foreground/8">
         <LoginForm />
       </div>
       <p className="mt-4 text-sm text-muted-foreground">

@@ -1,43 +1,56 @@
 import Link from "next/link";
+import { Clock, MapPin } from "lucide-react";
 import { PlacePhoto } from "@/components/places/PlacePhoto";
 import { formatDurationMinutes, formatRsd } from "@/lib/format";
 import type { Place } from "@/types/place";
+import { Badge } from "@/components/ui/badge";
 
 export function PlaceCard({ place }: { place: Place }) {
-  const location = [place.city, place.region].filter(Boolean).join(" · ") || "Srbija";
-  const duration = place.estimatedDurationMinutes
-    ? formatDurationMinutes(place.estimatedDurationMinutes)
-    : null;
-  const cost = place.estimatedCostPerPerson
-    ? formatRsd(place.estimatedCostPerPerson)
-    : "Besplatno";
-
   return (
-    <article className="group overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-0.5 hover:shadow-sm">
+    <article className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-foreground/8">
       <Link href={`/place/${place.slug}`} className="block">
-        <div className="relative aspect-[4/3] bg-muted">
-          <PlacePhoto
-            place={place}
-            sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover transition duration-500 group-hover:scale-[1.03]"
-          />
+        <div className="relative aspect-[16/10] bg-muted">
+          <PlacePhoto place={place} sizes="(max-width: 768px) 100vw, 33vw" />
         </div>
       </Link>
-      <div className="space-y-2 p-4">
-        <p className="text-sm text-muted-foreground">
-          {location} · {place.category}
-        </p>
-        <h3 className="font-heading text-xl leading-snug tracking-tight">
-          <Link href={`/place/${place.slug}`} className="hover:underline">
-            {place.name}
-          </Link>
-        </h3>
-        <p className="line-clamp-2 text-sm leading-6 text-muted-foreground">
+      <div className="space-y-3 p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h3 className="font-heading text-xl">
+              <Link href={`/place/${place.slug}`} className="hover:underline">
+                {place.name}
+              </Link>
+            </h3>
+            <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
+              <MapPin className="size-3.5" aria-hidden />
+              {[place.city, place.region].filter(Boolean).join(" · ") || "Srbija"}
+            </p>
+          </div>
+          <Badge variant="secondary">{place.category}</Badge>
+        </div>
+        <p className="text-sm leading-6 text-muted-foreground">
           {place.shortDescription}
         </p>
-        <p className="pt-1 text-sm text-muted-foreground">
-          {[duration, cost].filter(Boolean).join(" · ")}
-        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {place.tags.slice(0, 3).map((tag) => (
+            <Badge key={tag} variant="outline">
+              {tag.replace("-", " ")}
+            </Badge>
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+          {place.estimatedDurationMinutes ? (
+            <span className="flex items-center gap-1">
+              <Clock className="size-3.5" aria-hidden />
+              {formatDurationMinutes(place.estimatedDurationMinutes)}
+            </span>
+          ) : null}
+          {place.estimatedCostPerPerson ? (
+            <span>Procena {formatRsd(place.estimatedCostPerPerson)}</span>
+          ) : (
+            <span>Ulaz uglavnom bez naknade</span>
+          )}
+        </div>
       </div>
     </article>
   );

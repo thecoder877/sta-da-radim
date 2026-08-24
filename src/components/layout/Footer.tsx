@@ -4,15 +4,16 @@ import { Container } from "@/components/layout/Container";
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-border bg-card">
-      <Container className="flex flex-col gap-8 py-12 sm:flex-row sm:items-start sm:justify-between">
+    <footer className="mt-auto border-t border-border/70 bg-card">
+      <Container className="flex flex-col gap-6 py-10 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-sm">
           <p className="font-heading text-lg">{APP_NAME}</p>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Planer izleta i putovanja po Srbiji. Biramo stvarna mesta, ne nasumične tačke na mapi.
+            AI planer izleta i putovanja po Srbiji. Biramo mesta iz sopstvene
+            baze, ne iz nasumične mape.
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-10 text-sm">
+        <div className="grid grid-cols-2 gap-8 text-sm">
           <div className="flex flex-col gap-2">
             <p className="font-medium">Istraži</p>
             <Link href="/explore" className="text-muted-foreground hover:text-foreground">
@@ -23,9 +24,6 @@ export function Footer() {
             </Link>
             <Link href="/trip/demo" className="text-muted-foreground hover:text-foreground">
               Primer putovanja
-            </Link>
-            <Link href="/add-place" className="text-muted-foreground hover:text-foreground">
-              Dodaj mesto
             </Link>
           </div>
           <div className="flex flex-col gap-2">

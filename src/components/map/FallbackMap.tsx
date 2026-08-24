@@ -46,7 +46,7 @@ export function FallbackMap({
         {points.length > 1 ? (
           <polyline
             fill="none"
-            stroke="#2d6a4f"
+            stroke="#c45c26"
             strokeWidth="2.5"
             strokeLinejoin="round"
             points={points

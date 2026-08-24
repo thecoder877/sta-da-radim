@@ -19,7 +19,7 @@ export default function UpgradePage() {
       </p>
 
       <div className="mt-10 grid gap-4 md:grid-cols-2">
-        <article className="rounded-2xl border border-border bg-card p-6">
+        <article className="rounded-3xl bg-card p-6 ring-1 ring-foreground/8">
           <p className="text-sm text-muted-foreground">Besplatno</p>
           <h2 className="mt-1 font-heading text-3xl">0 RSD</h2>
           <ul className="mt-6 space-y-2 text-sm">
@@ -41,7 +41,7 @@ export default function UpgradePage() {
           </Button>
         </article>
 
-        <article className="rounded-2xl bg-primary p-6 text-primary-foreground">
+        <article className="rounded-3xl bg-primary p-6 text-primary-foreground shadow-lg">
           <p className="text-sm text-primary-foreground/80">Plus</p>
           <h2 className="mt-1 font-heading text-3xl">Uskoro</h2>
           <ul className="mt-6 space-y-2 text-sm">

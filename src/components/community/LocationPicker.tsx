@@ -9,7 +9,7 @@ function pickerIcon(L: typeof import("leaflet")) {
     className: "place-picker-marker",
     html: `<span style="
       display:block;width:22px;height:22px;border-radius:999px;
-      border:2px solid #fff;background:#2d6a4f;
+      border:2px solid #fff;background:#c45c26;
       box-shadow:0 2px 8px rgba(0,0,0,.28);
     "></span>`,
     iconSize: [22, 22],

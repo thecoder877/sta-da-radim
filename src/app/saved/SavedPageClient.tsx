@@ -11,6 +11,7 @@ import { ErrorState } from "@/components/states/ErrorState";
 import { LoadingState } from "@/components/states/LoadingState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -178,37 +179,38 @@ export function SavedPageClient() {
         <EmptyState
           className="mt-10"
           title="Još nemaš sačuvanih putovanja."
-          description="Isplaniraj prvo putovanje i sačuvaj ga ovde."
-          action={<Button render={<Link href="/plan" />}>Planiraj putovanje</Button>}
+          description="Napravi plan, pa ga sačuvaj da ti ostane i posle zatvaranja pregledača."
+          action={<Button render={<Link href="/plan" />}>Isplaniraj putovanje</Button>}
         />
       ) : null}
 
       <div className="mt-10 grid gap-4 md:grid-cols-2">
         {(trips ?? []).map((trip) => (
-          <article key={trip.id} className="rounded-2xl border border-border bg-card p-5">
-            <div className="flex items-start justify-between gap-3">
-              <button
-                type="button"
-                className="text-left"
-                onClick={() => router.push(`/trip/${trip.id}`)}
-              >
-                <h2 className="font-heading text-xl tracking-tight hover:underline">{trip.title}</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {formatTripDate(trip.startDate)} · {formatDayLabel(trip.days)}
-                </p>
-              </button>
-              <Badge variant={trip.isPublic ? "default" : "outline"}>
-                {trip.isPublic ? "Javno" : "Privatno"}
-              </Badge>
-            </div>
-            <p className="mt-3 text-sm text-muted-foreground">
-              Polazak iz {trip.startLocation}
-              {" · "}
-              {trip.totalDistanceKm ? `~${formatDistance(trip.totalDistanceKm)}` : "Udaljenost nije sačuvana"}
-              {" · "}
-              {trip.estimatedTotalCost ? `~${formatRsd(trip.estimatedTotalCost)}` : "Cena nije procenjena"}
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
+          <Card key={trip.id}>
+            <CardHeader>
+              <div className="flex items-start justify-between gap-3">
+                <CardTitle className="text-xl">{trip.title}</CardTitle>
+                <Badge variant={trip.isPublic ? "default" : "outline"}>
+                  {trip.isPublic ? "Javno" : "Privatno"}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {formatTripDate(trip.startDate)} · {formatDayLabel(trip.days)}
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-1 text-sm text-muted-foreground">
+              <p>Polazak: {trip.startLocation}</p>
+              <p>
+                {trip.totalDistanceKm
+                  ? `~${formatDistance(trip.totalDistanceKm)}`
+                  : "Udaljenost nije sačuvana"}
+                {" · "}
+                {trip.estimatedTotalCost
+                  ? `~${formatRsd(trip.estimatedTotalCost)}`
+                  : "Cena nije procenjena"}
+              </p>
+            </CardContent>
+            <CardFooter className="flex flex-wrap gap-2">
               <Button size="sm" onClick={() => router.push(`/trip/${trip.id}`)}>
                 Otvori
               </Button>
@@ -222,14 +224,14 @@ export function SavedPageClient() {
               </Button>
               <Button
                 size="sm"
-                variant="ghost"
+                variant="destructive"
                 disabled={busyId === trip.id}
                 onClick={() => setDeleteId(trip.id)}
               >
                 Obriši
               </Button>
-            </div>
-          </article>
+            </CardFooter>
+          </Card>
         ))}
       </div>
 

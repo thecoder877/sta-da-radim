@@ -4,20 +4,19 @@ import { useEffect, useRef, useState } from "react";
 import type { MapPoint } from "@/components/map/mapTypes";
 import { escapeHtml } from "@/lib/security/escapeHtml";
 import { SERBIA_CENTER } from "@/lib/constants";
-import { MAP_COLORS } from "@/lib/theme";
 import type { Coordinates } from "@/types/place";
 
 function pinBackground(point: MapPoint, selected: boolean): string {
   if (selected) {
-    return MAP_COLORS.selected;
+    return "#c45c26";
   }
   if (point.kind === "start") {
-    return MAP_COLORS.start;
+    return "#2c6e4f";
   }
   if (point.kind === "lodging") {
-    return MAP_COLORS.lodging;
+    return "#5b4b8a";
   }
-  return MAP_COLORS.stop;
+  return "#2c2416";
 }
 
 function pinText(point: MapPoint, stopNumber: number): string {
@@ -125,7 +124,7 @@ export function LeafletTripMap({
       if (line.length > 1) {
         L.polyline(
           line.map((point) => [point.latitude, point.longitude] as [number, number]),
-          { color: MAP_COLORS.route, weight: 4, opacity: 0.92 },
+          { color: "#c45c26", weight: 4, opacity: 0.92 },
         ).addTo(group);
       }
 

@@ -2,7 +2,6 @@
 
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useAuthModal } from "@/components/auth/AuthModalProvider";
-import { InfoRow } from "@/components/layout/InfoRow";
 import { Button } from "@/components/ui/button";
 import { formatDurationMinutes } from "@/lib/format";
 import { resolvePlacePrice } from "@/lib/places/price";
@@ -24,17 +23,34 @@ export interface PlaceFactsOverlay {
   lastVerifiedAt?: string | null;
 }
 
-function displayValue(value?: string | number | boolean | null): string | null {
-  if (value === true) {
-    return "Da";
-  }
-  if (value === false) {
-    return "Ne";
-  }
-  if (value === 0) {
-    return "0";
-  }
-  return value ? String(value) : null;
+function Fact({
+  label,
+  value,
+  field,
+  onSuggest,
+}: {
+  label: string;
+  value?: string | number | boolean | null;
+  field: string;
+  onSuggest: (field: string) => void;
+}) {
+  const display =
+    value === true ? "Da" : value === false ? "Ne" : value === 0 ? "0" : value ? String(value) : null;
+  return (
+    <div className="rounded-xl bg-muted/60 p-4">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      {display ? (
+        <p className="mt-1 text-sm font-medium">{display}</p>
+      ) : (
+        <>
+          <p className="mt-1 text-sm text-muted-foreground">Nije poznato</p>
+          <button type="button" className="mt-1 text-sm text-primary underline" onClick={() => onSuggest(field)}>
+            + Dodaj {label.toLowerCase()}
+          </button>
+        </>
+      )}
+    </div>
+  );
 }
 
 export function PlaceFacts({
@@ -60,28 +76,10 @@ export function PlaceFacts({
     onSuggest(field);
   }
 
-  const durationSource = overlay.estimatedDurationMinutes ?? place.estimatedDurationMinutes;
-  const rows = [
-    { label: "Radno vreme", value: overlay.openingHours ?? place.openingHours, field: "opening_hours" },
-    { label: "Cena", value: resolvePlacePrice(place, overlay), field: "price_info" },
-    { label: "Adresa", value: overlay.address, field: "address" },
-    { label: "Telefon", value: overlay.phone, field: "phone" },
-    { label: "Website", value: overlay.website ?? place.website, field: "website" },
-    { label: "Parking", value: overlay.parkingInfo, field: "parking_info" },
-    {
-      label: "Trajanje",
-      value: durationSource ? formatDurationMinutes(durationSource) : null,
-      field: "estimated_duration_minutes",
-    },
-    { label: "Porodično", value: overlay.familyFriendly, field: "family_friendly" },
-    { label: "Pet friendly", value: overlay.petFriendly, field: "pet_friendly" },
-    { label: "Pristupačnost", value: overlay.accessibilityNotes, field: "accessibility_notes" },
-  ];
-
   return (
     <section className="mt-8">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="font-heading text-2xl tracking-tight">Informacije</h2>
+        <h2 className="font-heading text-2xl">Informacije</h2>
         <Button variant="outline" size="sm" onClick={() => suggest()}>
           Predloži izmenu
         </Button>
@@ -91,29 +89,27 @@ export function PlaceFacts({
           Potvrđeno {new Date(overlay.lastVerifiedAt).toLocaleDateString("sr-Latn")}
         </p>
       ) : null}
-      <dl className="mt-2">
-        {rows.map((row) => {
-          const value = displayValue(row.value);
-          return (
-            <InfoRow
-              key={row.field}
-              label={row.label}
-              value={value}
-              action={
-                value ? null : (
-                  <button
-                    type="button"
-                    className="text-sm text-primary hover:underline"
-                    onClick={() => suggest(row.field)}
-                  >
-                    Dodaj informaciju
-                  </button>
-                )
-              }
-            />
-          );
-        })}
-      </dl>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <Fact label="Radno vreme" value={overlay.openingHours ?? place.openingHours} field="opening_hours" onSuggest={suggest} />
+        <Fact label="Cena" value={resolvePlacePrice(place, overlay)} field="price_info" onSuggest={suggest} />
+        <Fact label="Telefon" value={overlay.phone} field="phone" onSuggest={suggest} />
+        <Fact label="Website" value={overlay.website ?? place.website} field="website" onSuggest={suggest} />
+        <Fact label="Adresa" value={overlay.address} field="address" onSuggest={suggest} />
+        <Fact label="Parking" value={overlay.parkingInfo} field="parking_info" onSuggest={suggest} />
+        <Fact
+          label="Trajanje posete"
+          value={
+            overlay.estimatedDurationMinutes ?? place.estimatedDurationMinutes
+              ? formatDurationMinutes(overlay.estimatedDurationMinutes ?? place.estimatedDurationMinutes ?? 0)
+              : null
+          }
+          field="estimated_duration_minutes"
+          onSuggest={suggest}
+        />
+        <Fact label="Porodično" value={overlay.familyFriendly} field="family_friendly" onSuggest={suggest} />
+        <Fact label="Pet friendly" value={overlay.petFriendly} field="pet_friendly" onSuggest={suggest} />
+        <Fact label="Pristupačnost" value={overlay.accessibilityNotes} field="accessibility_notes" onSuggest={suggest} />
+      </div>
     </section>
   );
 }

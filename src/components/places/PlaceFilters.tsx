@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { MOCK_REGIONS } from "@/data/mockPlaces";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 
 const CATEGORY_FILTERS = [
   "Priroda",
@@ -54,56 +53,41 @@ export function PlaceFilters() {
     router.push(`/explore?${params.toString()}`);
   }
 
-  const activeCategory = searchParams.get("category") ?? "";
-
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 rounded-2xl bg-card p-4 ring-1 ring-foreground/8">
       <div className="space-y-1.5">
         <Label htmlFor="explore-search">Pretraga</Label>
         <Input
           id="explore-search"
           value={query}
           placeholder="Ruma, Beograd, bazen, manastir..."
+          className="h-10"
           onChange={(event) => setQuery(event.target.value)}
         />
       </div>
 
-      <div>
-        <p className="mb-2 text-sm font-medium">Kategorija</p>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => update("category", "")}
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-sm",
-              !activeCategory ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card",
-            )}
-          >
-            Sve
-          </button>
+      <div className="space-y-1.5">
+        <Label htmlFor="category">Kategorija</Label>
+        <select
+          id="category"
+          className="h-10 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
+          value={searchParams.get("category") ?? ""}
+          onChange={(event) => update("category", event.target.value)}
+        >
+          <option value="">Sve kategorije</option>
           {CATEGORY_FILTERS.map((category) => (
-            <button
-              key={category}
-              type="button"
-              onClick={() => update("category", activeCategory === category ? "" : category)}
-              className={cn(
-                "rounded-full border px-3 py-1.5 text-sm",
-                activeCategory === category
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card",
-              )}
-            >
+            <option key={category} value={category}>
               {category}
-            </button>
+            </option>
           ))}
-        </div>
+        </select>
       </div>
 
       <div className="space-y-1.5">
         <Label htmlFor="region">Region</Label>
         <select
           id="region"
-          className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm"
+          className="h-10 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm"
           value={searchParams.get("region") ?? ""}
           onChange={(event) => update("region", event.target.value)}
         >
@@ -116,30 +100,65 @@ export function PlaceFilters() {
         </select>
       </div>
 
-      <details className="rounded-xl border border-border bg-card p-3">
-        <summary className="cursor-pointer text-sm font-medium">Još filtera</summary>
-        <fieldset className="mt-3 space-y-2">
-          <legend className="sr-only">Dodatni filteri</legend>
-          {[
-            ["free", "Besplatno"],
-            ["paid", "Plaća se ulaz"],
-            ["outdoor", "Na otvorenom"],
-            ["indoor", "U zatvorenom"],
-            ["children", "Za decu"],
-            ["romantic", "Romantično"],
-            ["hidden", "Skrivena mesta"],
-          ].map(([key, label]) => (
-            <label key={key} className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={searchParams.get(key) === "1"}
-                onChange={() => toggle(key)}
-              />
-              {label}
-            </label>
-          ))}
-        </fieldset>
-      </details>
+      <fieldset className="space-y-2">
+        <legend className="text-sm font-medium">Dodatni filteri</legend>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={searchParams.get("free") === "1"}
+            onChange={() => toggle("free")}
+          />
+          Besplatno
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={searchParams.get("paid") === "1"}
+            onChange={() => toggle("paid")}
+          />
+          Plaća se ulaz
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={searchParams.get("outdoor") === "1"}
+            onChange={() => toggle("outdoor")}
+          />
+          Na otvorenom
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={searchParams.get("indoor") === "1"}
+            onChange={() => toggle("indoor")}
+          />
+          U zatvorenom
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={searchParams.get("children") === "1"}
+            onChange={() => toggle("children")}
+          />
+          Za decu
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={searchParams.get("romantic") === "1"}
+            onChange={() => toggle("romantic")}
+          />
+          Romantično
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={searchParams.get("hidden") === "1"}
+            onChange={() => toggle("hidden")}
+          />
+          Skrivena mesta
+        </label>
+      </fieldset>
     </div>
   );
 }

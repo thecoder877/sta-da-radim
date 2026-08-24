@@ -15,7 +15,7 @@ export default function RegisterPage() {
         Nalog služi za čuvanje putovanja, deljenje ruta i nove planove posle
         prvog besplatnog izleta.
       </p>
-      <div className="mt-8 rounded-2xl border border-border bg-card p-6">
+      <div className="mt-8 rounded-2xl bg-card p-6 ring-1 ring-foreground/8">
         <RegisterForm />
       </div>
       <p className="mt-4 text-sm text-muted-foreground">
