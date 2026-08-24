@@ -44,7 +44,7 @@ export function TripActions({
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const persisted = Boolean(trip.persisted);
-  const owner = Boolean(trip.isOwner || (user && persisted));
+  const owner = trip.isOwner === true;
 
   async function saveTrip() {
     if (!user) {

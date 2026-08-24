@@ -90,6 +90,7 @@ export function TripResultView({
               selectedId={selectedPlaceId}
               onSelect={setSelectedPlaceId}
               routeCoordinates={currentTrip.routeCoordinates}
+              transport={currentTrip.transport}
               className="h-full"
             />
           </div>
@@ -115,6 +116,7 @@ export function TripResultView({
             selectedId={selectedPlaceId}
             onSelect={setSelectedPlaceId}
             routeCoordinates={currentTrip.routeCoordinates}
+            transport={currentTrip.transport}
             className="h-full overflow-hidden rounded-2xl"
           />
         </div>

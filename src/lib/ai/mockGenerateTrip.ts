@@ -6,6 +6,7 @@ import { slugify } from "@/lib/format";
 import {
   filterPlacesByBudget,
   filterPlacesByDistance,
+  filterPlacesByInterests,
 } from "@/lib/tripPlanner/filtering";
 import { rankPlacesForTrip } from "@/lib/tripPlanner/scoring";
 import type { Coordinates, Place } from "@/types/place";
@@ -131,7 +132,15 @@ export function generateMockTrip(
     request.budget,
     request.numberOfPeople,
   );
-  const ranked = rankPlacesForTrip(byBudget, request, origin).filter(
+
+  // Interests must be a real constraint, not just a scoring hint. Keep only
+  // places that match a selected interest, but fall back to the wider budget
+  // pool when interests would leave too few candidates to build a plan.
+  const minCandidates = Math.max(2, Math.min(targetStopCount(request), 4));
+  const byInterests = filterPlacesByInterests(byBudget, request.interests);
+  const interestPool = byInterests.length >= minCandidates ? byInterests : byBudget;
+
+  const ranked = rankPlacesForTrip(interestPool, request, origin).filter(
     (item) => item.score > 0 || request.interests.length === 0,
   );
 
