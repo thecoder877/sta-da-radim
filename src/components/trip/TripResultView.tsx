@@ -58,7 +58,7 @@ export function TripResultView({
 
   return (
     <div className="min-h-[calc(100vh-4rem)]">
-      <div className="sticky top-16 z-30 border-b border-border/70 bg-background/90 backdrop-blur md:hidden">
+      <div className="sticky top-14 z-30 border-b border-border bg-background/90 backdrop-blur md:hidden">
         <div className="flex items-center justify-between px-4 py-3">
           <div>
             <p className="text-xs text-muted-foreground">{currentTrip.startLocation}</p>
@@ -110,8 +110,8 @@ export function TripResultView({
           <TripExport trip={currentTrip} />
           {readOnly ? null : <TripActions trip={currentTrip} onTripChange={setCurrentTrip} />}
         </div>
-        <div className="relative sticky top-16 h-[calc(100vh-4rem)] p-4">
-          <p className="pointer-events-none absolute bottom-8 left-8 z-10 rounded-full bg-card/95 px-3 py-1 text-xs text-muted-foreground shadow-sm">
+        <div className="relative sticky top-14 h-[calc(100vh-3.5rem)]">
+          <p className="pointer-events-none absolute bottom-6 left-6 z-10 rounded-full border border-border bg-card/95 px-3 py-1 text-xs text-muted-foreground shadow-sm">
             A polazak · broj stanica · H noćenje
           </p>
           <TripMapLazy
@@ -120,7 +120,7 @@ export function TripResultView({
             onSelect={setSelectedPlaceId}
             routeCoordinates={currentTrip.routeCoordinates}
             transport={currentTrip.transport}
-            className="h-full overflow-hidden rounded-2xl"
+            className="h-full"
           />
         </div>
       </div>

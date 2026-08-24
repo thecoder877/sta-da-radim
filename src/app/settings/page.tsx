@@ -13,7 +13,7 @@ export default function SettingsPage() {
       <p className="mt-3 text-sm text-muted-foreground">
         Email služi samo za prijavu i ne prikazuje se javno.
       </p>
-      <div className="mt-8 rounded-3xl bg-card p-6 ring-1 ring-foreground/8">
+      <div className="mt-8 rounded-2xl border border-border bg-card p-6">
         <SettingsForm />
       </div>
     </Container>

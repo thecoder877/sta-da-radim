@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { MapPoint } from "@/components/map/mapTypes";
 import type { Coordinates } from "@/types/place";
+import { MAP_COLORS } from "@/lib/theme";
 
 declare global {
   interface Window {
@@ -161,7 +162,7 @@ export function GoogleTripMap({
     if (line.length > 1) {
       lineRef.current = new maps.Polyline({
         path: line.map((point) => ({ lat: point.latitude, lng: point.longitude })),
-        strokeColor: "#c45c26",
+        strokeColor: MAP_COLORS.route,
         strokeOpacity: 0.9,
         strokeWeight: 4,
         map,

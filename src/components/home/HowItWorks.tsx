@@ -1,5 +1,6 @@
-import { Compass, Map, Sparkles } from "lucide-react";
+import { Compass, Map, Route } from "lucide-react";
 import { Container } from "@/components/layout/Container";
+import { SectionHeader } from "@/components/layout/SectionHeader";
 
 const steps = [
   {
@@ -8,7 +9,7 @@ const steps = [
     text: "Polazak, datum, budžet, prevoz i ono što te stvarno zanima.",
   },
   {
-    icon: Sparkles,
+    icon: Route,
     title: "Dobij personalizovan plan",
     text: "Biramo mesta iz naše baze i slažemo ih u logičan dan ili vikend.",
   },
@@ -21,19 +22,16 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="bg-card py-16 sm:py-20">
+    <section className="border-y border-border bg-card py-16 sm:py-20">
       <Container>
-        <p className="text-sm text-primary">Kako funkcioniše</p>
-        <h2 className="mt-1 font-heading text-3xl sm:text-4xl">Tri koraka do izleta</h2>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <SectionHeader eyebrow="Kako funkcioniše" title="Tri koraka do izleta" />
+        <div className="grid gap-10 md:grid-cols-3 md:gap-8">
           {steps.map((step, index) => (
-            <div key={step.title} className="rounded-2xl bg-background p-6 ring-1 ring-foreground/8">
-              <div className="flex items-center justify-between">
-                <step.icon className="size-5 text-primary" aria-hidden />
-                <span className="text-sm text-muted-foreground">0{index + 1}</span>
-              </div>
-              <h3 className="mt-5 font-heading text-2xl">{step.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">{step.text}</p>
+            <div key={step.title}>
+              <p className="text-sm font-medium text-primary">0{index + 1}</p>
+              <step.icon className="mt-4 size-5 text-primary" aria-hidden />
+              <h3 className="mt-4 font-heading text-2xl tracking-tight">{step.title}</h3>
+              <p className="mt-2 text-base leading-7 text-muted-foreground">{step.text}</p>
             </div>
           ))}
         </div>

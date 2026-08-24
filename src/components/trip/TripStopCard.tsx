@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { BedDouble, Clock, Coins } from "lucide-react";
 import { PlacePhoto } from "@/components/places/PlacePhoto";
 import { formatDurationMinutes, formatRsd } from "@/lib/format";
 import type { TripStop } from "@/types/trip";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export function TripStopCard({
   stop,
@@ -15,60 +14,42 @@ export function TripStopCard({
   selected?: boolean;
   onShowOnMap?: (placeId: string) => void;
 }) {
+  const lodging = stop.kind === "lodging";
+
   return (
     <article
-      className={`overflow-hidden rounded-2xl bg-card ring-1 ${
-        selected ? "ring-primary" : "ring-foreground/8"
-      }`}
+      className={cn(
+        "overflow-hidden rounded-xl border bg-card",
+        selected ? "border-primary" : "border-border",
+        lodging && "bg-secondary/40",
+      )}
     >
-      <div className="grid sm:grid-cols-[140px_1fr]">
-        <div className="relative min-h-36 bg-muted">
+      <div className="grid sm:grid-cols-[128px_1fr]">
+        <div className="relative min-h-32 bg-muted">
           <PlacePhoto
             place={stop.place}
-            sizes="140px"
+            sizes="128px"
             addHref={`/place/${stop.place.slug}#fotografije`}
           />
         </div>
-        <div className="space-y-3 p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs text-muted-foreground">{stop.arrivalTime}</p>
-              <h3 className="font-heading text-xl">{stop.place.name}</h3>
-            </div>
-            <Badge variant="secondary">
-              {stop.kind === "lodging" ? "Noćenje" : stop.place.category}
-            </Badge>
-          </div>
+        <div className="space-y-2 p-4">
+          <p className="text-sm text-muted-foreground">{stop.arrivalTime}</p>
+          <h3 className="font-heading text-xl leading-snug tracking-tight">{stop.place.name}</h3>
           <p className="text-sm leading-6 text-muted-foreground">
             {stop.reason ?? stop.place.shortDescription}
           </p>
-          <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              {stop.kind === "lodging" ? (
-                <BedDouble className="size-3.5" aria-hidden />
-              ) : (
-                <Clock className="size-3.5" aria-hidden />
-              )}
-              {stop.kind === "lodging"
-                ? "Noćenje"
-                : formatDurationMinutes(stop.durationMinutes)}
-            </span>
-            <span className="flex items-center gap-1">
-              <Coins className="size-3.5" aria-hidden />
-              {stop.estimatedCost
-                ? `Procena ${formatRsd(stop.estimatedCost)}`
-                : "Bez dodatnog troška"}
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
+          <p className="text-sm text-muted-foreground">
+            {lodging
+              ? "Noćenje"
+              : formatDurationMinutes(stop.durationMinutes)}
+            {" · "}
+            {stop.estimatedCost ? `Procena ${formatRsd(stop.estimatedCost)}` : "Bez dodatnog troška"}
+          </p>
+          <div className="flex flex-wrap gap-2 pt-1">
             <Button size="sm" variant="outline" render={<Link href={`/place/${stop.place.slug}`} />}>
               Detalji
             </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => onShowOnMap?.(stop.placeId)}
-            >
+            <Button size="sm" variant="ghost" onClick={() => onShowOnMap?.(stop.placeId)}>
               Prikaži na mapi
             </Button>
           </div>

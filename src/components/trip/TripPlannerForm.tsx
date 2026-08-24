@@ -260,31 +260,31 @@ export function TripPlannerForm() {
       ) : null}
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <Controller
-          control={form.control}
-          name="startName"
-          rules={{ required: true }}
-          render={({ field }) => (
-            <StartLocationField
-              value={field.value}
-              autoDetect={!searchParams.get("from")}
-              onChange={(name, coordinates) => {
-                field.onChange(name);
-                form.setValue("startLatitude", coordinates?.latitude);
-                form.setValue("startLongitude", coordinates?.longitude);
-              }}
-              error={form.formState.errors.startName?.message}
-            />
-          )}
-        />
-
         <div className="grid gap-5 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <Controller
+              control={form.control}
+              name="startName"
+              rules={{ required: true }}
+              render={({ field }) => (
+                <StartLocationField
+                  value={field.value}
+                  autoDetect={!searchParams.get("from")}
+                  onChange={(name, coordinates) => {
+                    field.onChange(name);
+                    form.setValue("startLatitude", coordinates?.latitude);
+                    form.setValue("startLongitude", coordinates?.longitude);
+                  }}
+                  error={form.formState.errors.startName?.message}
+                />
+              )}
+            />
+          </div>
           <div className="space-y-1.5">
             <Label htmlFor="startDate">Kada ideš?</Label>
             <Input
               id="startDate"
               type="date"
-              className="h-11"
               {...form.register("startDate")}
             />
           </div>
@@ -295,7 +295,6 @@ export function TripPlannerForm() {
               type="number"
               min={1}
               max={20}
-              className="h-11"
               {...form.register("numberOfPeople", { valueAsNumber: true })}
             />
           </div>
@@ -448,11 +447,11 @@ export function TripPlannerForm() {
         ) : null}
 
         <div className="space-y-2">
-          <Button type="submit" className="h-12 w-full text-base" disabled={loading}>
-            Napravi mi plan
+          <Button type="submit" size="lg" className="w-full" disabled={loading}>
+            Napravi plan
           </Button>
           {!user && !hasUsedAnonymousGeneration() ? (
-            <p className="text-center text-xs text-muted-foreground">
+            <p className="text-center text-sm text-muted-foreground">
               Prvi plan možeš da napraviš bez naloga.
             </p>
           ) : null}

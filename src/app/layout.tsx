@@ -25,15 +25,15 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: {
-    default: `${APP_NAME} — AI planer putovanja po Srbiji`,
+    default: `${APP_NAME} — Planer putovanja po Srbiji`,
     template: `%s · ${APP_NAME}`,
   },
   description:
-    "Otkrij Srbiju uz AI planer koji ti pravi putovanje prema vremenu, budžetu i interesovanjima.",
+    "Otkrij Srbiju po svom ritmu. Planiraj izlet ili vikend prema vremenu, budžetu i interesovanjima, od stvarnih mesta.",
   openGraph: {
-    title: `${APP_NAME} — AI planer putovanja po Srbiji`,
+    title: `${APP_NAME} — Planer putovanja po Srbiji`,
     description:
-      "Personalizovani izleti i vikendi od Fruške gore do Tare, iz sopstvene baze mesta.",
+      "Personalizovani izleti i vikendi od Fruške gore do Tare, iz stvarnih mesta a ne izmišljenih tačaka.",
     locale: "sr_Latn_RS",
     type: "website",
   },

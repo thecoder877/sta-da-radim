@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/Container";
@@ -7,24 +6,16 @@ export function PlannerCta() {
   return (
     <section className="pb-20">
       <Container>
-        <div className="relative overflow-hidden rounded-3xl">
-          <Image
-            src="/images/jazak.jpg"
-            alt="Manastir Jazak na Fruškoj gori"
-            fill
-            className="object-cover"
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-foreground/55" />
-          <div className="relative px-6 py-16 text-center text-white sm:px-12">
-            <h2 className="font-heading text-3xl sm:text-4xl">Nemaš ideju za vikend?</h2>
-            <p className="mx-auto mt-3 max-w-xl text-white/80">
-              Reci odakle krećeš i šta voliš. Mi ćemo složiti plan od stvarnih mesta,
-              ne od izmišljenih tačaka na mapi.
+        <div className="rounded-2xl border border-border bg-primary px-6 py-14 text-primary-foreground sm:px-12">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="font-heading text-3xl tracking-tight sm:text-4xl">Nemaš ideju za vikend?</h2>
+            <p className="mt-3 text-base leading-7 text-primary-foreground/80">
+              Reci odakle krećeš i šta voliš. Složićemo plan od stvarnih mesta, ne od izmišljenih tačaka na mapi.
             </p>
             <Button
               size="lg"
-              className="mt-6 h-11 px-5"
+              variant="secondary"
+              className="mt-7"
               render={<Link href="/plan" />}
             >
               Planiraj putovanje

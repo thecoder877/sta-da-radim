@@ -15,7 +15,7 @@ export default function AddPlacePage() {
       <p className="mt-3 max-w-xl text-muted-foreground">
         Predlog nije odmah javan. Moderator proverava podatke i može da ih ispravi pre odobrenja.
       </p>
-      <div className="mt-8 rounded-3xl bg-card p-5 shadow-sm ring-1 ring-foreground/8 sm:p-8">
+      <div className="mt-8 rounded-2xl border border-border bg-card p-5 sm:p-8">
         <AddPlaceForm />
       </div>
     </Container>

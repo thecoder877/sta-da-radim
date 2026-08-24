@@ -1,4 +1,5 @@
 import { CategoryGrid } from "@/components/home/CategoryGrid";
+import { CommunityTeaser } from "@/components/home/CommunityTeaser";
 import { Hero } from "@/components/home/Hero";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { PlannerCta } from "@/components/home/PlannerCta";
@@ -9,8 +10,9 @@ export default function HomePage() {
     <>
       <Hero />
       <PopularDestinations />
-      <HowItWorks />
       <CategoryGrid />
+      <HowItWorks />
+      <CommunityTeaser />
       <PlannerCta />
     </>
   );

@@ -34,50 +34,49 @@ export function HeroPlanner() {
   return (
     <form
       onSubmit={onSubmit}
-      className="mt-8 grid gap-3 rounded-2xl bg-card p-4 text-left text-foreground shadow-lg ring-1 ring-foreground/15 sm:grid-cols-2 lg:grid-cols-4"
+      className="mt-8 rounded-2xl border border-border bg-card p-4 text-left shadow-sm sm:p-5"
     >
-      <LocationSearch
-        value={from}
-        onChange={(name, nextCoordinates) => {
-          setFrom(name);
-          setCoordinates(nextCoordinates);
-        }}
-        inputClassName="h-10 bg-background pr-11 text-foreground"
-      />
-      <div className="space-y-1.5">
-        <Label htmlFor="hero-date" className="text-foreground">
-          Kada ideš?
-        </Label>
-        <Input
-          id="hero-date"
-          type="date"
-          value={date}
-          onChange={(event) => setDate(event.target.value)}
-          className="h-10 bg-background text-foreground [color-scheme:light]"
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <LocationSearch
+          value={from}
+          onChange={(name, nextCoordinates) => {
+            setFrom(name);
+            setCoordinates(nextCoordinates);
+          }}
+          inputClassName="h-10 bg-background pr-11 text-foreground"
         />
+        <div className="space-y-1.5">
+          <Label htmlFor="hero-date">Kada</Label>
+          <Input
+            id="hero-date"
+            type="date"
+            value={date}
+            onChange={(event) => setDate(event.target.value)}
+            className="bg-background [color-scheme:light]"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="hero-duration">Trajanje</Label>
+          <select
+            id="hero-duration"
+            value={duration}
+            onChange={(event) => setDuration(event.target.value)}
+            className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm"
+          >
+            {DURATION_OPTIONS.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-end">
+          <Button type="submit" className="w-full">
+            Napravi plan
+          </Button>
+        </div>
       </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="hero-duration" className="text-foreground">
-          Koliko dugo?
-        </Label>
-        <select
-          id="hero-duration"
-          value={duration}
-          onChange={(event) => setDuration(event.target.value)}
-          className="h-10 w-full rounded-lg border border-input bg-background px-2.5 text-sm text-foreground"
-        >
-          {DURATION_OPTIONS.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="flex items-end">
-        <Button type="submit" className="h-10 w-full">
-          Nastavi plan
-        </Button>
-      </div>
+      <p className="mt-3 text-sm text-muted-foreground">Prvi plan možeš da napraviš bez naloga.</p>
     </form>
   );
 }
