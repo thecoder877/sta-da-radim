@@ -1,5 +1,6 @@
 import { MOCK_LODGING } from "@/data/mockLodging";
 import { calculateDistanceKm } from "@/lib/geo/distance";
+import { withPlaceImage } from "@/lib/places/placeImage";
 import { searchGoogleLodging } from "@/lib/providers/lodging/googleLodging";
 import { searchOverpassLodging } from "@/lib/providers/places/overpass";
 import { rememberPlaces } from "@/lib/places/placeMemory";
@@ -17,9 +18,9 @@ export function pickFallbackLodging(
   origin: Coordinates,
   usedIds: Set<string>,
 ): Place | null {
-  return (
-    sortByDistance(origin, MOCK_LODGING).find((place) => !usedIds.has(place.id)) ?? null
-  );
+  const place =
+    sortByDistance(origin, MOCK_LODGING).find((item) => !usedIds.has(item.id)) ?? null;
+  return place ? withPlaceImage(place) : null;
 }
 
 export async function findLodgingNearby(
@@ -67,7 +68,9 @@ export async function findLodgingNearby(
   const fallback = sortByDistance(origin, MOCK_LODGING).find((place) => !usedIds.has(place.id));
   const chosen = ranked[0] ?? fallback ?? null;
   if (chosen) {
-    rememberPlaces([chosen]);
+    const withPhoto = withPlaceImage(chosen);
+    rememberPlaces([withPhoto]);
+    return withPhoto;
   }
-  return chosen;
+  return null;
 }

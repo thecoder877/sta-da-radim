@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { formatQuotaCountdown } from "@/lib/access/planQuota";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 export function SettingsForm() {
-  const { profile, refresh } = useAuth();
+  const { profile, quota, refresh } = useAuth();
   const [username, setUsername] = useState(profile?.username ?? "");
   const [displayName, setDisplayName] = useState(profile?.displayName ?? "");
   const [bio, setBio] = useState(profile?.bio ?? "");
@@ -49,6 +51,25 @@ export function SettingsForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
+      {quota ? (
+        <div className="rounded-2xl bg-muted/60 px-4 py-3 text-sm">
+          {quota.unlimited ? (
+            <p>Admin nalog: neograničena generisanja.</p>
+          ) : (
+            <>
+              <p>
+                {quota.generationsRemaining}/{quota.generationsLimit} generisanja ostalo ovog meseca
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Reset za {formatQuotaCountdown(quota.resetsAt)} · 3 izmene po planu
+              </p>
+              <Link href="/upgrade" className="mt-2 inline-block text-xs font-medium text-primary hover:underline">
+                Nadogradi nalog
+              </Link>
+            </>
+          )}
+        </div>
+      ) : null}
       <div className="space-y-1.5">
         <Label htmlFor="settings-username">Korisničko ime</Label>
         <Input id="settings-username" value={username} onChange={(event) => setUsername(event.target.value.toLowerCase())} />

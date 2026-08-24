@@ -2,12 +2,14 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { User } from "@supabase/supabase-js";
+import type { PlanQuota } from "@/lib/access/planQuota";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { UserProfile } from "@/types/user";
 
 interface AuthContextValue {
   user: User | null;
   profile: UserProfile | null;
+  quota: PlanQuota | null;
   ready: boolean;
   configured: boolean;
   refresh: () => Promise<void>;
@@ -17,6 +19,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue>({
   user: null,
   profile: null,
+  quota: null,
   ready: false,
   configured: false,
   refresh: async () => undefined,
@@ -31,12 +34,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const configured = isSupabaseConfigured();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [quota, setQuota] = useState<PlanQuota | null>(null);
   const [ready, setReady] = useState(!configured);
 
   async function refresh() {
     if (!configured) {
       setUser(null);
       setProfile(null);
+      setQuota(null);
       setReady(true);
       return;
     }
@@ -44,12 +49,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!response.ok) {
       setUser(null);
       setProfile(null);
+      setQuota(null);
       setReady(true);
       return;
     }
-    const data = (await response.json()) as { user?: { id: string } | null; profile?: UserProfile | null };
+    const data = (await response.json()) as {
+      user?: { id: string } | null;
+      profile?: UserProfile | null;
+      quota?: PlanQuota | null;
+    };
     setUser(data.user?.id ? asUser(data.user.id) : null);
     setProfile(data.profile ?? null);
+    setQuota(data.quota ?? null);
     setReady(true);
   }
 
@@ -61,6 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     () => ({
       user,
       profile,
+      quota,
       ready,
       configured,
       refresh,
@@ -68,9 +80,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await fetch("/api/auth/logout", { method: "POST" });
         setUser(null);
         setProfile(null);
+        setQuota(null);
       },
     }),
-    [user, profile, ready, configured],
+    [user, profile, quota, ready, configured],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

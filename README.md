@@ -55,6 +55,8 @@ OPENAI_API_KEY=
 
 Anonymous trips still live in `sessionStorage` until you save them. Logging out does **not** reset the free-generation flag.
 
+Registered accounts get **3 new plans per month** and **3 edits per plan**. After that, a countdown shows when the limit resets (1st of the next month, Europe/Belgrade). Admins are unlimited. Apply `supabase/migrations/0004_plan_quota.sql`. `/upgrade` is the Plus waitlist until billing ships.
+
 ## Project structure
 
 - `src/lib/access` — generation quota and pending protected actions

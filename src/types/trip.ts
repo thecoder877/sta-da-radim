@@ -64,6 +64,8 @@ export interface GeneratedTrip {
   request?: TripRequest;
   persisted?: boolean;
   isOwner?: boolean;
+  generationId?: string;
+  editCount?: number;
 }
 
 export interface SavedTripSummary {

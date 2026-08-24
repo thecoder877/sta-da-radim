@@ -26,7 +26,9 @@ import {
   markAnonymousGenerationUsed,
   tripSuccessfullyGenerated,
 } from "@/lib/access/generationAccess";
-import { requestGeneratedTrip } from "@/lib/trips/generateClient";
+import { canStartGeneration, type PlanQuotaReason } from "@/lib/access/planQuota";
+import { QuotaLockedDialog } from "@/components/access/QuotaLockedDialog";
+import { isQuotaError, requestGeneratedTrip } from "@/lib/trips/generateClient";
 import { persistGeneratedTrip, persistLastTripRequest, readLastTripRequest } from "@/lib/trips/storage";
 import { tripRequestSchema } from "@/lib/validation/trip";
 import type { DurationPreset, TransportType, TravelStyle, TripRequest } from "@/types/trip";
@@ -112,11 +114,12 @@ function defaultValues(searchParams: URLSearchParams): FormValues {
 export function TripPlannerForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth();
+  const { user, quota, refresh } = useAuth();
   const { openAuthModal } = useAuthModal();
   const [loading, setLoading] = useState(false);
   const [messageIndex, setMessageIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [quotaReason, setQuotaReason] = useState<PlanQuotaReason | null>(null);
 
   const form = useForm<FormValues>({
     defaultValues: defaultValues(searchParams),
@@ -212,6 +215,10 @@ export function TripPlannerForm() {
       });
       return;
     }
+    if (user && quota && !canStartGeneration(quota)) {
+      setQuotaReason("QUOTA_MONTH");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -225,8 +232,16 @@ export function TripPlannerForm() {
       if (access.mode === "anonymous_free") {
         markAnonymousGenerationUsed();
       }
+      if (user) {
+        await refresh();
+      }
       router.push(`/trip/${trip.id}`);
     } catch (generateError) {
+      if (isQuotaError(generateError)) {
+        setQuotaReason(generateError.code);
+        await refresh();
+        return;
+      }
       const code = (generateError as Error & { code?: string }).code;
       if (code === "NOT_ENOUGH_PLACES") {
         setError("NOT_ENOUGH_PLACES");
@@ -446,8 +461,24 @@ export function TripPlannerForm() {
               Napravi nalog da menjaš ovaj plan ili napraviš novi.
             </p>
           ) : null}
+          {user && quota && !quota.unlimited ? (
+            <p className="text-center text-xs text-muted-foreground">
+              {quota.generationsRemaining}/{quota.generationsLimit} generisanja ostalo ovog meseca
+            </p>
+          ) : null}
         </div>
       </form>
+
+      <QuotaLockedDialog
+        open={quotaReason !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setQuotaReason(null);
+          }
+        }}
+        reason={quotaReason ?? "QUOTA_MONTH"}
+        quota={quota}
+      />
     </>
   );
 }

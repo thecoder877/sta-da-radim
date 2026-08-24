@@ -7,6 +7,7 @@ import {
 } from "@/lib/geo/travelTime";
 import { resolveStartCoordinates } from "@/lib/locations";
 import { slugify } from "@/lib/format";
+import { withPlaceImage } from "@/lib/places/placeImage";
 import {
   filterPlacesByBudget,
   filterPlacesByDistance,
@@ -261,7 +262,7 @@ export function generateMockTrip(
       const stop: TripStop = {
         id: `stop-${place.id}-${dayIndex}`,
         placeId: place.id,
-        place,
+        place: withPlaceImage(place),
         arrivalTime: cursor,
         departureTime: addMinutesToTime(cursor, duration),
         durationMinutes: duration,

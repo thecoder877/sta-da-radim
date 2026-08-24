@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Clock, MapPin } from "lucide-react";
 import { PlaceCommunity } from "@/components/community/PlaceCommunity";
+import { PlacePhoto } from "@/components/places/PlacePhoto";
 import { Container } from "@/components/layout/Container";
 import { TripMapLazy } from "@/components/map/TripMapLazy";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { listReviewsForPlace } from "@/lib/community/reviews";
 import { formatDurationMinutes } from "@/lib/format";
 import { getPlaceRowByKey, listVisiblePlacePhotos, overlayFacts } from "@/lib/places/canonical";
+import { withPlaceImage } from "@/lib/places/placeImage";
 import { resolvePlacePrice } from "@/lib/places/price";
 import { getPlaceRepository } from "@/lib/providers/places";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -56,21 +57,16 @@ export default async function PlacePage({
     : { reviews: [], summary: { average: 0, count: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } } };
   const photos = supabase ? await listVisiblePlacePhotos(supabase, place.id) : [];
   const overlay = row ? overlayFacts(row) : {};
+  const displayPlace = withPlaceImage({
+    ...place,
+    imageUrl: row?.image_url || place.imageUrl,
+  });
   const price = resolvePlacePrice(place, overlay);
 
   return (
     <article>
       <div className="relative h-[42vw] min-h-64 max-h-[420px] bg-[linear-gradient(160deg,#c45c26_0%,#8a5a32_45%,#3f4a38_100%)]">
-        {place.imageUrl ? (
-          <Image
-            src={place.imageUrl}
-            alt={place.name}
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
-          />
-        ) : null}
+        <PlacePhoto place={displayPlace} sizes="100vw" priority />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
       </div>
 

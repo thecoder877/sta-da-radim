@@ -59,6 +59,8 @@ export const generatedTripSaveSchema = z.object({
   createdAt: z.string(),
   shareSlug: z.string().optional(),
   isPublic: z.boolean().optional(),
+  generationId: z.string().optional(),
+  editCount: z.number().optional(),
   request: z
     .object({
       startLocation: z.object({

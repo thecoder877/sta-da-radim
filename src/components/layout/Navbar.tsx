@@ -29,7 +29,7 @@ const links = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, quota, signOut } = useAuth();
   const label = profileLabel(profile);
   const isAdmin = profile?.role === "admin";
 
@@ -96,6 +96,11 @@ export function Navbar() {
                 <Button variant="ghost" className="w-full justify-start" render={<Link href="/settings" />}>
                   Podešavanja
                 </Button>
+                {quota && !quota.unlimited ? (
+                  <Button variant="ghost" className="w-full justify-start" render={<Link href="/upgrade" />}>
+                    Nadogradi · {quota.generationsRemaining}/{quota.generationsLimit}
+                  </Button>
+                ) : null}
                 {isAdmin ? (
                   <Button variant="ghost" className="w-full justify-start" render={<Link href="/admin" />}>
                     Moderacija
@@ -152,6 +157,11 @@ export function Navbar() {
                   <Link href="/settings" className="rounded-lg px-3 py-2 text-sm hover:bg-muted">
                     Podešavanja
                   </Link>
+                  {quota && !quota.unlimited ? (
+                    <Link href="/upgrade" className="rounded-lg px-3 py-2 text-sm hover:bg-muted">
+                      Nadogradi nalog
+                    </Link>
+                  ) : null}
                   {isAdmin ? (
                     <Link href="/admin" className="rounded-lg px-3 py-2 text-sm hover:bg-muted">
                       Moderacija

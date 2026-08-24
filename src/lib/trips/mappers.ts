@@ -134,7 +134,15 @@ export function mapGeneratedTripToDatabaseInput(trip: GeneratedTrip) {
     total_distance_km: trip.totalDistanceKm ?? null,
     total_travel_minutes: trip.totalTravelMinutes ?? null,
     route_coordinates: trip.routeCoordinates ?? null,
-    request_snapshot: request ?? null,
+    request_snapshot: (request
+      ? {
+          ...request,
+          generationId: trip.generationId,
+          editCount: trip.editCount,
+        }
+      : trip.generationId
+        ? { generationId: trip.generationId, editCount: trip.editCount }
+        : null) as TripRequest | null,
   };
 }
 
@@ -226,6 +234,14 @@ export function mapDatabaseTripToGeneratedTrip(
     shareSlug: trip.share_slug ?? undefined,
     isPublic: trip.is_public,
     request: trip.request_snapshot ?? undefined,
+    generationId:
+      trip.request_snapshot && typeof (trip.request_snapshot as { generationId?: string }).generationId === "string"
+        ? (trip.request_snapshot as { generationId?: string }).generationId
+        : undefined,
+    editCount:
+      trip.request_snapshot && typeof (trip.request_snapshot as { editCount?: number }).editCount === "number"
+        ? (trip.request_snapshot as { editCount?: number }).editCount
+        : undefined,
     persisted: true,
     isOwner: Boolean(options?.currentUserId && options.currentUserId === trip.user_id),
   };

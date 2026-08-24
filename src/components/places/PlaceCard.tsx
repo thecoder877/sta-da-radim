@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Clock, MapPin } from "lucide-react";
+import { PlacePhoto } from "@/components/places/PlacePhoto";
 import { formatDurationMinutes, formatRsd } from "@/lib/format";
 import type { Place } from "@/types/place";
 import { Badge } from "@/components/ui/badge";
@@ -10,19 +10,7 @@ export function PlaceCard({ place }: { place: Place }) {
     <article className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-foreground/8">
       <Link href={`/place/${place.slug}`} className="block">
         <div className="relative aspect-[16/10] bg-muted">
-          {place.imageUrl ? (
-            <Image
-              src={place.imageUrl}
-              alt={place.name}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 33vw"
-            />
-          ) : (
-            <div className="flex h-full items-end bg-[linear-gradient(160deg,#c45c26_0%,#8a5a32_45%,#3f4a38_100%)] p-4">
-              <span className="font-heading text-2xl text-white">{place.name}</span>
-            </div>
-          )}
+          <PlacePhoto place={place} sizes="(max-width: 768px) 100vw, 33vw" />
         </div>
       </Link>
       <div className="space-y-3 p-4">

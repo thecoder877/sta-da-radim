@@ -10,6 +10,7 @@ interface ProfileRow {
   avatar_url: string | null;
   bio: string | null;
   role: "user" | "admin" | null;
+  plan?: "free" | "plus" | null;
   created_at: string;
   updated_at: string;
 }
@@ -22,6 +23,7 @@ export function mapProfile(row: ProfileRow): UserProfile {
     avatarUrl: row.avatar_url,
     bio: row.bio,
     role: row.role === "admin" ? "admin" : "user",
+    plan: row.plan === "plus" ? "plus" : "free",
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

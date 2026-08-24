@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test src/lib/access/generationAccess.test.ts src/lib/security/*.test.ts src/lib/geo/*.test.ts src/lib/format.test.ts src/lib/providers/routing/osrm.test.ts src/lib/providers/geocoding/nominatim.test.ts",
+    "test": "node --experimental-strip-types --test src/lib/access/*.test.ts src/lib/security/*.test.ts src/lib/geo/*.test.ts src/lib/format.test.ts src/lib/providers/routing/osrm.test.ts src/lib/providers/geocoding/nominatim.test.ts",
     "audit": "npm audit --audit-level=high"
   },
   "dependencies": {

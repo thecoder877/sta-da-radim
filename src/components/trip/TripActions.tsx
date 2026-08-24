@@ -6,13 +6,15 @@ import { useRouter } from "next/navigation";
 import { Bookmark, RefreshCw, Share2, Trash2 } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useAuthModal } from "@/components/auth/AuthModalProvider";
+import { QuotaLockedDialog } from "@/components/access/QuotaLockedDialog";
 import {
   getGenerationAccess,
   hasUsedAnonymousGeneration,
   markAnonymousGenerationUsed,
   tripSuccessfullyGenerated,
 } from "@/lib/access/generationAccess";
-import { requestGeneratedTrip } from "@/lib/trips/generateClient";
+import { EDITS_PER_GENERATION, type PlanQuotaReason } from "@/lib/access/planQuota";
+import { isQuotaError, requestGeneratedTrip } from "@/lib/trips/generateClient";
 import {
   deleteTripFromAccount,
   saveTripToAccount,
@@ -38,11 +40,12 @@ export function TripActions({
   onTripChange?: (trip: GeneratedTrip) => void;
 }) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, quota, refresh } = useAuth();
   const { openAuthModal } = useAuthModal();
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [quotaReason, setQuotaReason] = useState<PlanQuotaReason | null>(null);
   const persisted = Boolean(trip.persisted);
   const owner = Boolean(trip.isOwner || (user && persisted));
 
@@ -114,7 +117,7 @@ export function TripActions({
     setBusy(true);
     setMessage(null);
     try {
-      const next = await requestGeneratedTrip(request);
+      const next = await requestGeneratedTrip(request, { generationId: trip.generationId });
       if (!tripSuccessfullyGenerated(next)) {
         setMessage("Novi plan nije spreman. Pokušaj ponovo.");
         return;
@@ -123,9 +126,17 @@ export function TripActions({
       if (access.mode === "anonymous_free") {
         markAnonymousGenerationUsed();
       }
+      if (user) {
+        await refresh();
+      }
       onTripChange?.(next);
       router.push(`/trip/${next.id}`);
-    } catch {
+    } catch (error) {
+      if (isQuotaError(error)) {
+        setQuotaReason(error.code);
+        await refresh();
+        return;
+      }
       setMessage("Novi plan nije spreman. Pokušaj ponovo.");
     } finally {
       setBusy(false);
@@ -181,6 +192,11 @@ export function TripActions({
           Izmeni plan
         </Button>
       </div>
+      {user && trip.generationId && !quota?.unlimited ? (
+        <p className="text-xs text-muted-foreground">
+          Još {Math.max(0, EDITS_PER_GENERATION - (trip.editCount ?? 0))} izmena ovog plana
+        </p>
+      ) : null}
 
       <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <DialogContent>
@@ -198,6 +214,17 @@ export function TripActions({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <QuotaLockedDialog
+        open={quotaReason !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setQuotaReason(null);
+          }
+        }}
+        reason={quotaReason ?? "QUOTA_EDITS"}
+        quota={quota}
+      />
     </div>
   );
 }

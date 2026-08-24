@@ -162,6 +162,16 @@ select id, username, display_name, role
 from public.profiles;
 ```
 
+### Monthly generation quota
+
+Apply [`migrations/0004_plan_quota.sql`](migrations/0004_plan_quota.sql) in the SQL Editor. It adds `profiles.plan` (`free` / `plus`) and `plan_generations`.
+
+Registered users get 3 new plans per calendar month (Europe/Belgrade) and 3 edits per plan. Admins and `plan = 'plus'` are unlimited. Grant Plus with:
+
+```sql
+update public.profiles set plan = 'plus' where username = 'tvoje-ime';
+```
+
 Then promote yourself (pick one):
 
 ```sql

@@ -1,4 +1,5 @@
 import { slugify } from "@/lib/format";
+import { withPlaceImage } from "@/lib/places/placeImage";
 import type { Place } from "@/types/place";
 
 function googleMapsKey(): string | undefined {
@@ -13,6 +14,7 @@ interface GoogleNearbyResult {
   user_ratings_total?: number;
   geometry?: { location?: { lat: number; lng: number } };
   types?: string[];
+  photos?: Array<{ photo_reference?: string }>;
 }
 
 export async function searchGoogleLodging(
@@ -56,7 +58,8 @@ export async function searchGoogleLodging(
       if (!item.name || lat === undefined || lng === undefined) {
         return null;
       }
-      return {
+      const photoRef = item.photos?.[0]?.photo_reference;
+      return withPlaceImage({
         id: `google-${item.place_id}`,
         name: item.name,
         slug: `${slugify(item.name)}-${item.place_id.slice(-6)}`,
@@ -72,10 +75,11 @@ export async function searchGoogleLodging(
         estimatedCostPerPerson: 5500,
         rating: item.rating,
         reviewCount: item.user_ratings_total,
+        imageUrl: photoRef ? `/api/places/photo?ref=${encodeURIComponent(photoRef)}` : undefined,
         source: "google",
         verified: Boolean(item.rating && item.rating >= 4),
         environment: "mixed",
-      };
+      });
     })
     .filter((place): place is Place => place !== null);
 }

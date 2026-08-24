@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { BedDouble, Clock, Coins } from "lucide-react";
+import { PlacePhoto } from "@/components/places/PlacePhoto";
 import { formatDurationMinutes, formatRsd } from "@/lib/format";
 import type { TripStop } from "@/types/trip";
 import { Badge } from "@/components/ui/badge";
@@ -23,15 +23,7 @@ export function TripStopCard({
     >
       <div className="grid sm:grid-cols-[140px_1fr]">
         <div className="relative min-h-36 bg-muted">
-          {stop.place.imageUrl ? (
-            <Image
-              src={stop.place.imageUrl}
-              alt={stop.place.name}
-              fill
-              className="object-cover"
-              sizes="140px"
-            />
-          ) : null}
+          <PlacePhoto place={stop.place} sizes="140px" />
         </div>
         <div className="space-y-3 p-4">
           <div className="flex items-start justify-between gap-3">

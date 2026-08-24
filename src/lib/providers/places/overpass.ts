@@ -1,5 +1,6 @@
 import { slugify } from "@/lib/format";
 import type { AmenityKind } from "@/lib/places/amenityKeywords";
+import { imageFromOsmTags, withPlaceImage } from "@/lib/places/placeImage";
 import type { Place, PlaceEnvironment, PlaceSource } from "@/types/place";
 
 const OVERPASS_URLS = [
@@ -174,7 +175,7 @@ export function placesFromOverpassElements(
       tags["description:sr"] ??
       `${name} — lokacija sa otvorene mape Srbije.`;
 
-    const place: Place = {
+    const place: Place = withPlaceImage({
       id: `osm-${element.type}-${element.id}`,
       name,
       slug: `${slugify(name)}-${element.id}`,
@@ -187,11 +188,12 @@ export function placesFromOverpassElements(
       category: mapped.category,
       tags: [...new Set(mapped.tags)],
       website: tags.website ?? tags["contact:website"],
+      imageUrl: imageFromOsmTags(tags),
       source: "osm" as PlaceSource,
       verified: Boolean(tags.wikipedia || tags.wikidata),
       environment: environmentFor(tags),
       suitableForChildren: isPoolTags(tags) || tags.tourism === "zoo" || tags.leisure === "park",
-    };
+    });
 
     const key = `${place.name.toLowerCase()}|${place.latitude.toFixed(3)}|${place.longitude.toFixed(3)}`;
     if (!unique.has(key)) {
@@ -401,13 +403,19 @@ out center tags;
 `.trim();
 
   const elements = await overpassQuery(query);
-  return placesFromOverpassElements(elements).map((place) => ({
-    ...place,
-    category: "Smeštaj",
-    tags: [...new Set(["hotel", "prenociste", ...place.tags])],
-    estimatedDurationMinutes: place.estimatedDurationMinutes ?? 720,
-    estimatedCostPerPerson: place.estimatedCostPerPerson ?? 5000,
-  }));
+  return placesFromOverpassElements(elements).map((place) =>
+    withPlaceImage({
+      ...place,
+      category: "Smeštaj",
+      tags: [...new Set(["hotel", "prenociste", ...place.tags])],
+      estimatedDurationMinutes: place.estimatedDurationMinutes ?? 720,
+      estimatedCostPerPerson: place.estimatedCostPerPerson ?? 5000,
+      imageUrl:
+        place.imageUrl && !place.imageUrl.includes("images.unsplash.com")
+          ? place.imageUrl
+          : undefined,
+    }),
+  );
 }
 
 export async function fetchOverpassByOsmId(osmId: number): Promise<Place | null> {
@@ -426,7 +434,7 @@ async function loadBundledSnapshot(): Promise<Place[]> {
     const path = await import("node:path");
     const filePath = path.join(process.cwd(), "src/data/osmPlaces.json");
     const raw = await readFile(filePath, "utf8");
-    return JSON.parse(raw) as Place[];
+    return (JSON.parse(raw) as Place[]).map(withPlaceImage);
   } catch {
     return [];
   }

@@ -1,5 +1,6 @@
 import { MOCK_LODGING } from "@/data/mockLodging";
 import { MOCK_PLACES } from "@/data/mockPlaces";
+import { withPlaceImage } from "@/lib/places/placeImage";
 import { calculateDistanceKm } from "@/lib/geo/distance";
 import {
   applyPlaceOverlay,
@@ -90,7 +91,7 @@ async function listCatalog(): Promise<Place[]> {
       merged.push(place);
     }
   }
-  return merged;
+  return merged.map(withPlaceImage);
 }
 
 async function lookupRememberedOrOsm(value: string, by: "id" | "slug"): Promise<Place | null> {
@@ -117,7 +118,8 @@ export const catalogPlaceRepository: PlaceRepository = {
   async getPlaceById(id) {
     const lodging = MOCK_LODGING.find((place) => place.id === id);
     if (lodging) {
-      return withOverlay(lodging);
+      const overlaid = await withOverlay(lodging);
+      return overlaid ? withPlaceImage(overlaid) : null;
     }
     const internal = await mockPlaceRepository.getPlaceById(id);
     if (internal) {
@@ -132,7 +134,8 @@ export const catalogPlaceRepository: PlaceRepository = {
   async getPlaceBySlug(slug) {
     const lodging = MOCK_LODGING.find((place) => place.slug === slug);
     if (lodging) {
-      return withOverlay(lodging);
+      const overlaid = await withOverlay(lodging);
+      return overlaid ? withPlaceImage(overlaid) : null;
     }
     const internal = await mockPlaceRepository.getPlaceBySlug(slug);
     if (internal) {

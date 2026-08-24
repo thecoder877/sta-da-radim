@@ -1,5 +1,7 @@
 export type UserRole = "user" | "admin" | "moderator";
 
+export type AccountPlan = "free" | "plus";
+
 export interface UserProfile {
   id: string;
   username: string | null;
@@ -7,6 +9,7 @@ export interface UserProfile {
   avatarUrl: string | null;
   bio?: string | null;
   role?: UserRole;
+  plan?: AccountPlan;
   createdAt: string;
   updatedAt: string;
 }

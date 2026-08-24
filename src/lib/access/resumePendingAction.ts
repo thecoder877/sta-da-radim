@@ -2,7 +2,7 @@ import {
   clearPendingProtectedAction,
   readPendingProtectedAction,
 } from "@/lib/access/pendingAction";
-import { requestGeneratedTrip } from "@/lib/trips/generateClient";
+import { isQuotaError, requestGeneratedTrip } from "@/lib/trips/generateClient";
 import { saveTripToAccount } from "@/lib/trips/clientApi";
 import { persistGeneratedTrip, persistLastTripRequest } from "@/lib/trips/storage";
 
@@ -18,10 +18,18 @@ export async function resumePendingProtectedAction(
   try {
     if (pending.type === "generate") {
       persistLastTripRequest(pending.request);
-      const trip = await requestGeneratedTrip(pending.request);
-      persistGeneratedTrip(trip);
-      navigate(`/trip/${trip.id}`);
-      return true;
+      try {
+        const trip = await requestGeneratedTrip(pending.request);
+        persistGeneratedTrip(trip);
+        navigate(`/trip/${trip.id}`);
+        return true;
+      } catch (error) {
+        if (isQuotaError(error)) {
+          navigate("/upgrade");
+          return true;
+        }
+        throw error;
+      }
     }
 
     if (pending.type === "community") {
