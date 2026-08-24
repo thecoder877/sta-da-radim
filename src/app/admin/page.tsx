@@ -9,6 +9,7 @@ export default async function AdminHomePage() {
 
   const cards = [
     [`${counts.pendingPlaces} novih lokacija`, "/admin/place-submissions"],
+    ["Objavljene lokacije", "/admin/places"],
     [`${counts.pendingEdits} predloga izmena`, "/admin/place-edits"],
     [`${counts.openReports} otvorenih prijava`, "/admin/reports"],
     [`${counts.reportedPhotos} prijavljenih fotografija`, "/admin/photos"],

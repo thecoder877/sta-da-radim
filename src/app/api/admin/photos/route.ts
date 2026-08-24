@@ -8,7 +8,18 @@ export async function GET() {
       supabase.from("review_photos").select("*").order("created_at", { ascending: false }).limit(50),
       supabase.from("place_photos").select("*").order("created_at", { ascending: false }).limit(50),
     ]);
-    return NextResponse.json({ reviewPhotos: reviews ?? [], placePhotos: places ?? [] });
+    const withUrl = (
+      rows: Record<string, unknown>[] | null,
+      bucket: "review-photos" | "place-submission-photos",
+    ) =>
+      (rows ?? []).map((row) => ({
+        ...row,
+        publicUrl: supabase.storage.from(bucket).getPublicUrl(row.storage_path as string).data.publicUrl,
+      }));
+    return NextResponse.json({
+      reviewPhotos: withUrl((reviews ?? []) as Record<string, unknown>[], "review-photos"),
+      placePhotos: withUrl((places ?? []) as Record<string, unknown>[], "place-submission-photos"),
+    });
   } catch (error) {
     return communityResponse(error);
   }

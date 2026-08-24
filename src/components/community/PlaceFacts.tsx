@@ -3,7 +3,25 @@
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useAuthModal } from "@/components/auth/AuthModalProvider";
 import { Button } from "@/components/ui/button";
+import { formatDurationMinutes } from "@/lib/format";
+import { resolvePlacePrice } from "@/lib/places/price";
 import type { Place } from "@/types/place";
+
+export interface PlaceFactsOverlay {
+  address?: string | null;
+  openingHours?: string | null;
+  phone?: string | null;
+  website?: string | null;
+  instagram?: string | null;
+  facebook?: string | null;
+  priceInfo?: string | null;
+  parkingInfo?: string | null;
+  estimatedDurationMinutes?: number | null;
+  familyFriendly?: boolean | null;
+  petFriendly?: boolean | null;
+  accessibilityNotes?: string | null;
+  lastVerifiedAt?: string | null;
+}
 
 function Fact({
   label,
@@ -41,21 +59,7 @@ export function PlaceFacts({
   onSuggest,
 }: {
   place: Place;
-  overlay: {
-    address?: string | null;
-    openingHours?: string | null;
-    phone?: string | null;
-    website?: string | null;
-    instagram?: string | null;
-    facebook?: string | null;
-    priceInfo?: string | null;
-    parkingInfo?: string | null;
-    estimatedDurationMinutes?: number | null;
-    familyFriendly?: boolean | null;
-    petFriendly?: boolean | null;
-    accessibilityNotes?: string | null;
-    lastVerifiedAt?: string | null;
-  };
+  overlay: PlaceFactsOverlay;
   onSuggest: (field?: string) => void;
 }) {
   const { user } = useAuth();
@@ -87,14 +91,18 @@ export function PlaceFacts({
       ) : null}
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <Fact label="Radno vreme" value={overlay.openingHours ?? place.openingHours} field="opening_hours" onSuggest={suggest} />
-        <Fact label="Cena" value={overlay.priceInfo} field="price_info" onSuggest={suggest} />
+        <Fact label="Cena" value={resolvePlacePrice(place, overlay)} field="price_info" onSuggest={suggest} />
         <Fact label="Telefon" value={overlay.phone} field="phone" onSuggest={suggest} />
         <Fact label="Website" value={overlay.website ?? place.website} field="website" onSuggest={suggest} />
         <Fact label="Adresa" value={overlay.address} field="address" onSuggest={suggest} />
         <Fact label="Parking" value={overlay.parkingInfo} field="parking_info" onSuggest={suggest} />
         <Fact
           label="Trajanje posete"
-          value={overlay.estimatedDurationMinutes ?? place.estimatedDurationMinutes}
+          value={
+            overlay.estimatedDurationMinutes ?? place.estimatedDurationMinutes
+              ? formatDurationMinutes(overlay.estimatedDurationMinutes ?? place.estimatedDurationMinutes ?? 0)
+              : null
+          }
           field="estimated_duration_minutes"
           onSuggest={suggest}
         />

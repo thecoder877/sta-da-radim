@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { TripMapLazy } from "@/components/map/TripMapLazy";
 import { TripActions } from "@/components/trip/TripActions";
+import { TripExport } from "@/components/trip/TripExport";
 import { TripSummary } from "@/components/trip/TripSummary";
 import { TripTimeline } from "@/components/trip/TripTimeline";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -81,6 +82,7 @@ export function TripResultView({
               selectedPlaceId={selectedPlaceId}
               onShowOnMap={showOnMap}
             />
+            <TripExport trip={currentTrip} />
             {readOnly ? null : <TripActions trip={currentTrip} onTripChange={setCurrentTrip} />}
           </div>
         ) : (
@@ -104,6 +106,7 @@ export function TripResultView({
             selectedPlaceId={selectedPlaceId}
             onShowOnMap={setSelectedPlaceId}
           />
+          <TripExport trip={currentTrip} />
           {readOnly ? null : <TripActions trip={currentTrip} onTripChange={setCurrentTrip} />}
         </div>
         <div className="relative sticky top-16 h-[calc(100vh-4rem)] p-4">

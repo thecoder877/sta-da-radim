@@ -6,8 +6,47 @@ import { Button } from "@/components/ui/button";
 interface PhotoRow {
   id: string;
   storage_path: string;
+  publicUrl?: string;
   status: string;
   caption: string | null;
+}
+
+function PhotoCard({
+  photo,
+  kind,
+  onAct,
+}: {
+  photo: PhotoRow;
+  kind: "review" | "place";
+  onAct: (id: string, kind: "review" | "place", action: "remove" | "restore") => void;
+}) {
+  return (
+    <article className="overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/8">
+      {photo.publicUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={photo.publicUrl} alt={photo.caption ?? "Fotografija"} className="h-48 w-full object-cover" />
+      ) : (
+        <div className="flex h-48 items-center justify-center bg-muted text-sm text-muted-foreground">
+          Nema pregleda
+        </div>
+      )}
+      <div className="p-4 text-sm">
+        {photo.caption ? <p>{photo.caption}</p> : null}
+        <p className="text-muted-foreground">{photo.status}</p>
+        <div className="mt-2 flex gap-2">
+          {photo.status === "visible" ? (
+            <Button size="sm" variant="outline" onClick={() => onAct(photo.id, kind, "remove")}>
+              Ukloni
+            </Button>
+          ) : (
+            <Button size="sm" onClick={() => onAct(photo.id, kind, "restore")}>
+              Vrati
+            </Button>
+          )}
+        </div>
+      </div>
+    </article>
+  );
 }
 
 export default function AdminPhotosPage() {
@@ -39,41 +78,21 @@ export default function AdminPhotosPage() {
       <h1 className="font-heading text-3xl">Fotografije</h1>
       <section className="mt-6">
         <h2 className="font-heading text-xl">Recenzije</h2>
-        <div className="mt-3 space-y-3">
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {reviewPhotos.map((photo) => (
-            <article key={photo.id} className="rounded-2xl bg-card p-4 text-sm ring-1 ring-foreground/8">
-              <p>{photo.storage_path}</p>
-              <p className="text-muted-foreground">{photo.status}{photo.caption ? ` · ${photo.caption}` : ""}</p>
-              <div className="mt-2 flex gap-2">
-                {photo.status === "visible" ? (
-                  <Button size="sm" variant="outline" onClick={() => void act(photo.id, "review", "remove")}>Ukloni</Button>
-                ) : (
-                  <Button size="sm" onClick={() => void act(photo.id, "review", "restore")}>Vrati</Button>
-                )}
-              </div>
-            </article>
+            <PhotoCard key={photo.id} photo={photo} kind="review" onAct={(id, kind, action) => void act(id, kind, action)} />
           ))}
-          {reviewPhotos.length === 0 ? <p className="text-sm text-muted-foreground">Nema fotografija recenzija.</p> : null}
         </div>
+        {reviewPhotos.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">Nema fotografija recenzija.</p> : null}
       </section>
       <section className="mt-8">
         <h2 className="font-heading text-xl">Mesta</h2>
-        <div className="mt-3 space-y-3">
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {placePhotos.map((photo) => (
-            <article key={photo.id} className="rounded-2xl bg-card p-4 text-sm ring-1 ring-foreground/8">
-              <p>{photo.storage_path}</p>
-              <p className="text-muted-foreground">{photo.status}</p>
-              <div className="mt-2 flex gap-2">
-                {photo.status === "visible" ? (
-                  <Button size="sm" variant="outline" onClick={() => void act(photo.id, "place", "remove")}>Ukloni</Button>
-                ) : (
-                  <Button size="sm" onClick={() => void act(photo.id, "place", "restore")}>Vrati</Button>
-                )}
-              </div>
-            </article>
+            <PhotoCard key={photo.id} photo={photo} kind="place" onAct={(id, kind, action) => void act(id, kind, action)} />
           ))}
-          {placePhotos.length === 0 ? <p className="text-sm text-muted-foreground">Nema fotografija mesta.</p> : null}
         </div>
+        {placePhotos.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">Nema fotografija mesta.</p> : null}
       </section>
     </div>
   );

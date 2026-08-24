@@ -33,15 +33,6 @@ export function PlaceCommunity({
           <Plus data-icon="inline-start" />
           Dodaj u putovanje
         </Button>
-        <Button
-          variant="outline"
-          onClick={() => {
-            setEditField(undefined);
-            setEditOpen(true);
-          }}
-        >
-          Predloži izmenu
-        </Button>
         <Button variant="ghost" render={<Link href="/saved" />}>
           <Bookmark data-icon="inline-start" />
           Sačuvaj
@@ -67,7 +58,13 @@ export function PlaceCommunity({
         </section>
       ) : null}
       <PlaceReviews place={place} initialReviews={reviews} initialSummary={summary} />
-      <PlaceEditDialog place={place} open={editOpen} field={editField} onOpenChange={setEditOpen} />
+      <PlaceEditDialog
+        place={place}
+        overlay={overlay}
+        open={editOpen}
+        field={editField}
+        onOpenChange={setEditOpen}
+      />
     </>
   );
 }

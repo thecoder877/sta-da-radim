@@ -8,8 +8,9 @@ import { TripMapLazy } from "@/components/map/TripMapLazy";
 import { Badge } from "@/components/ui/badge";
 import { getCurrentUser } from "@/lib/auth/session";
 import { listReviewsForPlace } from "@/lib/community/reviews";
-import { formatDurationMinutes, formatRsd } from "@/lib/format";
+import { formatDurationMinutes } from "@/lib/format";
 import { getPlaceRowByKey, listVisiblePlacePhotos, overlayFacts } from "@/lib/places/canonical";
+import { resolvePlacePrice } from "@/lib/places/price";
 import { getPlaceRepository } from "@/lib/providers/places";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -54,6 +55,8 @@ export default async function PlacePage({
     ? await listReviewsForPlace(supabase, place.id, user?.id)
     : { reviews: [], summary: { average: 0, count: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } } };
   const photos = supabase ? await listVisiblePlacePhotos(supabase, place.id) : [];
+  const overlay = row ? overlayFacts(row) : {};
+  const price = resolvePlacePrice(place, overlay);
 
   return (
     <article>
@@ -102,16 +105,12 @@ export default async function PlacePage({
               </div>
               <div className="rounded-xl bg-muted/60 p-4">
                 <dt className="text-xs text-muted-foreground">Procena po osobi</dt>
-                <dd className="mt-1 font-medium">
-                  {place.estimatedCostPerPerson
-                    ? formatRsd(place.estimatedCostPerPerson)
-                    : "Obično bez ulaznice"}
-                </dd>
+                <dd className="mt-1 font-medium">{price ?? "Nije poznato"}</dd>
               </div>
             </dl>
             <PlaceCommunity
               place={place}
-              overlay={row ? overlayFacts(row) : {}}
+              overlay={overlay}
               reviews={community.reviews}
               summary={community.summary}
               photos={photos}

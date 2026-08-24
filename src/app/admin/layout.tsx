@@ -15,6 +15,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const links = [
     ["/admin", "Pregled"],
     ["/admin/place-submissions", "Nove lokacije"],
+    ["/admin/places", "Lokacije"],
     ["/admin/place-edits", "Izmene"],
     ["/admin/reviews", "Recenzije"],
     ["/admin/reports", "Prijave"],
