@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/session";
+import { errorMeta, logger } from "@/lib/logger";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isUuid } from "@/lib/trips/ids";
 import { deleteSavedTrip, getSavedTripById, setTripSharing } from "@/lib/trips/repository";
@@ -64,7 +65,8 @@ export async function PATCH(
       return NextResponse.json({ error: "Putovanje nije pronađeno.", code: "NOT_FOUND" }, { status: 404 });
     }
     return NextResponse.json({ trip });
-  } catch {
+  } catch (error) {
+    logger.error("Updating trip sharing failed", errorMeta(error));
     return NextResponse.json({ error: "Deljenje nije ažurirano.", code: "TRIP_UPDATE_FAILED" }, { status: 500 });
   }
 }
@@ -94,7 +96,8 @@ export async function DELETE(
       return NextResponse.json({ error: "Putovanje nije pronađeno.", code: "NOT_FOUND" }, { status: 404 });
     }
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (error) {
+    logger.error("Deleting trip failed", errorMeta(error));
     return NextResponse.json({ error: "Putovanje nije obrisano.", code: "TRIP_DELETE_FAILED" }, { status: 500 });
   }
 }

@@ -9,6 +9,7 @@ import {
   encodeQuota,
   FREE_ANONYMOUS_GENERATIONS,
 } from "@/lib/access/serverGenerationQuota";
+import { errorMeta, logger } from "@/lib/logger";
 import { rateLimitOrResponse } from "@/lib/security/apiGuards";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { tripRequestSchema } from "@/lib/validation/trip";
@@ -78,6 +79,7 @@ export async function POST(request: Request) {
       );
     }
 
+    logger.error("Trip generation failed", errorMeta(error));
     return NextResponse.json(
       {
         error: "Trenutno nismo uspeli da napravimo plan. Pokušaj ponovo.",

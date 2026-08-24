@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/session";
+import { errorMeta, logger } from "@/lib/logger";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { listSavedTrips, saveGeneratedTrip } from "@/lib/trips/repository";
 import { generatedTripSaveSchema } from "@/lib/validation/savedTrip";
@@ -18,7 +19,8 @@ export async function GET() {
   try {
     const trips = await listSavedTrips(supabase, user.id);
     return NextResponse.json({ trips });
-  } catch {
+  } catch (error) {
+    logger.error("Listing saved trips failed", errorMeta(error));
     return NextResponse.json({ error: "Lista putovanja trenutno nije dostupna.", code: "TRIP_LIST_FAILED" }, { status: 500 });
   }
 }
@@ -43,7 +45,8 @@ export async function POST(request: Request) {
 
     const trip = await saveGeneratedTrip(supabase, user.id, parsed.data);
     return NextResponse.json({ trip });
-  } catch {
+  } catch (error) {
+    logger.error("Saving trip failed", errorMeta(error));
     return NextResponse.json({ error: "Putovanje nije sačuvano. Pokušaj ponovo.", code: "TRIP_SAVE_FAILED" }, { status: 500 });
   }
 }
