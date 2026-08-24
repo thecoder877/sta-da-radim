@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import { describe, it } from "vitest";
 import {
   ANONYMOUS_GENERATION_KEY,
   getGenerationAccess,
@@ -7,7 +7,7 @@ import {
   markAnonymousGenerationUsed,
   tripSuccessfullyGenerated,
   type GenerationAccessStore,
-} from "./generationAccess.ts";
+} from "./generationAccess";
 
 class MemoryStore implements GenerationAccessStore {
   private readonly values = new Map<string, string>();
