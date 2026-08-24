@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useAuthModal } from "@/components/auth/AuthModalProvider";
-import { LocationPicker } from "@/components/community/LocationPicker";
+import { LocationPickerLazy } from "@/components/community/LocationPickerLazy";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -150,7 +150,7 @@ export function AddPlaceForm() {
       <div>
         <Label>Lokacija na mapi *</Label>
         <p className="mb-2 text-xs text-muted-foreground">Klikni ili pomeri marker.</p>
-        <LocationPicker
+        <LocationPickerLazy
           onChange={(next) => {
             setCoordinates(next);
             void checkDuplicates(next);

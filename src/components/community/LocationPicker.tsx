@@ -31,9 +31,11 @@ export function LocationPicker({
   onChangeRef.current = onChange;
 
   useEffect(() => {
-    if (!containerRef.current) {
+    const node = containerRef.current;
+    if (!node) {
       return;
     }
+
     let cancelled = false;
     let map: import("leaflet").Map | null = null;
     let observer: ResizeObserver | null = null;
@@ -44,6 +46,9 @@ export function LocationPicker({
         return;
       }
       const L = leaflet.default;
+      if ("_leaflet_id" in containerRef.current) {
+        delete (containerRef.current as HTMLDivElement & { _leaflet_id?: number })._leaflet_id;
+      }
       const instance = L.map(containerRef.current, { scrollWheelZoom: true }).setView(
         [start.latitude, start.longitude],
         value ? 12 : 7,
@@ -102,9 +107,8 @@ export function LocationPicker({
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className={className ?? "h-72 w-full overflow-hidden rounded-2xl bg-muted ring-1 ring-foreground/10"}
-    />
+    <div className={className ?? "h-72 w-full overflow-hidden rounded-2xl bg-[#e7efe4] ring-1 ring-foreground/10"}>
+      <div ref={containerRef} className="h-full min-h-[18rem] w-full" />
+    </div>
   );
 }
