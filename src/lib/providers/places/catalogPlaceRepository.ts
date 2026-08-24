@@ -13,7 +13,8 @@ import { fetchOverpassByOsmId, fetchOverpassPlaces } from "@/lib/providers/place
 import type { PlaceRepository } from "@/lib/providers/types";
 import type { Place, PlaceFilters } from "@/types/place";
 
-function isNearDuplicate(candidate: Place, existing: Place): boolean {
+// Merge-time dedup: drop an OSM place that overlaps a curated MOCK place.
+function isCatalogNearDuplicate(candidate: Place, existing: Place): boolean {
   if (candidate.name.toLowerCase() === existing.name.toLowerCase()) {
     return true;
   }
@@ -51,7 +52,7 @@ async function listCatalog(): Promise<Place[]> {
 
   const merged = [...MOCK_PLACES];
   for (const place of osmPlaces) {
-    const duplicate = merged.some((existing) => isNearDuplicate(place, existing));
+    const duplicate = merged.some((existing) => isCatalogNearDuplicate(place, existing));
     if (!duplicate) {
       merged.push(place);
     }

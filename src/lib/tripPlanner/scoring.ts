@@ -1,4 +1,10 @@
 import { calculateDistanceKm } from "@/lib/geo/distance";
+import {
+  BUDGET_FRIENDLY_FACTOR,
+  DISTANCE_SCORE_BANDS,
+  DURATION_SCORE_BAND,
+  SCORE_WEIGHTS,
+} from "@/lib/tripPlanner/config";
 import type { Coordinates, Place } from "@/types/place";
 import type { TripRequest } from "@/types/trip";
 
@@ -20,12 +26,12 @@ export function calculatePlaceScore(
 
   for (const tag of tags) {
     if (interests.has(tag)) {
-      score += 10;
+      score += SCORE_WEIGHTS.interestTagMatch;
     }
   }
 
   if (interests.has(category)) {
-    score += 10;
+    score += SCORE_WEIGHTS.interestCategoryMatch;
   }
 
   const distanceKm = calculateDistanceKm(origin, {
@@ -33,44 +39,44 @@ export function calculatePlaceScore(
     longitude: place.longitude,
   });
 
-  if (distanceKm <= 25) {
-    score += 8;
-  } else if (distanceKm <= 50) {
-    score += 5;
-  } else if (distanceKm <= 100) {
-    score += 2;
+  const band = DISTANCE_SCORE_BANDS.find((entry) => distanceKm <= entry.maxKm);
+  if (band) {
+    score += band.points;
   }
 
   if (place.verified) {
-    score += 3;
+    score += SCORE_WEIGHTS.verified;
   }
 
   if (place.estimatedDurationMinutes) {
     const minutes = place.estimatedDurationMinutes;
-    if (minutes >= 40 && minutes <= 180) {
-      score += 2;
+    if (
+      minutes >= DURATION_SCORE_BAND.minMinutes &&
+      minutes <= DURATION_SCORE_BAND.maxMinutes
+    ) {
+      score += SCORE_WEIGHTS.durationBand;
     }
   }
 
   if (request.budget && place.estimatedCostPerPerson !== undefined) {
     const perPersonBudget = request.budget / Math.max(request.numberOfPeople, 1);
-    if (place.estimatedCostPerPerson <= perPersonBudget * 0.5) {
-      score += 5;
+    if (place.estimatedCostPerPerson <= perPersonBudget * BUDGET_FRIENDLY_FACTOR) {
+      score += SCORE_WEIGHTS.budgetFriendly;
     }
   } else if (!request.budget) {
-    score += 1;
+    score += SCORE_WEIGHTS.noBudget;
   }
 
   if (place.hiddenGem && interests.has("skrivena-mesta")) {
-    score += 4;
+    score += SCORE_WEIGHTS.hiddenGem;
   }
 
   if (place.romantic && interests.has("romanticno")) {
-    score += 3;
+    score += SCORE_WEIGHTS.romantic;
   }
 
   if (place.suitableForChildren && interests.has("porodicno")) {
-    score += 3;
+    score += SCORE_WEIGHTS.family;
   }
 
   return score;

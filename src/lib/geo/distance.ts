@@ -1,4 +1,6 @@
+import { TRAVEL_SPEED_KMH } from "@/lib/tripPlanner/config";
 import type { Coordinates } from "@/types/place";
+import type { TransportType } from "@/types/trip";
 
 const EARTH_RADIUS_KM = 6371;
 
@@ -30,16 +32,9 @@ export function calculateDistanceKm(
 
 export function estimateTravelMinutes(
   distanceKm: number,
-  transport: "car" | "bus" | "train" | "walk" | "bike",
+  transport: TransportType,
 ): number {
-  const kmPerHour = {
-    car: 55,
-    bus: 40,
-    train: 50,
-    walk: 4.5,
-    bike: 14,
-  }[transport];
-
+  const kmPerHour = TRAVEL_SPEED_KMH[transport];
   return Math.round((distanceKm / kmPerHour) * 60);
 }
 

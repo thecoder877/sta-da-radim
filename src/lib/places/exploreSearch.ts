@@ -120,7 +120,8 @@ function textBlob(place: Place): string {
   );
 }
 
-function isNearDuplicate(candidate: Place, existing: Place): boolean {
+// Explore-time dedup: collapse near-identical results across search groups.
+function isExploreNearDuplicate(candidate: Place, existing: Place): boolean {
   if (foldSerbian(candidate.name) === foldSerbian(existing.name)) {
     const distance = calculateDistanceKm(
       { latitude: candidate.latitude, longitude: candidate.longitude },
@@ -145,7 +146,7 @@ function mergePlaces(groups: Place[][]): Place[] {
   const merged: Place[] = [];
   for (const group of groups) {
     for (const place of group) {
-      if (!merged.some((existing) => isNearDuplicate(place, existing))) {
+      if (!merged.some((existing) => isExploreNearDuplicate(place, existing))) {
         merged.push(place);
       }
     }

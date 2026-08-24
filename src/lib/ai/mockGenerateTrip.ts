@@ -4,11 +4,18 @@ import { calculateDistanceKm, estimateTravelMinutes } from "@/lib/geo/distance";
 import { resolveStartCoordinates } from "@/lib/locations";
 import { slugify } from "@/lib/format";
 import {
+  MIN_STOPS,
+  STOP_COUNT_BY_PRESET,
+  STOPS_PER_DAY,
+  TRAVEL_STYLE_STOP_DELTA,
+} from "@/lib/tripPlanner/config";
+import {
   filterPlacesByBudget,
   filterPlacesByDistance,
   filterPlacesByInterests,
 } from "@/lib/tripPlanner/filtering";
 import { rankPlacesForTrip } from "@/lib/tripPlanner/scoring";
+import { addMinutesToTime } from "@/lib/tripPlanner/time";
 import type { Coordinates, Place } from "@/types/place";
 import type {
   GeneratedTrip,
@@ -18,28 +25,12 @@ import type {
 } from "@/types/trip";
 
 function targetStopCount(request: TripRequest): number {
-  const preset = request.durationPreset;
-  let base = request.days * 4;
+  const base = request.durationPreset
+    ? STOP_COUNT_BY_PRESET[request.durationPreset]
+    : request.days * STOPS_PER_DAY;
 
-  if (preset === "hours") {
-    base = 3;
-  } else if (preset === "1") {
-    base = 5;
-  } else if (preset === "2") {
-    base = 8;
-  } else if (preset === "3") {
-    base = 11;
-  } else if (preset === "4plus") {
-    base = 13;
-  }
-
-  if (request.travelStyle === "relaxed") {
-    return Math.max(2, base - 2);
-  }
-  if (request.travelStyle === "packed") {
-    return base + 2;
-  }
-  return base;
+  const target = base + TRAVEL_STYLE_STOP_DELTA[request.travelStyle];
+  return request.travelStyle === "relaxed" ? Math.max(MIN_STOPS, target) : target;
 }
 
 function orderByNearestNeighbor(
@@ -72,15 +63,6 @@ function orderByNearestNeighbor(
   }
 
   return ordered;
-}
-
-function addMinutesToTime(time: string, minutes: number): string {
-  const [hours, mins] = time.split(":").map(Number);
-  const total = hours * 60 + mins + minutes;
-  const wrapped = ((total % (24 * 60)) + 24 * 60) % (24 * 60);
-  const nextHours = Math.floor(wrapped / 60);
-  const nextMins = wrapped % 60;
-  return `${String(nextHours).padStart(2, "0")}:${String(nextMins).padStart(2, "0")}`;
 }
 
 function buildTitle(places: Place[], startLocation: string): string {

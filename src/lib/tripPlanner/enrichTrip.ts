@@ -1,16 +1,8 @@
 import { findLodgingNearby, pickFallbackLodging } from "@/lib/providers/lodging";
 import { getTripRoute } from "@/lib/providers/routing";
+import { addMinutesToTime } from "@/lib/tripPlanner/time";
 import type { Coordinates } from "@/types/place";
 import type { GeneratedTrip, TripRequest, TripStop } from "@/types/trip";
-
-function addMinutesToTime(time: string, minutes: number): string {
-  const [hours, mins] = time.split(":").map(Number);
-  const total = hours * 60 + mins + minutes;
-  const wrapped = ((total % (24 * 60)) + 24 * 60) % (24 * 60);
-  const nextHours = Math.floor(wrapped / 60);
-  const nextMins = wrapped % 60;
-  return `${String(nextHours).padStart(2, "0")}:${String(nextMins).padStart(2, "0")}`;
-}
 
 function lastVisitStop(stops: TripStop[]): TripStop | undefined {
   return [...stops].reverse().find((stop) => stop.kind !== "lodging");
