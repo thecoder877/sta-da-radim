@@ -1,13 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { POPULAR_DESTINATIONS } from "@/lib/constants";
 import { Container } from "@/components/layout/Container";
-
-const TONES = [
-  "bg-[linear-gradient(160deg,#c45c26_0%,#8a5a32_55%,#3f4a38_100%)]",
-  "bg-[linear-gradient(160deg,#3f4a38_0%,#6b7c59_55%,#c4b48a_100%)]",
-  "bg-[linear-gradient(160deg,#2c4a5c_0%,#5a7a6a_55%,#c45c26_100%)]",
-  "bg-[linear-gradient(160deg,#5b4b8a_0%,#8a5a32_55%,#c4b48a_100%)]",
-];
 
 export function PopularDestinations() {
   return (
@@ -25,17 +19,20 @@ export function PopularDestinations() {
           </Link>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {POPULAR_DESTINATIONS.map((destination, index) => (
+          {POPULAR_DESTINATIONS.map((destination) => (
             <Link
               key={destination.slug}
               href={`/explore?q=${encodeURIComponent(destination.name)}`}
               className="group overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-foreground/8"
             >
-              <div className={`relative aspect-[4/3] ${TONES[index % TONES.length]}`}>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
-                <p className="absolute bottom-3 left-4 font-heading text-xl text-white">
-                  {destination.name}
-                </p>
+              <div className="relative aspect-[4/3]">
+                <Image
+                  src={destination.imageUrl}
+                  alt={destination.name}
+                  fill
+                  className="object-cover transition duration-500 group-hover:scale-[1.03]"
+                  sizes="(max-width: 768px) 100vw, 25vw"
+                />
               </div>
               <div className="p-4">
                 <p className="text-xs text-muted-foreground">{destination.region}</p>

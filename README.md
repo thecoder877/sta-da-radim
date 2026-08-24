@@ -14,7 +14,7 @@ v0.3 adds community reviews, usernames, place submissions, factual edit suggesti
 - Zod + React Hook Form
 - Deterministic planner (no OpenAI yet)
 - Walking and cycling times use foot/bike routing and a pace model (~4.5 km/h walk, ~14 km/h bike). A car OSRM duration is never shown as walking time.
-- Place photos are real images of that location (OSM/Wikimedia, Google lodging photos, or community uploads). Missing photos stay empty — no stock Unsplash covers. Logged-in users can add a photo on the place page.
+- Place photos prefer a real image of that location (OSM/Wikimedia, Google lodging photos, or community uploads). If none exists, the same category cover from the first public deploy is shown so cards are not empty. Logged-in users can still add a real photo on the place page.
 - Multi-day driving totals follow the visit-to-visit road path. Overnight hotels are local suggestions and do not add extra legs across the country.
 
 ## Run locally

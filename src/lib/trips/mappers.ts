@@ -1,4 +1,4 @@
-import { authenticImageUrl } from "@/lib/places/placeImage";
+import { isDisplayablePlaceImage } from "@/lib/places/placeImage";
 import type { Place } from "@/types/place";
 import type {
   GeneratedTrip,
@@ -100,9 +100,11 @@ function placeFromStop(stop: TripStopRow): Place {
     category: typeof metadata.category === "string" ? metadata.category : "Srbija",
     tags: Array.isArray(metadata.tags) ? metadata.tags.filter((tag): tag is string => typeof tag === "string") : [],
     website: typeof metadata.website === "string" ? metadata.website : undefined,
-    imageUrl: authenticImageUrl({
-      imageUrl: typeof metadata.imageUrl === "string" ? metadata.imageUrl : undefined,
-    }),
+    imageUrl: isDisplayablePlaceImage(
+      typeof metadata.imageUrl === "string" ? metadata.imageUrl : undefined,
+    )
+      ? (metadata.imageUrl as string)
+      : undefined,
     source:
       metadata.source === "osm" ||
       metadata.source === "google" ||

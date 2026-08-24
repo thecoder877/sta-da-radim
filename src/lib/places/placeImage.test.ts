@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { authenticImageUrl, imageFromOsmTags, isAuthenticPlaceImage, withPlaceImage } from "./placeImage.ts";
+import {
+  authenticImageUrl,
+  displayImageUrl,
+  fallbackPlaceImage,
+  imageFromOsmTags,
+  isAuthenticPlaceImage,
+  withPlaceImage,
+} from "./placeImage.ts";
 import type { Place } from "../../types/place.ts";
 
 function place(imageUrl?: string): Place {
@@ -20,7 +27,7 @@ function place(imageUrl?: string): Place {
 }
 
 describe("place images", () => {
-  it("rejects Unsplash stock covers", () => {
+  it("does not treat Unsplash covers as authentic location photos", () => {
     assert.equal(
       isAuthenticPlaceImage("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format"),
       false,
@@ -39,9 +46,19 @@ describe("place images", () => {
     assert.equal(isAuthenticPlaceImage("/api/places/photo?ref=abc"), true);
   });
 
-  it("strips stock URLs from a place", () => {
-    assert.equal(authenticImageUrl(place("https://images.unsplash.com/photo-x")), undefined);
-    assert.equal(withPlaceImage(place("https://images.unsplash.com/photo-x")).imageUrl, undefined);
+  it("fills empty and missing local files with a stable category cover", () => {
+    const cover = fallbackPlaceImage(place());
+    assert.match(cover, /images\.unsplash\.com/);
+    assert.equal(displayImageUrl(place()), cover);
+    assert.equal(displayImageUrl(place("/images/krusedol.jpg")), cover);
+    assert.equal(withPlaceImage(place()).imageUrl, cover);
+    assert.equal(withPlaceImage(place("/images/krusedol.jpg")).imageUrl, cover);
+  });
+
+  it("keeps Unsplash covers for display so cards are not empty", () => {
+    const stock = "https://images.unsplash.com/photo-x";
+    assert.equal(authenticImageUrl(place(stock)), undefined);
+    assert.equal(withPlaceImage(place(stock)).imageUrl, stock);
   });
 
   it("reads an OSM File: tag as Wikimedia", () => {

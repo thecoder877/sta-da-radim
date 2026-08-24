@@ -9,7 +9,7 @@ export function Hero() {
     <section className="relative overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="/images/banjska-stena.jpg"
+          src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80"
           alt="Vidikovac Banjska stena na Tari"
           fill
           priority

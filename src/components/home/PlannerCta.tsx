@@ -9,7 +9,7 @@ export function PlannerCta() {
       <Container>
         <div className="relative overflow-hidden rounded-3xl">
           <Image
-            src="/images/jazak.jpg"
+            src="https://images.unsplash.com/photo-1524492412937-b28074a5d7c7?auto=format&fit=crop&w=1600&q=80"
             alt="Manastir Jazak na Fruškoj gori"
             fill
             className="object-cover"
