@@ -1,6 +1,9 @@
 # Šta da radim?
 
 Travel planner for Serbia. The app helps people decide where to go, what to visit, and how to organize a day trip or multi-day itinerary from a starting city, date, budget, transport, distance, and interests.
+<img width="1894" height="914" alt="image" src="https://github.com/user-attachments/assets/4769de8b-c55a-4bec-8989-4bf5caee8321" />
+<img width="1920" height="1908" alt="image" src="https://github.com/user-attachments/assets/544eab2f-1910-467e-a83f-4f83ab4c78bf" />
+<img width="1920" height="2470" alt="image" src="https://github.com/user-attachments/assets/334b21f4-7831-44b8-8617-85210491f021" />
 
 v0.3 adds community reviews, usernames, place submissions, factual edit suggestions, and admin moderation. The existing planner, maps, OSM/OSRM stack, anonymous generation limit, saved trips, and public sharing are unchanged.
 
