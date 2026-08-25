@@ -50,7 +50,12 @@ function tripRow(overrides: Partial<TripRow> = {}): TripRow {
 }
 
 const days: TripDayRow[] = [
-  { id: "day-1", trip_id: "11111111-1111-4111-8111-111111111111", day_number: 1, date: "2026-09-01" },
+  {
+    id: "day-1",
+    trip_id: "11111111-1111-4111-8111-111111111111",
+    day_number: 1,
+    date: "2026-09-01",
+  },
 ];
 
 const stops: TripStopRow[] = [

@@ -35,7 +35,18 @@ const AMENITY_PATTERNS: { kind: AmenityKind; pattern: RegExp }[] = [
   { kind: "sport", pattern: /\b(sport(ski)?|hala|stadion|teren)\b/ },
 ];
 
-const FILLER = new Set(["u", "na", "kod", "pored", "za", "the", "in", "near", "oko", "i"]);
+const FILLER = new Set([
+  "u",
+  "na",
+  "kod",
+  "pored",
+  "za",
+  "the",
+  "in",
+  "near",
+  "oko",
+  "i",
+]);
 
 export interface ParsedExploreQuery {
   original: string;
@@ -68,12 +79,15 @@ export function parseExploreQuery(raw: string): ParsedExploreQuery {
   return { original, folded, amenity, locationQuery };
 }
 
-export function placeMatchesAmenity(place: {
-  name: string;
-  category: string;
-  tags: string[];
-  shortDescription?: string;
-}, amenity: AmenityKind): boolean {
+export function placeMatchesAmenity(
+  place: {
+    name: string;
+    category: string;
+    tags: string[];
+    shortDescription?: string;
+  },
+  amenity: AmenityKind,
+): boolean {
   const blob = foldSerbian(
     `${place.name} ${place.category} ${place.tags.join(" ")} ${place.shortDescription ?? ""}`,
   );

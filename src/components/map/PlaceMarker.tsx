@@ -1,10 +1,4 @@
-export function PlaceMarker({
-  selected,
-  index,
-}: {
-  selected?: boolean;
-  index?: number;
-}) {
+export function PlaceMarker({ selected, index }: { selected?: boolean; index?: number }) {
   return (
     <div
       className={`flex size-8 items-center justify-center rounded-full border-2 text-xs font-medium shadow ${

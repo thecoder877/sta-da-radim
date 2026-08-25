@@ -9,7 +9,10 @@ import {
   rememberPlaces,
 } from "@/lib/places/placeMemory";
 import { mockPlaceRepository } from "@/lib/providers/places/mockPlaceRepository";
-import { fetchOverpassByOsmId, fetchOverpassPlaces } from "@/lib/providers/places/overpass";
+import {
+  fetchOverpassByOsmId,
+  fetchOverpassPlaces,
+} from "@/lib/providers/places/overpass";
 import type { PlaceRepository } from "@/lib/providers/types";
 import type { Place, PlaceFilters } from "@/types/place";
 
@@ -62,7 +65,10 @@ async function listCatalog(): Promise<Place[]> {
   return merged;
 }
 
-async function lookupRememberedOrOsm(value: string, by: "id" | "slug"): Promise<Place | null> {
+async function lookupRememberedOrOsm(
+  value: string,
+  by: "id" | "slug",
+): Promise<Place | null> {
   const remembered = by === "id" ? recallPlaceById(value) : recallPlaceBySlug(value);
   if (remembered) {
     return remembered;

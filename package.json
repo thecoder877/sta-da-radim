@@ -16,7 +16,11 @@
     "prepare": "husky || true"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "eslint --fix"
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,mjs,mts,md,yml,yaml}": "prettier --write"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

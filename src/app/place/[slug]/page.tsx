@@ -111,8 +111,8 @@ export default async function PlacePage({
             <section className="mt-10 border-t border-border pt-8">
               <h2 className="font-heading text-2xl">Uskoro ovde</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Recenzije, fotografije posetilaca, obližnja mesta i saveti
-                ljudi koji su već bili ovde.
+                Recenzije, fotografije posetilaca, obližnja mesta i saveti ljudi koji su
+                već bili ovde.
               </p>
             </section>
           </div>

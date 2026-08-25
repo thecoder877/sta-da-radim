@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  ANON_QUOTA_COOKIE,
-  encodeQuota,
-} from "@/lib/access/serverGenerationQuota";
+import { ANON_QUOTA_COOKIE, encodeQuota } from "@/lib/access/serverGenerationQuota";
 import { resetRateLimits } from "@/lib/security/rateLimit";
 
 const state = vi.hoisted(() => ({
@@ -35,7 +32,9 @@ const fakeTrip = {
   startDate: "2026-09-01",
   days: 1,
   transport: "car",
-  stops: [{ id: "s1", placeId: "p1", place: {}, arrivalTime: "09:00", durationMinutes: 60 }],
+  stops: [
+    { id: "s1", placeId: "p1", place: {}, arrivalTime: "09:00", durationMinutes: 60 },
+  ],
   daysPlan: [{ dayNumber: 1, date: "2026-09-01", stops: [] }],
   createdAt: "2026-08-24T00:00:00.000Z",
 };

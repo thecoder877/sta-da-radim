@@ -35,7 +35,12 @@ describe("POST /api/routes", () => {
 
   it("returns 400 for out-of-range coordinates", async () => {
     const res = await POST(
-      post({ points: [{ latitude: 999, longitude: 0 }, { latitude: 1, longitude: 1 }] }),
+      post({
+        points: [
+          { latitude: 999, longitude: 0 },
+          { latitude: 1, longitude: 1 },
+        ],
+      }),
     );
     expect(res.status).toBe(400);
     const data = await res.json();

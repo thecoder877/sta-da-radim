@@ -17,12 +17,7 @@ import {
 import { rankPlacesForTrip } from "@/lib/tripPlanner/scoring";
 import { addMinutesToTime } from "@/lib/tripPlanner/time";
 import type { Coordinates, Place } from "@/types/place";
-import type {
-  GeneratedTrip,
-  TripDay,
-  TripRequest,
-  TripStop,
-} from "@/types/trip";
+import type { GeneratedTrip, TripDay, TripRequest, TripStop } from "@/types/trip";
 
 function targetStopCount(request: TripRequest): number {
   const base = request.durationPreset
@@ -33,10 +28,7 @@ function targetStopCount(request: TripRequest): number {
   return request.travelStyle === "relaxed" ? Math.max(MIN_STOPS, target) : target;
 }
 
-function orderByNearestNeighbor(
-  origin: Coordinates,
-  places: Place[],
-): Place[] {
+function orderByNearestNeighbor(origin: Coordinates, places: Place[]): Place[] {
   const remaining = [...places];
   const ordered: Place[] = [];
   let current = origin;
@@ -66,7 +58,9 @@ function orderByNearestNeighbor(
 }
 
 function buildTitle(places: Place[], startLocation: string): string {
-  const regions = [...new Set(places.map((place) => place.city ?? place.region).filter(Boolean))];
+  const regions = [
+    ...new Set(places.map((place) => place.city ?? place.region).filter(Boolean)),
+  ];
   if (regions.length >= 2) {
     return `${regions[0]} & ${regions[1]}`;
   }
@@ -77,9 +71,7 @@ function buildTitle(places: Place[], startLocation: string): string {
 }
 
 function buildReason(place: Place, request: TripRequest): string {
-  const matched = place.tags.filter((tag) =>
-    request.interests.includes(tag),
-  );
+  const matched = place.tags.filter((tag) => request.interests.includes(tag));
   if (place.category === "Hrana") {
     return "Pauza za ručak i lokalnu hranu, da dan ne bude samo u hodu.";
   }
@@ -95,20 +87,13 @@ function buildReason(place: Place, request: TripRequest): string {
   return place.shortDescription;
 }
 
-export function generateMockTrip(
-  request: TripRequest,
-  catalog: Place[],
-): GeneratedTrip {
+export function generateMockTrip(request: TripRequest, catalog: Place[]): GeneratedTrip {
   const origin =
     request.startLocation.coordinates ??
     resolveStartCoordinates(request.startLocation.name) ??
     SERBIA_CENTER;
 
-  const byDistance = filterPlacesByDistance(
-    catalog,
-    origin,
-    request.maxDistanceKm,
-  );
+  const byDistance = filterPlacesByDistance(catalog, origin, request.maxDistanceKm);
   const byBudget = filterPlacesByBudget(
     byDistance,
     request.budget,
@@ -126,15 +111,17 @@ export function generateMockTrip(
     (item) => item.score > 0 || request.interests.length === 0,
   );
 
-  const usable = (ranked.length > 0 ? ranked : rankPlacesForTrip(byDistance, request, origin))
+  const usable = (
+    ranked.length > 0 ? ranked : rankPlacesForTrip(byDistance, request, origin)
+  )
     .map((item) => item.place)
     .filter((place) => place.category !== "Smeštaj");
 
   const count = Math.min(targetStopCount(request), usable.length);
-  const selected = orderByNearestNeighbor(origin, usable.slice(0, Math.max(count, 3))).slice(
-    0,
-    count,
-  );
+  const selected = orderByNearestNeighbor(
+    origin,
+    usable.slice(0, Math.max(count, 3)),
+  ).slice(0, count);
 
   if (selected.length < 2) {
     throw new Error("NOT_ENOUGH_PLACES");
@@ -180,10 +167,8 @@ export function generateMockTrip(
       totalTravel += travel;
 
       const duration =
-        place.estimatedDurationMinutes ??
-        (request.travelStyle === "relaxed" ? 90 : 60);
-      const cost =
-        (place.estimatedCostPerPerson ?? 0) * request.numberOfPeople;
+        place.estimatedDurationMinutes ?? (request.travelStyle === "relaxed" ? 90 : 60);
+      const cost = (place.estimatedCostPerPerson ?? 0) * request.numberOfPeople;
       totalCost += cost;
 
       const stop: TripStop = {

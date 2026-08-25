@@ -2,10 +2,7 @@ import { fetchWithTimeout } from "@/lib/providers/http";
 import type { Coordinates } from "@/types/place";
 import type { RouteGeometry } from "@/lib/providers/types";
 
-const OSRM_URLS = [
-  "https://router.project-osrm.org",
-  "https://routing.openstreetmap.de",
-];
+const OSRM_URLS = ["https://router.project-osrm.org", "https://routing.openstreetmap.de"];
 
 function profilePath(profile: "driving" | "walking" | "cycling"): string {
   if (profile === "walking") {

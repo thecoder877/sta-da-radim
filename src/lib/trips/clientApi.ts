@@ -40,7 +40,10 @@ export async function fetchSharedTrip(slug: string): Promise<GeneratedTrip | nul
   return data.trip ?? null;
 }
 
-export async function updateTripSharing(id: string, isPublic: boolean): Promise<GeneratedTrip> {
+export async function updateTripSharing(
+  id: string,
+  isPublic: boolean,
+): Promise<GeneratedTrip> {
   const response = await fetch(`/api/trips/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },

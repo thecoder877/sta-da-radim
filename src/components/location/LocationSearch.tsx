@@ -63,7 +63,9 @@ export function LocationSearch({
     const timer = window.setTimeout(async () => {
       setSearching(true);
       try {
-        const response = await fetch(`/api/geocode/search?q=${encodeURIComponent(query)}`);
+        const response = await fetch(
+          `/api/geocode/search?q=${encodeURIComponent(query)}`,
+        );
         const data = (await response.json()) as { suggestions?: LocationSuggestion[] };
         setSuggestions(data.suggestions ?? []);
         setActiveIndex(-1);
@@ -95,7 +97,9 @@ export function LocationSearch({
             lng: String(position.coords.longitude),
           });
           const response = await fetch(`/api/geocode/reverse?${params.toString()}`);
-          const data = (await response.json()) as { suggestion?: LocationSuggestion | null };
+          const data = (await response.json()) as {
+            suggestion?: LocationSuggestion | null;
+          };
           const suggestion = data.suggestion;
           skipSearch.current = true;
           if (suggestion) {
@@ -116,7 +120,9 @@ export function LocationSearch({
       },
       () => {
         setDetecting(false);
-        setStatus("Dozvoli lokaciju ili ukucaj mesto — predlozi se pojavljuju dok kucaš.");
+        setStatus(
+          "Dozvoli lokaciju ili ukucaj mesto — predlozi se pojavljuju dok kucaš.",
+        );
       },
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 60_000 },
     );
@@ -211,7 +217,10 @@ export function LocationSearch({
           className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-border bg-card shadow-lg"
         >
           {suggestions.map((suggestion, index) => (
-            <li key={`${suggestion.name}-${suggestion.coordinates.latitude}`} role="presentation">
+            <li
+              key={`${suggestion.name}-${suggestion.coordinates.latitude}`}
+              role="presentation"
+            >
               <button
                 type="button"
                 id={optionId(index)}

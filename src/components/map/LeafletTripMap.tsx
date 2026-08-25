@@ -80,11 +80,14 @@ export function LeafletTripMap({
         attributionControl: true,
       }).setView([center.latitude, center.longitude], 8);
 
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap &copy; CARTO",
-        subdomains: "abcd",
-        maxZoom: 19,
-      }).addTo(map);
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+        {
+          attribution: "&copy; OpenStreetMap &copy; CARTO",
+          subdomains: "abcd",
+          maxZoom: 19,
+        },
+      ).addTo(map);
 
       layerRef.current = L.layerGroup().addTo(map);
       mapRef.current = map;
@@ -133,15 +136,18 @@ export function LeafletTripMap({
         if (point.kind === "stop" || !point.kind) {
           stopNumber += 1;
         }
-        const marker = L.marker([point.coordinates.latitude, point.coordinates.longitude], {
-          icon: L.divIcon({
-            className: "trip-leaflet-marker",
-            html: markerHtml(point, stopNumber, point.id === selectedId),
-            iconSize: [30, 30],
-            iconAnchor: [15, 15],
-          }),
-          title: point.name,
-        });
+        const marker = L.marker(
+          [point.coordinates.latitude, point.coordinates.longitude],
+          {
+            icon: L.divIcon({
+              className: "trip-leaflet-marker",
+              html: markerHtml(point, stopNumber, point.id === selectedId),
+              iconSize: [30, 30],
+              iconAnchor: [15, 15],
+            }),
+            title: point.name,
+          },
+        );
         marker.on("click", () => onSelectRef.current?.(point.id));
         marker.bindPopup(
           `<strong>${point.name}</strong>${point.description ? `<div>${point.description}</div>` : ""}`,
@@ -150,10 +156,16 @@ export function LeafletTripMap({
       });
 
       if (points.length === 1) {
-        map.setView([points[0].coordinates.latitude, points[0].coordinates.longitude], 11);
+        map.setView(
+          [points[0].coordinates.latitude, points[0].coordinates.longitude],
+          11,
+        );
       } else if (points.length > 1) {
         const bounds = L.latLngBounds(
-          points.map((point) => [point.coordinates.latitude, point.coordinates.longitude]),
+          points.map((point) => [
+            point.coordinates.latitude,
+            point.coordinates.longitude,
+          ]),
         );
         map.fitBounds(bounds, { padding: [56, 56], maxZoom: 12 });
       }

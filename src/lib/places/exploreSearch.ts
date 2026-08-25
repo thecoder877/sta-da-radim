@@ -74,7 +74,10 @@ interface ResolvedLocation {
 }
 
 function matchesSideFilters(place: Place, filters: PlaceFilters): boolean {
-  if (filters.category && place.category.toLowerCase() !== filters.category.toLowerCase()) {
+  if (
+    filters.category &&
+    place.category.toLowerCase() !== filters.category.toLowerCase()
+  ) {
     return false;
   }
   if (filters.region && place.region !== filters.region) {
@@ -134,11 +137,12 @@ function isExploreNearDuplicate(candidate: Place, existing: Place): boolean {
     { latitude: candidate.latitude, longitude: candidate.longitude },
     { latitude: existing.latitude, longitude: existing.longitude },
   );
-  return distance < 0.25 && (
-    candidate.slug.startsWith(existing.slug) ||
-    existing.slug.startsWith(candidate.slug) ||
-    foldSerbian(candidate.name).includes(foldSerbian(existing.name)) ||
-    foldSerbian(existing.name).includes(foldSerbian(candidate.name))
+  return (
+    distance < 0.25 &&
+    (candidate.slug.startsWith(existing.slug) ||
+      existing.slug.startsWith(candidate.slug) ||
+      foldSerbian(candidate.name).includes(foldSerbian(existing.name)) ||
+      foldSerbian(existing.name).includes(foldSerbian(candidate.name)))
   );
 }
 
@@ -216,7 +220,11 @@ function nominatimToPlace(item: NominatimSearchItem): Place | null {
   return {
     id: `osm-${item.osm_type}-${item.osm_id}`,
     name,
-    slug: `${foldSerbian(name).replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "mesto"}-${item.osm_id}`,
+    slug: `${
+      foldSerbian(name)
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "") || "mesto"
+    }-${item.osm_id}`,
     shortDescription: `${name} — ${[city, address.county].filter(Boolean).join(", ") || "lokacija u Srbiji"}.`,
     latitude: Number(item.lat),
     longitude: Number(item.lon),
@@ -256,18 +264,15 @@ function nearbyFromCatalog(
   };
 }
 
-function scorePlace(
-  place: Place,
-  query: string,
-  center?: Coordinates,
-): number {
+function scorePlace(place: Place, query: string, center?: Coordinates): number {
   const foldedQuery = foldSerbian(query);
   const name = foldSerbian(place.name);
   let score = place.source === "internal" ? 24 : 0;
   if (place.verified) {
     score += 4;
   }
-  const genericName = name === "bazen" || name === "restoran" || name === "kafic" || name === "park";
+  const genericName =
+    name === "bazen" || name === "restoran" || name === "kafic" || name === "park";
   if (name === foldedQuery) {
     score += genericName ? 4 : 80;
   } else if (name.includes(foldedQuery) && foldedQuery.length > 2) {
@@ -322,9 +327,11 @@ async function resolveLocation(
   try {
     const hits = await searchNominatimDetailed(nominatimQuery, 8);
     const settlement = hits.find(isNominatimSettlement);
-    const venues = hits.map(nominatimToPlace).filter((place): place is Place => place !== null);
+    const venues = hits
+      .map(nominatimToPlace)
+      .filter((place): place is Place => place !== null);
     return {
-      location: settlement ? locationFromNominatim(settlement) : local ?? undefined,
+      location: settlement ? locationFromNominatim(settlement) : (local ?? undefined),
       venues,
     };
   } catch {
@@ -347,8 +354,15 @@ export async function searchExplorePlaces(
   const { location, venues } = await resolveLocation(parsed);
 
   const textMatches = catalog.filter((place) => {
-    if (!textBlob(place).includes(parsed.folded) && !textBlob(place).includes(foldSerbian(parsed.locationQuery || query))) {
-      if (parsed.amenity && placeMatchesAmenity(place, parsed.amenity) && !parsed.locationQuery) {
+    if (
+      !textBlob(place).includes(parsed.folded) &&
+      !textBlob(place).includes(foldSerbian(parsed.locationQuery || query))
+    ) {
+      if (
+        parsed.amenity &&
+        placeMatchesAmenity(place, parsed.amenity) &&
+        !parsed.locationQuery
+      ) {
         return matchesSideFilters(place, filters);
       }
       return false;
@@ -368,7 +382,9 @@ export async function searchExplorePlaces(
   try {
     if (location && shouldFetchLive) {
       const radiusMeters = Math.round(
-        (parsed.amenity === "pool" ? Math.max(location.radiusKm, 12) : location.radiusKm) * 1000,
+        (parsed.amenity === "pool"
+          ? Math.max(location.radiusKm, 12)
+          : location.radiusKm) * 1000,
       );
       live = await withTimeout(
         searchOverpassAround({

@@ -37,10 +37,7 @@ export function filterPlacesByBudget(
   });
 }
 
-export function filterPlacesByInterests(
-  places: Place[],
-  interests: string[],
-): Place[] {
+export function filterPlacesByInterests(places: Place[], interests: string[]): Place[] {
   if (interests.length === 0) {
     return places;
   }

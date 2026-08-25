@@ -13,10 +13,7 @@ function toRadians(degrees: number): number {
  * This is not driving distance. Later routing APIs should replace it
  * when a real travel path is needed.
  */
-export function calculateDistanceKm(
-  pointA: Coordinates,
-  pointB: Coordinates,
-): number {
+export function calculateDistanceKm(pointA: Coordinates, pointB: Coordinates): number {
   const lat1 = toRadians(pointA.latitude);
   const lat2 = toRadians(pointB.latitude);
   const deltaLat = toRadians(pointB.latitude - pointA.latitude);
@@ -38,9 +35,6 @@ export function estimateTravelMinutes(
   return Math.round((distanceKm / kmPerHour) * 60);
 }
 
-export function toCoordinates(
-  latitude: number,
-  longitude: number,
-): Coordinates {
+export function toCoordinates(latitude: number, longitude: number): Coordinates {
   return { latitude, longitude };
 }

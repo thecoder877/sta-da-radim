@@ -65,11 +65,17 @@ export function AuthForm({
         },
       });
       if (signUpError) {
-        setError(signUpError.message.includes("already") ? "Ovaj email je već registrovan." : "Nalog nije napravljen. Pokušaj ponovo.");
+        setError(
+          signUpError.message.includes("already")
+            ? "Ovaj email je već registrovan."
+            : "Nalog nije napravljen. Pokušaj ponovo.",
+        );
         return;
       }
       if (!data.session) {
-        setInfo("Nalog je uspešno napravljen. Proveri email da potvrdiš adresu, pa se prijavi.");
+        setInfo(
+          "Nalog je uspešno napravljen. Proveri email da potvrdiš adresu, pa se prijavi.",
+        );
         return;
       }
       setInfo("Nalog je uspešno napravljen.");

@@ -156,7 +156,9 @@ export async function reverseGeocode(
     zoom: "12",
   });
 
-  const data = (await nominatimGet(`/reverse?${params.toString()}`)) as NominatimSearchItem;
+  const data = (await nominatimGet(
+    `/reverse?${params.toString()}`,
+  )) as NominatimSearchItem;
   if (!data?.lat) {
     return null;
   }

@@ -18,7 +18,11 @@ import {
   saveTripToAccount,
   updateTripSharing,
 } from "@/lib/trips/clientApi";
-import { persistGeneratedTrip, persistLastTripRequest, readLastTripRequest } from "@/lib/trips/storage";
+import {
+  persistGeneratedTrip,
+  persistLastTripRequest,
+  readLastTripRequest,
+} from "@/lib/trips/storage";
 import type { GeneratedTrip } from "@/types/trip";
 import { Button } from "@/components/ui/button";
 import {
@@ -152,7 +156,11 @@ export function TripActions({
       ) : null}
       {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
       <div className="flex flex-wrap gap-2">
-        <Button variant="outline" onClick={() => void saveTrip()} disabled={busy || persisted}>
+        <Button
+          variant="outline"
+          onClick={() => void saveTrip()}
+          disabled={busy || persisted}
+        >
           <Bookmark data-icon="inline-start" />
           {persisted ? "Sačuvano" : "Sačuvaj"}
         </Button>
@@ -168,7 +176,11 @@ export function TripActions({
           </Button>
         )}
         {owner && persisted ? (
-          <Button variant="destructive" onClick={() => setConfirmDelete(true)} disabled={busy}>
+          <Button
+            variant="destructive"
+            onClick={() => setConfirmDelete(true)}
+            disabled={busy}
+          >
             <Trash2 data-icon="inline-start" />
             Obriši
           </Button>
@@ -192,7 +204,11 @@ export function TripActions({
             <Button variant="outline" onClick={() => setConfirmDelete(false)}>
               Odustani
             </Button>
-            <Button variant="destructive" onClick={() => void removeTrip()} disabled={busy}>
+            <Button
+              variant="destructive"
+              onClick={() => void removeTrip()}
+              disabled={busy}
+            >
               Obriši
             </Button>
           </DialogFooter>

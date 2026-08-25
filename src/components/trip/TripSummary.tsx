@@ -15,7 +15,9 @@ export function TripSummary({ trip }: { trip: GeneratedTrip }) {
       icon: Clock,
     },
     {
-      label: trip.totalDistanceKm ? `~${formatDistance(trip.totalDistanceKm)}` : "Udaljenost uskoro",
+      label: trip.totalDistanceKm
+        ? `~${formatDistance(trip.totalDistanceKm)}`
+        : "Udaljenost uskoro",
       icon: Route,
     },
     {

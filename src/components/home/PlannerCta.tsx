@@ -19,14 +19,10 @@ export function PlannerCta() {
           <div className="relative px-6 py-16 text-center text-white sm:px-12">
             <h2 className="font-heading text-3xl sm:text-4xl">Nemaš ideju za vikend?</h2>
             <p className="mx-auto mt-3 max-w-xl text-white/80">
-              Reci odakle krećeš i šta voliš. Mi ćemo složiti plan od stvarnih mesta,
-              ne od izmišljenih tačaka na mapi.
+              Reci odakle krećeš i šta voliš. Mi ćemo složiti plan od stvarnih mesta, ne
+              od izmišljenih tačaka na mapi.
             </p>
-            <Button
-              size="lg"
-              className="mt-6 h-11 px-5"
-              render={<Link href="/plan" />}
-            >
+            <Button size="lg" className="mt-6 h-11 px-5" render={<Link href="/plan" />}>
               Planiraj putovanje
             </Button>
           </div>

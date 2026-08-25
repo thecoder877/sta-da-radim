@@ -79,10 +79,15 @@ export function getGenerationAccess(
   return { allowed: false, reason: "AUTH_REQUIRED" };
 }
 
-export function tripSuccessfullyGenerated(trip: {
-  id?: string;
-  daysPlan?: unknown[];
-  stops?: unknown[];
-} | null | undefined): boolean {
+export function tripSuccessfullyGenerated(
+  trip:
+    | {
+        id?: string;
+        daysPlan?: unknown[];
+        stops?: unknown[];
+      }
+    | null
+    | undefined,
+): boolean {
   return Boolean(trip?.id && trip.daysPlan && trip.daysPlan.length > 0 && trip.stops);
 }

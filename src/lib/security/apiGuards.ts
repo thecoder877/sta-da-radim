@@ -1,9 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  getClientIp,
-  rateLimit,
-  type RateLimitOptions,
-} from "@/lib/security/rateLimit";
+import { getClientIp, rateLimit, type RateLimitOptions } from "@/lib/security/rateLimit";
 
 /**
  * Enforce an IP-based rate limit for a public API route. Returns a 429

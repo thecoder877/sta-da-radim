@@ -59,7 +59,8 @@ export async function getGoogleRoute(
   const origin = points[0];
   const destination = points[points.length - 1];
   const waypoints = points.slice(1, -1).slice(0, 23);
-  const mode = profile === "walking" ? "walking" : profile === "cycling" ? "bicycling" : "driving";
+  const mode =
+    profile === "walking" ? "walking" : profile === "cycling" ? "bicycling" : "driving";
   const params = new URLSearchParams({
     origin: toLatLng(origin),
     destination: toLatLng(destination),

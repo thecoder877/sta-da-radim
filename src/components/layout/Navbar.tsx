@@ -7,11 +7,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Sheet,
   SheetContent,
@@ -64,7 +60,9 @@ export function Navbar() {
                 <span className="max-w-36 truncate">{user.email}</span>
               </PopoverTrigger>
               <PopoverContent align="end" className="w-56">
-                <p className="truncate px-2 text-sm text-muted-foreground">{user.email}</p>
+                <p className="truncate px-2 text-sm text-muted-foreground">
+                  {user.email}
+                </p>
                 <Button
                   variant="ghost"
                   className="w-full justify-start"
@@ -128,7 +126,10 @@ export function Navbar() {
                   </button>
                 </>
               ) : (
-                <Link href="/login" className="rounded-lg px-3 py-2 text-sm hover:bg-muted">
+                <Link
+                  href="/login"
+                  className="rounded-lg px-3 py-2 text-sm hover:bg-muted"
+                >
                   Prijavi se
                 </Link>
               )}

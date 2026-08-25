@@ -39,7 +39,8 @@ const COPY: Record<AuthModalReason, { title: string; description: string }> = {
   },
   save_trip: {
     title: "Sačuvaj svoj plan",
-    description: "Prijavi se ili napravi nalog da sačuvaš putovanje i pristupiš mu kasnije.",
+    description:
+      "Prijavi se ili napravi nalog da sačuvaš putovanje i pristupiš mu kasnije.",
   },
   protected_action: {
     title: "Želiš još planova?",
@@ -66,7 +67,9 @@ export function AuthModalProvider({ children }: { children: React.ReactNode }) {
         setPendingProtectedAction(options.pendingAction);
       }
       setReason(options.reason);
-      setMode(options.initialMode ?? (options.reason === "save_trip" ? "login" : "register"));
+      setMode(
+        options.initialMode ?? (options.reason === "save_trip" ? "login" : "register"),
+      );
       setOpen(true);
     },
     [],
@@ -124,7 +127,13 @@ export function AuthModalProvider({ children }: { children: React.ReactNode }) {
               await resumePending();
             }}
           />
-          <Button type="button" variant="ghost" className="w-full" onClick={() => setOpen(false)} disabled={busy}>
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full"
+            onClick={() => setOpen(false)}
+            disabled={busy}
+          >
             Možda kasnije
           </Button>
         </DialogContent>

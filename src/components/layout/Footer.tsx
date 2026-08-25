@@ -9,8 +9,8 @@ export function Footer() {
         <div className="max-w-sm">
           <p className="font-heading text-lg">{APP_NAME}</p>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            AI planer izleta i putovanja po Srbiji. Biramo mesta iz sopstvene
-            baze, ne iz nasumične mape.
+            AI planer izleta i putovanja po Srbiji. Biramo mesta iz sopstvene baze, ne iz
+            nasumične mape.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-8 text-sm">
@@ -22,7 +22,10 @@ export function Footer() {
             <Link href="/plan" className="text-muted-foreground hover:text-foreground">
               Planer
             </Link>
-            <Link href="/trip/demo" className="text-muted-foreground hover:text-foreground">
+            <Link
+              href="/trip/demo"
+              className="text-muted-foreground hover:text-foreground"
+            >
               Primer putovanja
             </Link>
           </div>
@@ -31,7 +34,10 @@ export function Footer() {
             <Link href="/login" className="text-muted-foreground hover:text-foreground">
               Prijava
             </Link>
-            <Link href="/register" className="text-muted-foreground hover:text-foreground">
+            <Link
+              href="/register"
+              className="text-muted-foreground hover:text-foreground"
+            >
               Registracija
             </Link>
             <Link href="/saved" className="text-muted-foreground hover:text-foreground">

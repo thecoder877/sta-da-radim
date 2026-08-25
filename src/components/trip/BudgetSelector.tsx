@@ -48,7 +48,9 @@ export function BudgetSelector({
             className="h-10 max-w-xs"
             aria-label="Budžet u dinarima"
           />
-          <p className="mt-1 text-xs text-muted-foreground">Iznos u RSD, za celu grupu.</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Iznos u RSD, za celu grupu.
+          </p>
         </div>
       ) : null}
     </div>

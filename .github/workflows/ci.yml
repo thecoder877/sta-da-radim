@@ -22,6 +22,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Format check
+        run: npm run format:check
+
       - name: Typecheck
         run: npm run typecheck
 
@@ -49,4 +52,3 @@ jobs:
 
       - name: Run end-to-end smoke test
         run: npm run test:e2e
-

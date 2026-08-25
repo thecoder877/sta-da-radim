@@ -12,9 +12,12 @@ vi.mock("@/lib/providers/geocoding/nominatim", () => ({ searchLocations }));
 import { GET } from "./route";
 
 function get(query: string, ip = "1.1.1.1"): Request {
-  return new Request(`http://localhost/api/geocode/search?q=${encodeURIComponent(query)}`, {
-    headers: { "x-forwarded-for": ip },
-  });
+  return new Request(
+    `http://localhost/api/geocode/search?q=${encodeURIComponent(query)}`,
+    {
+      headers: { "x-forwarded-for": ip },
+    },
+  );
 }
 
 describe("GET /api/geocode/search", () => {

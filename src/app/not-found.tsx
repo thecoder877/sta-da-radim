@@ -8,8 +8,8 @@ export default function NotFound() {
       <p className="text-sm text-primary">404</p>
       <h1 className="mt-2 font-heading text-4xl">Ova stranica ne postoji</h1>
       <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-        Možda je putovanje obrisano, ili je adresa pogrešna. Vrati se na početnu
-        ili napravi novi plan.
+        Možda je putovanje obrisano, ili je adresa pogrešna. Vrati se na početnu ili
+        napravi novi plan.
       </p>
       <div className="mt-6 flex justify-center gap-2">
         <Button render={<Link href="/" />}>Početna</Button>

@@ -34,10 +34,13 @@ describe("generation access", () => {
       allowed: false,
       reason: "AUTH_REQUIRED",
     });
-    assert.equal(store.getItem(ANONYMOUS_GENERATION_KEY), JSON.stringify({
-      used: true,
-      usedAt: "2026-08-24T00:00:00.000Z",
-    }));
+    assert.equal(
+      store.getItem(ANONYMOUS_GENERATION_KEY),
+      JSON.stringify({
+        used: true,
+        usedAt: "2026-08-24T00:00:00.000Z",
+      }),
+    );
   });
 
   it("ignores the anonymous flag for authenticated users", () => {

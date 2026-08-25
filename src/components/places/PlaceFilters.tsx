@@ -6,13 +6,7 @@ import { MOCK_REGIONS } from "@/data/mockPlaces";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const CATEGORY_FILTERS = [
-  "Priroda",
-  "Istorija",
-  "Hrana",
-  "Avantura",
-  "Wellness",
-];
+const CATEGORY_FILTERS = ["Priroda", "Istorija", "Hrana", "Avantura", "Wellness"];
 
 export function PlaceFilters() {
   const router = useRouter();

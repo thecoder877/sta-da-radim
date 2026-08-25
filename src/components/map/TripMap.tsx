@@ -14,7 +14,10 @@ function downsampleRoute(points: Coordinates[], maxPoints = 240): Coordinates[] 
     return points;
   }
   const step = (points.length - 1) / (maxPoints - 1);
-  return Array.from({ length: maxPoints }, (_, index) => points[Math.round(index * step)]);
+  return Array.from(
+    { length: maxPoints },
+    (_, index) => points[Math.round(index * step)],
+  );
 }
 
 interface TripMapProps {

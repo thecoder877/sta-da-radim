@@ -47,7 +47,10 @@ describe("generateMockTrip", () => {
       place("n2", "Priroda", ["priroda"], 6),
       place("n3", "Priroda", ["priroda"], 7),
     ];
-    const trip = generateMockTrip(request({ interests: ["istorija", "muzeji"] }), catalog);
+    const trip = generateMockTrip(
+      request({ interests: ["istorija", "muzeji"] }),
+      catalog,
+    );
     const categories = new Set(trip.stops.map((stop) => stop.place.category));
     expect(categories.has("Priroda")).toBe(false);
     expect(categories.has("Istorija")).toBe(true);

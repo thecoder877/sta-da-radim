@@ -5,8 +5,7 @@ const PENDING_ACTION_KEY = "stadardim_pending_action";
 export type AuthModalReason = "generation_limit" | "save_trip" | "protected_action";
 
 export type PendingProtectedAction =
-  | { type: "generate"; request: TripRequest }
-  | { type: "save_trip"; trip: GeneratedTrip };
+  { type: "generate"; request: TripRequest } | { type: "save_trip"; trip: GeneratedTrip };
 
 export function setPendingProtectedAction(action: PendingProtectedAction): void {
   if (typeof window === "undefined") {

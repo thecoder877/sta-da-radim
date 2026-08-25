@@ -28,8 +28,8 @@ export function Hero() {
             Šta da radim?
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-8 text-white/85">
-            Otkrij Srbiju uz AI planer koji ti pravi putovanje prema vremenu,
-            budžetu i interesovanjima.
+            Otkrij Srbiju uz AI planer koji ti pravi putovanje prema vremenu, budžetu i
+            interesovanjima.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button size="lg" className="h-11 px-5" render={<Link href="/plan" />}>

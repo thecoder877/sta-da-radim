@@ -12,8 +12,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Istraži Srbiju",
-  description:
-    "Pregledaj jezera, tvrđave, manastire i skrivena mesta širom Srbije.",
+  description: "Pregledaj jezera, tvrđave, manastire i skrivena mesta širom Srbije.",
 };
 
 export default async function ExplorePage({
@@ -80,9 +79,8 @@ export default async function ExplorePage({
       <p className="text-sm text-primary">Istraži Srbiju</p>
       <h1 className="mt-1 font-heading text-4xl">Mesta vredna puta</h1>
       <p className="mt-3 max-w-2xl text-muted-foreground">
-        Pretraži kao na mapi: ukucaj grad (Ruma, Beograd), vrstu mesta
-        (bazen, manastir, jezero) ili tačan naziv. Rezultati dolaze iz naše
-        baze i otvorene mape Srbije.
+        Pretraži kao na mapi: ukucaj grad (Ruma, Beograd), vrstu mesta (bazen, manastir,
+        jezero) ili tačan naziv. Rezultati dolaze iz naše baze i otvorene mape Srbije.
       </p>
       <div className="mt-8 grid gap-6 lg:grid-cols-[280px_1fr]">
         <Suspense fallback={<LoadingState message="Učitavamo filtere..." />}>
@@ -99,7 +97,10 @@ export default async function ExplorePage({
             emptyDescription="Probaj grad (Ruma, Beograd), vrstu mesta (bazen, manastir, jezero) ili tačan naziv."
           />
           {totalPages > 1 ? (
-            <nav className="mt-8 flex items-center justify-between gap-3 text-sm" aria-label="Stranice">
+            <nav
+              className="mt-8 flex items-center justify-between gap-3 text-sm"
+              aria-label="Stranice"
+            >
               {currentPage > 1 ? (
                 <Link href={pageHref(currentPage - 1)} className="hover:underline">
                   Prethodna

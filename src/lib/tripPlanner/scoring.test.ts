@@ -53,8 +53,19 @@ describe("calculatePlaceScore", () => {
 
 describe("rankPlacesForTrip", () => {
   it("orders by descending score", () => {
-    const good = place({ id: "good", category: "Istorija", tags: ["istorija"], verified: true });
-    const weak = place({ id: "weak", category: "Priroda", tags: [], latitude: 45.9, longitude: 19.1 });
+    const good = place({
+      id: "good",
+      category: "Istorija",
+      tags: ["istorija"],
+      verified: true,
+    });
+    const weak = place({
+      id: "weak",
+      category: "Priroda",
+      tags: [],
+      latitude: 45.9,
+      longitude: 19.1,
+    });
     const ranked = rankPlacesForTrip([weak, good], request(), origin);
     expect(ranked[0].place.id).toBe("good");
   });

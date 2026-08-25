@@ -20,7 +20,9 @@ export function validateServerEnv(): void {
   const parsed = serverEnvSchema.safeParse(process.env);
   if (!parsed.success) {
     for (const issue of parsed.error.issues) {
-      logger.warn(`Invalid environment variable: ${issue.path.join(".")} — ${issue.message}`);
+      logger.warn(
+        `Invalid environment variable: ${issue.path.join(".")} — ${issue.message}`,
+      );
     }
     return;
   }

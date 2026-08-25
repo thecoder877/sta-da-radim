@@ -6,11 +6,7 @@ export const metadata: Metadata = {
   description: "Pregled itinerera, mape i procene troškova za izlet po Srbiji.",
 };
 
-export default async function TripPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function TripPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   return <TripPageClient id={id} />;
 }

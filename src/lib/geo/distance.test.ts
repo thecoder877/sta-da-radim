@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  calculateDistanceKm,
-  estimateTravelMinutes,
-  toCoordinates,
-} from "./distance";
+import { calculateDistanceKm, estimateTravelMinutes, toCoordinates } from "./distance";
 
 describe("calculateDistanceKm", () => {
   it("is zero for identical points", () => {

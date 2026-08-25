@@ -64,7 +64,9 @@ export async function findLodgingNearby(
       }) <= 40,
   );
 
-  const fallback = sortByDistance(origin, MOCK_LODGING).find((place) => !usedIds.has(place.id));
+  const fallback = sortByDistance(origin, MOCK_LODGING).find(
+    (place) => !usedIds.has(place.id),
+  );
   const chosen = ranked[0] ?? fallback ?? null;
   if (chosen) {
     rememberPlaces([chosen]);

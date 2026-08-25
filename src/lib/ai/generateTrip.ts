@@ -11,9 +11,7 @@ import type { GeneratedTrip, TripRequest } from "@/types/trip";
  * Phase 3 will send ranked candidates to OpenAI and validate that every
  * returned placeId exists in the candidate set. The AI must never invent places.
  */
-export async function generateTrip(
-  input: TripRequest,
-): Promise<GeneratedTrip> {
+export async function generateTrip(input: TripRequest): Promise<GeneratedTrip> {
   const request = tripRequestSchema.parse(input);
 
   if (!request.startLocation.coordinates) {
@@ -24,10 +22,11 @@ export async function generateTrip(
 
   const places = await getPlaceRepository().listPlaces();
   const trip = generateMockTrip(request, places);
-  const origin =
-    request.startLocation.coordinates ??
-    resolveStartCoordinates(request.startLocation.name) ??
-    { latitude: 44.2, longitude: 20.8 };
+  const origin = request.startLocation.coordinates ??
+    resolveStartCoordinates(request.startLocation.name) ?? {
+      latitude: 44.2,
+      longitude: 20.8,
+    };
 
   await insertLodgingStops(trip, request);
   await attachTripRoute(trip, origin, request.transport);
