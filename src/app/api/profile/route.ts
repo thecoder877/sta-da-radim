@@ -19,7 +19,10 @@ export async function PATCH(request: Request) {
     const body: unknown = await request.json();
     const parsed = profileUpdateSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: "Neispravan profil.", code: "INVALID_REQUEST" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Neispravan profil.", code: "INVALID_REQUEST" },
+        { status: 400 },
+      );
     }
     const profile = await updateOwnProfile(supabase, user.id, parsed.data);
     return NextResponse.json({ profile });

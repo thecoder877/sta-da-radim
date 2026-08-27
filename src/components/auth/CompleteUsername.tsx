@@ -38,10 +38,15 @@ export function CompleteUsername() {
 
   return (
     <div className="border-b border-border bg-card px-4 py-4">
-      <form onSubmit={onSubmit} className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-end">
+      <form
+        onSubmit={onSubmit}
+        className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-end"
+      >
         <div className="flex-1">
           <p className="font-heading text-lg">Još samo jedan korak</p>
-          <p className="text-sm text-muted-foreground">Odaberi korisničko ime. Email ostaje privatan.</p>
+          <p className="text-sm text-muted-foreground">
+            Odaberi korisničko ime. Email ostaje privatan.
+          </p>
           <Label htmlFor="complete-username" className="sr-only">
             Korisničko ime
           </Label>

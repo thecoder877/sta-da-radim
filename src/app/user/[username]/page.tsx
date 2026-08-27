@@ -40,14 +40,22 @@ export default async function UserProfilePage({
     .eq("status", "published");
   const reviewIds = (ownReviews ?? []).map((row) => row.id as string);
   const { count: helpful } = reviewIds.length
-    ? await supabase.from("review_votes").select("id", { count: "exact", head: true }).eq("vote", 1).in("review_id", reviewIds)
+    ? await supabase
+        .from("review_votes")
+        .select("id", { count: "exact", head: true })
+        .eq("vote", 1)
+        .in("review_id", reviewIds)
     : { count: 0 };
 
   return (
     <Container className="max-w-2xl py-12">
       {profile.avatarUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={profile.avatarUrl} alt="" className="mb-4 size-20 rounded-full object-cover" />
+        <img
+          src={profile.avatarUrl}
+          alt=""
+          className="mb-4 size-20 rounded-full object-cover"
+        />
       ) : null}
       <h1 className="font-heading text-4xl">{profile.displayName || profile.username}</h1>
       <p className="mt-2 text-muted-foreground">@{profile.username}</p>

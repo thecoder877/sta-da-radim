@@ -26,9 +26,7 @@ export function drivingWaypoints(
 ): Coordinates[] {
   const points: Coordinates[] = [origin];
   const ordered =
-    trip.daysPlan.length > 0
-      ? trip.daysPlan.flatMap((day) => day.stops)
-      : trip.stops;
+    trip.daysPlan.length > 0 ? trip.daysPlan.flatMap((day) => day.stops) : trip.stops;
 
   for (const stop of ordered) {
     if (stop.kind === "lodging") {

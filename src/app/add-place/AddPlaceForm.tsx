@@ -123,28 +123,53 @@ export function AddPlaceForm() {
     <form onSubmit={onSubmit} className="space-y-5">
       <div className="space-y-1.5">
         <Label htmlFor="place-name">Naziv *</Label>
-        <Input id="place-name" value={name} onChange={(event) => setName(event.target.value)} required />
+        <Input
+          id="place-name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          required
+        />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="place-short">Kratak opis *</Label>
-        <Textarea id="place-short" value={shortDescription} onChange={(event) => setShortDescription(event.target.value)} required minLength={10} />
+        <Textarea
+          id="place-short"
+          value={shortDescription}
+          onChange={(event) => setShortDescription(event.target.value)}
+          required
+          minLength={10}
+        />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="place-desc">Opis</Label>
-        <Textarea id="place-desc" value={description} onChange={(event) => setDescription(event.target.value)} />
+        <Textarea
+          id="place-desc"
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+        />
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label>Kategorija *</Label>
-          <select className="h-10 w-full rounded-lg border border-input bg-background px-2 text-sm" value={category} onChange={(event) => setCategory(event.target.value)}>
+          <select
+            className="h-10 w-full rounded-lg border border-input bg-background px-2 text-sm"
+            value={category}
+            onChange={(event) => setCategory(event.target.value)}
+          >
             {CATEGORIES.map((item) => (
-              <option key={item.id} value={item.id}>{item.label}</option>
+              <option key={item.id} value={item.id}>
+                {item.label}
+              </option>
             ))}
           </select>
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="place-city">Grad</Label>
-          <Input id="place-city" value={city} onChange={(event) => setCity(event.target.value)} />
+          <Input
+            id="place-city"
+            value={city}
+            onChange={(event) => setCity(event.target.value)}
+          />
         </div>
       </div>
       <div>
@@ -182,59 +207,115 @@ export function AddPlaceForm() {
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <div className="space-y-1.5 sm:col-span-2">
             <Label htmlFor="place-address">Adresa</Label>
-            <Input id="place-address" value={address} onChange={(event) => setAddress(event.target.value)} />
+            <Input
+              id="place-address"
+              value={address}
+              onChange={(event) => setAddress(event.target.value)}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="place-hours">Radno vreme</Label>
-            <Input id="place-hours" value={openingHours} onChange={(event) => setOpeningHours(event.target.value)} />
+            <Input
+              id="place-hours"
+              value={openingHours}
+              onChange={(event) => setOpeningHours(event.target.value)}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="place-phone">Telefon</Label>
-            <Input id="place-phone" value={phone} onChange={(event) => setPhone(event.target.value)} />
+            <Input
+              id="place-phone"
+              value={phone}
+              onChange={(event) => setPhone(event.target.value)}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="place-web">Website</Label>
-            <Input id="place-web" value={website} onChange={(event) => setWebsite(event.target.value)} />
+            <Input
+              id="place-web"
+              value={website}
+              onChange={(event) => setWebsite(event.target.value)}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="place-ig">Instagram</Label>
-            <Input id="place-ig" value={instagram} onChange={(event) => setInstagram(event.target.value)} />
+            <Input
+              id="place-ig"
+              value={instagram}
+              onChange={(event) => setInstagram(event.target.value)}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="place-fb">Facebook</Label>
-            <Input id="place-fb" value={facebook} onChange={(event) => setFacebook(event.target.value)} />
+            <Input
+              id="place-fb"
+              value={facebook}
+              onChange={(event) => setFacebook(event.target.value)}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="place-price">Cena</Label>
-            <Input id="place-price" value={priceInfo} onChange={(event) => setPriceInfo(event.target.value)} />
+            <Input
+              id="place-price"
+              value={priceInfo}
+              onChange={(event) => setPriceInfo(event.target.value)}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="place-parking">Parking</Label>
-            <Input id="place-parking" value={parkingInfo} onChange={(event) => setParkingInfo(event.target.value)} />
+            <Input
+              id="place-parking"
+              value={parkingInfo}
+              onChange={(event) => setParkingInfo(event.target.value)}
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="place-duration">Trajanje posete (min)</Label>
-            <Input id="place-duration" type="number" min={1} value={duration} onChange={(event) => setDuration(event.target.value)} />
+            <Input
+              id="place-duration"
+              type="number"
+              min={1}
+              value={duration}
+              onChange={(event) => setDuration(event.target.value)}
+            />
           </div>
         </div>
         <div className="mt-3 flex flex-wrap gap-3 text-sm">
           <label className="flex items-center gap-2">
-            <input type="checkbox" checked={familyFriendly} onChange={(event) => setFamilyFriendly(event.target.checked)} />
+            <input
+              type="checkbox"
+              checked={familyFriendly}
+              onChange={(event) => setFamilyFriendly(event.target.checked)}
+            />
             Porodično
           </label>
           <label className="flex items-center gap-2">
-            <input type="checkbox" checked={petFriendly} onChange={(event) => setPetFriendly(event.target.checked)} />
+            <input
+              type="checkbox"
+              checked={petFriendly}
+              onChange={(event) => setPetFriendly(event.target.checked)}
+            />
             Pet friendly
           </label>
         </div>
       </details>
       <div className="space-y-1.5">
         <Label htmlFor="place-photos">Fotografije</Label>
-        <Input id="place-photos" type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(event) => setFiles(Array.from(event.target.files ?? []).slice(0, 6))} />
+        <Input
+          id="place-photos"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          multiple
+          onChange={(event) => setFiles(Array.from(event.target.files ?? []).slice(0, 6))}
+        />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="place-note">Izvor / napomena</Label>
-        <Textarea id="place-note" value={sourceNote} onChange={(event) => setSourceNote(event.target.value)} />
+        <Textarea
+          id="place-note"
+          value={sourceNote}
+          onChange={(event) => setSourceNote(event.target.value)}
+        />
       </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}

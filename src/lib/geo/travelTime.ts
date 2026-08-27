@@ -27,7 +27,11 @@ export function sanitizeTravelMinutes(
   transport: TransportType,
 ): number {
   const estimated = estimateTravelMinutes(distanceKm, transport);
-  if (durationMinutes == null || !Number.isFinite(durationMinutes) || durationMinutes <= 0) {
+  if (
+    durationMinutes == null ||
+    !Number.isFinite(durationMinutes) ||
+    durationMinutes <= 0
+  ) {
     return estimated;
   }
 

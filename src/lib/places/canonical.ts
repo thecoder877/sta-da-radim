@@ -57,9 +57,12 @@ export function placeFromRow(row: PlaceRow): Place {
     openingHours: row.opening_hours ?? undefined,
     source: row.source,
     verified: Boolean(row.last_verified_at),
-    environment: row.environment === "indoor" || row.environment === "outdoor" || row.environment === "mixed"
-      ? row.environment
-      : undefined,
+    environment:
+      row.environment === "indoor" ||
+      row.environment === "outdoor" ||
+      row.environment === "mixed"
+        ? row.environment
+        : undefined,
     suitableForChildren: row.family_friendly ?? undefined,
   };
 }
@@ -81,9 +84,12 @@ export function applyPlaceOverlay(place: Place, row: PlaceRow | null): Place {
     tags: row.tags?.length ? row.tags : place.tags,
     website: row.website || place.website,
     openingHours: row.opening_hours || place.openingHours,
-    estimatedDurationMinutes: row.estimated_duration_minutes ?? place.estimatedDurationMinutes,
+    estimatedDurationMinutes:
+      row.estimated_duration_minutes ?? place.estimatedDurationMinutes,
     estimatedCostPerPerson: row.estimated_cost_per_person ?? place.estimatedCostPerPerson,
-    imageUrl: authenticImageUrl({ imageUrl: row.image_url ?? undefined }) ?? authenticImageUrl(place),
+    imageUrl:
+      authenticImageUrl({ imageUrl: row.image_url ?? undefined }) ??
+      authenticImageUrl(place),
     suitableForChildren: row.family_friendly ?? place.suitableForChildren,
   };
 }
@@ -92,7 +98,11 @@ export async function getPlaceRowByKey(
   supabase: SupabaseClient,
   placeKey: string,
 ): Promise<PlaceRow | null> {
-  const { data } = await supabase.from("places").select("*").eq("place_key", placeKey).maybeSingle();
+  const { data } = await supabase
+    .from("places")
+    .select("*")
+    .eq("place_key", placeKey)
+    .maybeSingle();
   return (data as PlaceRow | null) ?? null;
 }
 
@@ -109,7 +119,9 @@ export async function getPlaceRowBySlug(
   return (data as PlaceRow | null) ?? null;
 }
 
-export async function listPublishedCommunityPlaces(supabase: SupabaseClient): Promise<Place[]> {
+export async function listPublishedCommunityPlaces(
+  supabase: SupabaseClient,
+): Promise<Place[]> {
   const { data } = await supabase
     .from("places")
     .select("*")
@@ -168,7 +180,8 @@ export async function ensureCanonicalPlace(
 }
 
 function photoPublicUrl(supabase: SupabaseClient, storagePath: string): string {
-  return supabase.storage.from("place-submission-photos").getPublicUrl(storagePath).data.publicUrl;
+  return supabase.storage.from("place-submission-photos").getPublicUrl(storagePath).data
+    .publicUrl;
 }
 
 export async function listVisiblePlacePhotos(

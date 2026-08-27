@@ -10,13 +10,21 @@ import { reviewInputSchema } from "@/lib/validation/community";
 export async function GET(request: Request) {
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
-    return NextResponse.json({ reviews: [], summary: { average: 0, count: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } } });
+    return NextResponse.json({
+      reviews: [],
+      summary: { average: 0, count: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } },
+    });
   }
   const { searchParams } = new URL(request.url);
   const placeKey = searchParams.get("placeKey");
-  const sort = (searchParams.get("sort") as "helpful" | "newest" | "highest" | "lowest") ?? "helpful";
+  const sort =
+    (searchParams.get("sort") as "helpful" | "newest" | "highest" | "lowest") ??
+    "helpful";
   if (!placeKey) {
-    return NextResponse.json({ error: "Nedostaje mesto.", code: "INVALID_REQUEST" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Nedostaje mesto.", code: "INVALID_REQUEST" },
+      { status: 400 },
+    );
   }
   const user = await getCurrentUser();
   const result = await listReviewsForPlace(supabase, placeKey, user?.id, sort);
@@ -29,11 +37,20 @@ export async function POST(request: Request) {
     await requireUsername(profile);
     const parsed = reviewInputSchema.safeParse(await request.json());
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Neispravna recenzija.", code: "INVALID_REQUEST" }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: parsed.error.issues[0]?.message ?? "Neispravna recenzija.",
+          code: "INVALID_REQUEST",
+        },
+        { status: 400 },
+      );
     }
     const place = await getPlaceRepository().getPlaceById(parsed.data.placeKey);
     if (!place) {
-      return NextResponse.json({ error: "Mesto nije pronađeno.", code: "NOT_FOUND" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Mesto nije pronađeno.", code: "NOT_FOUND" },
+        { status: 404 },
+      );
     }
     await upsertReview(supabase, user.id, place, parsed.data);
     const result = await listReviewsForPlace(supabase, place.id, user.id);

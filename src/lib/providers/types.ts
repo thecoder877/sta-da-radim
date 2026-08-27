@@ -12,3 +12,30 @@ export interface RouteGeometry {
   durationMinutes: number;
   coordinates: Coordinates[];
 }
+
+export interface GeocodingProvider {
+  search(query: string): Promise<
+    Array<{
+      name: string;
+      coordinates: Coordinates;
+    }>
+  >;
+}
+
+export interface RoutingProvider {
+  getRoute(
+    points: Coordinates[],
+    profile: "driving" | "walking" | "cycling",
+  ): Promise<RouteGeometry | null>;
+}
+
+export interface WeatherSummary {
+  date: string;
+  temperatureC: number;
+  condition: "clear" | "clouds" | "rain" | "snow" | "heat" | "unknown";
+  precipitationMm?: number;
+}
+
+export interface WeatherProvider {
+  getForecast(coordinates: Coordinates, date: string): Promise<WeatherSummary | null>;
+}

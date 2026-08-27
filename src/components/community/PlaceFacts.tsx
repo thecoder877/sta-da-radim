@@ -35,7 +35,15 @@ function Fact({
   onSuggest: (field: string) => void;
 }) {
   const display =
-    value === true ? "Da" : value === false ? "Ne" : value === 0 ? "0" : value ? String(value) : null;
+    value === true
+      ? "Da"
+      : value === false
+        ? "Ne"
+        : value === 0
+          ? "0"
+          : value
+            ? String(value)
+            : null;
   return (
     <div className="rounded-xl bg-muted/60 p-4">
       <p className="text-xs text-muted-foreground">{label}</p>
@@ -44,7 +52,11 @@ function Fact({
       ) : (
         <>
           <p className="mt-1 text-sm text-muted-foreground">Nije poznato</p>
-          <button type="button" className="mt-1 text-sm text-primary underline" onClick={() => onSuggest(field)}>
+          <button
+            type="button"
+            className="mt-1 text-sm text-primary underline"
+            onClick={() => onSuggest(field)}
+          >
             + Dodaj {label.toLowerCase()}
           </button>
         </>
@@ -69,7 +81,10 @@ export function PlaceFacts({
     if (!user) {
       openAuthModal({
         reason: "community",
-        pendingAction: { type: "community", href: `/place/${place.slug}?edit=${field ?? "opening_hours"}` },
+        pendingAction: {
+          type: "community",
+          href: `/place/${place.slug}?edit=${field ?? "opening_hours"}`,
+        },
       });
       return;
     }
@@ -90,25 +105,67 @@ export function PlaceFacts({
         </p>
       ) : null}
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <Fact label="Radno vreme" value={overlay.openingHours ?? place.openingHours} field="opening_hours" onSuggest={suggest} />
-        <Fact label="Cena" value={resolvePlacePrice(place, overlay)} field="price_info" onSuggest={suggest} />
+        <Fact
+          label="Radno vreme"
+          value={overlay.openingHours ?? place.openingHours}
+          field="opening_hours"
+          onSuggest={suggest}
+        />
+        <Fact
+          label="Cena"
+          value={resolvePlacePrice(place, overlay)}
+          field="price_info"
+          onSuggest={suggest}
+        />
         <Fact label="Telefon" value={overlay.phone} field="phone" onSuggest={suggest} />
-        <Fact label="Website" value={overlay.website ?? place.website} field="website" onSuggest={suggest} />
-        <Fact label="Adresa" value={overlay.address} field="address" onSuggest={suggest} />
-        <Fact label="Parking" value={overlay.parkingInfo} field="parking_info" onSuggest={suggest} />
+        <Fact
+          label="Website"
+          value={overlay.website ?? place.website}
+          field="website"
+          onSuggest={suggest}
+        />
+        <Fact
+          label="Adresa"
+          value={overlay.address}
+          field="address"
+          onSuggest={suggest}
+        />
+        <Fact
+          label="Parking"
+          value={overlay.parkingInfo}
+          field="parking_info"
+          onSuggest={suggest}
+        />
         <Fact
           label="Trajanje posete"
           value={
-            overlay.estimatedDurationMinutes ?? place.estimatedDurationMinutes
-              ? formatDurationMinutes(overlay.estimatedDurationMinutes ?? place.estimatedDurationMinutes ?? 0)
+            (overlay.estimatedDurationMinutes ?? place.estimatedDurationMinutes)
+              ? formatDurationMinutes(
+                  overlay.estimatedDurationMinutes ?? place.estimatedDurationMinutes ?? 0,
+                )
               : null
           }
           field="estimated_duration_minutes"
           onSuggest={suggest}
         />
-        <Fact label="Porodično" value={overlay.familyFriendly} field="family_friendly" onSuggest={suggest} />
-        <Fact label="Pet friendly" value={overlay.petFriendly} field="pet_friendly" onSuggest={suggest} />
-        <Fact label="Pristupačnost" value={overlay.accessibilityNotes} field="accessibility_notes" onSuggest={suggest} />
+        <Fact
+          label="Porodično"
+          value={overlay.familyFriendly}
+          field="family_friendly"
+          onSuggest={suggest}
+        />
+        <Fact
+          label="Pet friendly"
+          value={overlay.petFriendly}
+          field="pet_friendly"
+          onSuggest={suggest}
+        />
+        <Fact
+          label="Pristupačnost"
+          value={overlay.accessibilityNotes}
+          field="accessibility_notes"
+          onSuggest={suggest}
+        />
       </div>
     </section>
   );

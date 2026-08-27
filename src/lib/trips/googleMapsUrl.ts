@@ -33,8 +33,7 @@ function point(lat: number, lng: number): string {
 }
 
 export function googleMapsDirectionsUrl(trip: GeneratedTrip): string | null {
-  const start =
-    trip.startCoordinates ?? resolveStartCoordinates(trip.startLocation);
+  const start = trip.startCoordinates ?? resolveStartCoordinates(trip.startLocation);
   if (!start) {
     return null;
   }

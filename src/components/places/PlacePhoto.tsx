@@ -30,7 +30,10 @@ export function PlacePhoto({
       <div className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-2 bg-muted px-4 text-center">
         <Camera className="size-6 text-muted-foreground" aria-hidden />
         {addHref ? (
-          <Link href={addHref} className="text-sm font-medium text-primary hover:underline">
+          <Link
+            href={addHref}
+            className="text-sm font-medium text-primary hover:underline"
+          >
             Dodaj fotografiju
           </Link>
         ) : (

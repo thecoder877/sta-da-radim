@@ -5,7 +5,10 @@ export const usernameSchema = z
   .string()
   .trim()
   .toLowerCase()
-  .regex(USERNAME_PATTERN, "Korisničko ime: 3–30 karaktera, slova, brojevi i donja crta.");
+  .regex(
+    USERNAME_PATTERN,
+    "Korisničko ime: 3–30 karaktera, slova, brojevi i donja crta.",
+  );
 
 export const profileUpdateSchema = z
   .object({
@@ -25,7 +28,17 @@ export const reviewInputSchema = z.object({
   crowdLevel: z.enum(["low", "medium", "high"]).optional(),
   worthVisiting: z.boolean().optional(),
   recommendedFor: z
-    .array(z.enum(["couples", "families", "children", "solo", "friends", "photography", "hiking"]))
+    .array(
+      z.enum([
+        "couples",
+        "families",
+        "children",
+        "solo",
+        "friends",
+        "photography",
+        "hiking",
+      ]),
+    )
     .default([]),
 });
 
@@ -56,7 +69,12 @@ export const placeSubmissionSchema = z.object({
   facebook: z.string().trim().max(240).optional(),
   priceInfo: z.string().trim().max(200).optional(),
   parkingInfo: z.string().trim().max(200).optional(),
-  estimatedDurationMinutes: z.number().int().positive().max(24 * 60).optional(),
+  estimatedDurationMinutes: z
+    .number()
+    .int()
+    .positive()
+    .max(24 * 60)
+    .optional(),
   indoor: z.boolean().optional(),
   outdoor: z.boolean().optional(),
   familyFriendly: z.boolean().optional(),
@@ -114,7 +132,15 @@ export const reportInputSchema = z.object({
 });
 
 export const adminDecisionSchema = z.object({
-  action: z.enum(["approve", "reject", "edit_approve", "remove", "restore", "resolve", "dismiss"]),
+  action: z.enum([
+    "approve",
+    "reject",
+    "edit_approve",
+    "remove",
+    "restore",
+    "resolve",
+    "dismiss",
+  ]),
   note: z.string().trim().max(500).optional(),
   publicNote: z.string().trim().max(400).optional(),
   patch: z.record(z.string(), z.unknown()).optional(),

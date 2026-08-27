@@ -90,56 +90,103 @@ export default function AdminPlaceSubmissionsPage() {
         {items.map((item) => {
           const draft = { ...item, ...editing[item.id] };
           return (
-            <article key={item.id} className="rounded-2xl bg-card p-4 ring-1 ring-foreground/8">
+            <article
+              key={item.id}
+              className="rounded-2xl bg-card p-4 ring-1 ring-foreground/8"
+            >
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label>Naziv</Label>
-                  <Input value={draft.name} onChange={(event) => update(item.id, "name", event.target.value)} />
+                  <Input
+                    value={draft.name}
+                    onChange={(event) => update(item.id, "name", event.target.value)}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Kategorija</Label>
-                  <Input value={draft.category} onChange={(event) => update(item.id, "category", event.target.value)} />
+                  <Input
+                    value={draft.category}
+                    onChange={(event) => update(item.id, "category", event.target.value)}
+                  />
                 </div>
                 <div className="space-y-1.5 sm:col-span-2">
                   <Label>Kratak opis</Label>
-                  <Textarea value={draft.short_description} onChange={(event) => update(item.id, "short_description", event.target.value)} />
+                  <Textarea
+                    value={draft.short_description}
+                    onChange={(event) =>
+                      update(item.id, "short_description", event.target.value)
+                    }
+                  />
                 </div>
                 <div className="space-y-1.5 sm:col-span-2">
                   <Label>Opis</Label>
-                  <Textarea value={draft.description ?? ""} onChange={(event) => update(item.id, "description", event.target.value)} />
+                  <Textarea
+                    value={draft.description ?? ""}
+                    onChange={(event) =>
+                      update(item.id, "description", event.target.value)
+                    }
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Grad</Label>
-                  <Input value={draft.city ?? ""} onChange={(event) => update(item.id, "city", event.target.value)} />
+                  <Input
+                    value={draft.city ?? ""}
+                    onChange={(event) => update(item.id, "city", event.target.value)}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Adresa</Label>
-                  <Input value={draft.address ?? ""} onChange={(event) => update(item.id, "address", event.target.value)} />
+                  <Input
+                    value={draft.address ?? ""}
+                    onChange={(event) => update(item.id, "address", event.target.value)}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Širina</Label>
-                  <Input value={String(draft.latitude)} onChange={(event) => update(item.id, "latitude", event.target.value)} />
+                  <Input
+                    value={String(draft.latitude)}
+                    onChange={(event) => update(item.id, "latitude", event.target.value)}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Dužina</Label>
-                  <Input value={String(draft.longitude)} onChange={(event) => update(item.id, "longitude", event.target.value)} />
+                  <Input
+                    value={String(draft.longitude)}
+                    onChange={(event) => update(item.id, "longitude", event.target.value)}
+                  />
                 </div>
               </div>
-              {item.source_note ? <p className="mt-3 text-sm">Napomena: {item.source_note}</p> : null}
+              {item.source_note ? (
+                <p className="mt-3 text-sm">Napomena: {item.source_note}</p>
+              ) : null}
               <p className="mt-2 text-xs text-muted-foreground">
                 {item.latitude.toFixed(4)}, {item.longitude.toFixed(4)}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <Button size="sm" onClick={() => void act(item.id, "approve")}>Odobri</Button>
-                <Button size="sm" variant="outline" onClick={() => void act(item.id, "edit_approve")}>
+                <Button size="sm" onClick={() => void act(item.id, "approve")}>
+                  Odobri
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => void act(item.id, "edit_approve")}
+                >
                   Izmeni i odobri
                 </Button>
-                <Button size="sm" variant="ghost" onClick={() => void act(item.id, "reject")}>Odbij</Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => void act(item.id, "reject")}
+                >
+                  Odbij
+                </Button>
               </div>
             </article>
           );
         })}
-        {items.length === 0 ? <p className="text-sm text-muted-foreground">Nema predloga na čekanju.</p> : null}
+        {items.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Nema predloga na čekanju.</p>
+        ) : null}
       </div>
     </div>
   );

@@ -14,8 +14,8 @@ export default function UpgradePage() {
       <p className="text-sm text-muted-foreground">Nalog</p>
       <h1 className="mt-2 font-heading text-4xl">Više planova, bez čekanja</h1>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-        Besplatan nalog ima 3 nova plana mesečno i 3 izmene po svakom planu. Kad potrošiš limit,
-        tajmer pokazuje koliko je do sledećeg meseca. Plus skida to ograničenje.
+        Besplatan nalog ima 3 nova plana mesečno i 3 izmene po svakom planu. Kad potrošiš
+        limit, tajmer pokazuje koliko je do sledećeg meseca. Plus skida to ograničenje.
       </p>
 
       <div className="mt-10 grid gap-4 md:grid-cols-2">
@@ -24,19 +24,23 @@ export default function UpgradePage() {
           <h2 className="mt-1 font-heading text-3xl">0 RSD</h2>
           <ul className="mt-6 space-y-2 text-sm">
             <li className="flex gap-2">
-              <Check className="mt-0.5 size-4 text-primary" aria-hidden />
-              3 generisanja mesečno
+              <Check className="mt-0.5 size-4 text-primary" aria-hidden />3 generisanja
+              mesečno
             </li>
             <li className="flex gap-2">
-              <Check className="mt-0.5 size-4 text-primary" aria-hidden />
-              3 izmene po svakom planu
+              <Check className="mt-0.5 size-4 text-primary" aria-hidden />3 izmene po
+              svakom planu
             </li>
             <li className="flex gap-2">
               <Check className="mt-0.5 size-4 text-primary" aria-hidden />
               Čuvanje i deljenje planova
             </li>
           </ul>
-          <Button variant="outline" className="mt-8 w-full" render={<Link href="/plan" />}>
+          <Button
+            variant="outline"
+            className="mt-8 w-full"
+            render={<Link href="/plan" />}
+          >
             Ostani na besplatnom
           </Button>
         </article>

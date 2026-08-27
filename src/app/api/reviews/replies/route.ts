@@ -10,7 +10,10 @@ export async function POST(request: Request) {
     await requireUsername(profile);
     const parsed = replyInputSchema.safeParse(await request.json());
     if (!parsed.success) {
-      return NextResponse.json({ error: "Odgovor je prekratak.", code: "INVALID_REQUEST" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Odgovor je prekratak.", code: "INVALID_REQUEST" },
+        { status: 400 },
+      );
     }
     await addReply(supabase, user.id, parsed.data.reviewId, parsed.data.content);
     return NextResponse.json({ ok: true });
@@ -24,7 +27,10 @@ export async function DELETE(request: Request) {
     const { user, supabase } = await requireAuthed();
     const body = (await request.json()) as { id?: string };
     if (!body.id) {
-      return NextResponse.json({ error: "Nedostaje odgovor.", code: "INVALID_REQUEST" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Nedostaje odgovor.", code: "INVALID_REQUEST" },
+        { status: 400 },
+      );
     }
     await softDeleteOwnReply(supabase, user.id, body.id);
     return NextResponse.json({ ok: true });

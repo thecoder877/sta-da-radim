@@ -82,7 +82,11 @@ export function ReportDialog({
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="report-details">Detalji (opciono)</Label>
-            <Textarea id="report-details" value={details} onChange={(event) => setDetails(event.target.value)} />
+            <Textarea
+              id="report-details"
+              value={details}
+              onChange={(event) => setDetails(event.target.value)}
+            />
           </div>
           {message ? <p className="text-sm text-destructive">{message}</p> : null}
           <Button type="submit" disabled={loading}>

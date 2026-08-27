@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import { describe, it } from "vitest";
 import {
   authenticImageUrl,
   imageFromOsmTags,
@@ -27,21 +27,34 @@ function place(imageUrl?: string): Place {
 describe("place images", () => {
   it("keeps the original Wikimedia files in /images", () => {
     assert.equal(isAuthenticPlaceImage("/images/krusedol.jpg"), true);
-    assert.equal(withPlaceImage(place("/images/krusedol.jpg")).imageUrl, "/images/krusedol.jpg");
+    assert.equal(
+      withPlaceImage(place("/images/krusedol.jpg")).imageUrl,
+      "/images/krusedol.jpg",
+    );
   });
 
   it("rejects Unsplash stock covers", () => {
     assert.equal(
-      isAuthenticPlaceImage("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format"),
+      isAuthenticPlaceImage(
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format",
+      ),
       false,
     );
-    assert.equal(authenticImageUrl(place("https://images.unsplash.com/photo-x")), undefined);
-    assert.equal(withPlaceImage(place("https://images.unsplash.com/photo-x")).imageUrl, undefined);
+    assert.equal(
+      authenticImageUrl(place("https://images.unsplash.com/photo-x")),
+      undefined,
+    );
+    assert.equal(
+      withPlaceImage(place("https://images.unsplash.com/photo-x")).imageUrl,
+      undefined,
+    );
   });
 
   it("keeps Wikimedia and Google photo proxy URLs", () => {
     assert.equal(
-      isAuthenticPlaceImage("https://commons.wikimedia.org/wiki/Special:FilePath/Foo.jpg?width=1200"),
+      isAuthenticPlaceImage(
+        "https://commons.wikimedia.org/wiki/Special:FilePath/Foo.jpg?width=1200",
+      ),
       true,
     );
     assert.equal(isAuthenticPlaceImage("/api/places/photo?ref=abc"), true);

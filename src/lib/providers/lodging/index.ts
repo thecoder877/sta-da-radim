@@ -2,7 +2,10 @@ import { MOCK_LODGING } from "@/data/mockLodging";
 import { calculateDistanceKm } from "@/lib/geo/distance";
 import { withPlaceImage } from "@/lib/places/placeImage";
 import { searchGoogleLodging } from "@/lib/providers/lodging/googleLodging";
-import { isLodgingWithinStayRadius, MAX_LODGING_DISTANCE_KM } from "@/lib/providers/lodging/stayRadius";
+import {
+  isLodgingWithinStayRadius,
+  MAX_LODGING_DISTANCE_KM,
+} from "@/lib/providers/lodging/stayRadius";
 import { searchOverpassLodging } from "@/lib/providers/places/overpass";
 import { rememberPlaces } from "@/lib/places/placeMemory";
 import type { Coordinates, Place } from "@/types/place";

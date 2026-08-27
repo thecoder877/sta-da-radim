@@ -27,7 +27,7 @@ export function SettingsForm() {
     });
     const data = (await response.json()) as { error?: string };
     setLoading(false);
-    setMessage(response.ok ? "Profil je sačuvan." : data.error ?? "Nije sačuvano.");
+    setMessage(response.ok ? "Profil je sačuvan." : (data.error ?? "Nije sačuvano."));
     if (response.ok) {
       await refresh();
     }
@@ -58,12 +58,16 @@ export function SettingsForm() {
           ) : (
             <>
               <p>
-                {quota.generationsRemaining}/{quota.generationsLimit} generisanja ostalo ovog meseca
+                {quota.generationsRemaining}/{quota.generationsLimit} generisanja ostalo
+                ovog meseca
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
                 Reset za {formatQuotaCountdown(quota.resetsAt)} · 3 izmene po planu
               </p>
-              <Link href="/upgrade" className="mt-2 inline-block text-xs font-medium text-primary hover:underline">
+              <Link
+                href="/upgrade"
+                className="mt-2 inline-block text-xs font-medium text-primary hover:underline"
+              >
                 Nadogradi nalog
               </Link>
             </>
@@ -72,22 +76,41 @@ export function SettingsForm() {
       ) : null}
       <div className="space-y-1.5">
         <Label htmlFor="settings-username">Korisničko ime</Label>
-        <Input id="settings-username" value={username} onChange={(event) => setUsername(event.target.value.toLowerCase())} />
+        <Input
+          id="settings-username"
+          value={username}
+          onChange={(event) => setUsername(event.target.value.toLowerCase())}
+        />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="settings-name">Ime</Label>
-        <Input id="settings-name" value={displayName} onChange={(event) => setDisplayName(event.target.value)} />
+        <Input
+          id="settings-name"
+          value={displayName}
+          onChange={(event) => setDisplayName(event.target.value)}
+        />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="settings-bio">Bio</Label>
-        <Textarea id="settings-bio" value={bio} onChange={(event) => setBio(event.target.value)} />
+        <Textarea
+          id="settings-bio"
+          value={bio}
+          onChange={(event) => setBio(event.target.value)}
+        />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="settings-avatar">Avatar</Label>
-        <Input id="settings-avatar" type="file" accept="image/jpeg,image/png,image/webp" onChange={onAvatar} />
+        <Input
+          id="settings-avatar"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={onAvatar}
+        />
       </div>
       {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
-      <Button type="submit" disabled={loading}>Sačuvaj</Button>
+      <Button type="submit" disabled={loading}>
+        Sačuvaj
+      </Button>
     </form>
   );
 }

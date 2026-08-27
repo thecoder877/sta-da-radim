@@ -33,7 +33,11 @@ export async function getProfileById(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<UserProfile | null> {
-  const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .maybeSingle();
   if (error || !data) {
     return null;
   }
@@ -65,7 +69,12 @@ export async function requireUsername(profile: UserProfile | null): Promise<User
 export async function updateOwnProfile(
   supabase: SupabaseClient,
   userId: string,
-  input: { username?: string; displayName?: string; bio?: string; avatarUrl?: string | null },
+  input: {
+    username?: string;
+    displayName?: string;
+    bio?: string;
+    avatarUrl?: string | null;
+  },
 ): Promise<UserProfile> {
   const patch: Record<string, unknown> = {};
   if (input.username !== undefined) {
@@ -109,7 +118,10 @@ export async function updateOwnProfile(
   return mapProfile(data as ProfileRow);
 }
 
-export async function isAdminUser(supabase: SupabaseClient, userId: string): Promise<boolean> {
+export async function isAdminUser(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<boolean> {
   const profile = await getProfileById(supabase, userId);
   return profile?.role === "admin";
 }

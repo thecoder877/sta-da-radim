@@ -19,8 +19,18 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const { user, supabase } = await requireAdmin();
-    const body = (await request.json()) as { id: string; action: "resolve" | "dismiss"; note?: string };
-    await resolveReport(supabase, user.id, body.id, body.action === "dismiss" ? "dismissed" : "resolved", body.note);
+    const body = (await request.json()) as {
+      id: string;
+      action: "resolve" | "dismiss";
+      note?: string;
+    };
+    await resolveReport(
+      supabase,
+      user.id,
+      body.id,
+      body.action === "dismiss" ? "dismissed" : "resolved",
+      body.note,
+    );
     return NextResponse.json({ ok: true });
   } catch (error) {
     return communityResponse(error);

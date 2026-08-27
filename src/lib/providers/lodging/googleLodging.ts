@@ -75,7 +75,9 @@ export async function searchGoogleLodging(
         estimatedCostPerPerson: 5500,
         rating: item.rating,
         reviewCount: item.user_ratings_total,
-        imageUrl: photoRef ? `/api/places/photo?ref=${encodeURIComponent(photoRef)}` : undefined,
+        imageUrl: photoRef
+          ? `/api/places/photo?ref=${encodeURIComponent(photoRef)}`
+          : undefined,
         source: "google",
         verified: Boolean(item.rating && item.rating >= 4),
         environment: "mixed",

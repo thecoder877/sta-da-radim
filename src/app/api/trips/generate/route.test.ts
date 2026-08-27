@@ -20,6 +20,13 @@ vi.mock("next/headers", () => ({
 vi.mock("@/lib/auth/session", () => ({ getCurrentUser: async () => state.user }));
 vi.mock("@/lib/supabase/env", () => ({
   isSupabaseConfigured: () => state.supabaseConfigured,
+  getSupabasePublicEnv: () =>
+    state.supabaseConfigured
+      ? { url: "https://example.supabase.co", anonKey: "anon" }
+      : null,
+}));
+vi.mock("@/lib/supabase/server", () => ({
+  createServerSupabaseClient: async () => null,
 }));
 vi.mock("@/lib/ai/generateTrip", () => ({ generateTrip }));
 

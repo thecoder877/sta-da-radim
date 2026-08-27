@@ -8,7 +8,11 @@ export class CommunityError extends Error {
   }
 }
 
-export function publicError(code: string): { error: string; code: string; status: number } {
+export function publicError(code: string): {
+  error: string;
+  code: string;
+  status: number;
+} {
   const map: Record<string, { error: string; status: number }> = {
     AUTH_REQUIRED: { error: "Prijava je potrebna.", status: 401 },
     FORBIDDEN: { error: "Nemate pristup.", status: 403 },
@@ -16,7 +20,10 @@ export function publicError(code: string): { error: string; code: string; status
     USERNAME_TAKEN: { error: "To korisničko ime je zauzeto.", status: 409 },
     USERNAME_REQUIRED: { error: "Odaberi korisničko ime.", status: 400 },
     INVALID_REQUEST: { error: "Neispravan zahtev.", status: 400 },
-    REVIEW_EXISTS: { error: "Već imaš recenziju za ovo mesto. Možeš je izmeniti.", status: 409 },
+    REVIEW_EXISTS: {
+      error: "Već imaš recenziju za ovo mesto. Možeš je izmeniti.",
+      status: 409,
+    },
     PHOTO_LIMIT: { error: "Dostignut je limit fotografija.", status: 400 },
     FILE_TOO_LARGE: { error: "Fajl je prevelik.", status: 400 },
     FILE_TYPE: { error: "Dozvoljeni su JPG, PNG i WebP.", status: 400 },

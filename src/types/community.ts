@@ -5,13 +5,7 @@ export type ModerationStatus = "pending" | "approved" | "rejected";
 export type ParkingRating = "easy" | "average" | "difficult" | "unknown";
 export type CrowdLevel = "low" | "medium" | "high";
 export type RecommendedFor =
-  | "couples"
-  | "families"
-  | "children"
-  | "solo"
-  | "friends"
-  | "photography"
-  | "hiking";
+  "couples" | "families" | "children" | "solo" | "friends" | "photography" | "hiking";
 
 export interface PublicAuthor {
   id: string;

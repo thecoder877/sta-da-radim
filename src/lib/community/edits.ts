@@ -54,7 +54,9 @@ export async function createEditRequest(
       place_key: place.id,
       user_id: userId,
       field_name: field.fieldName,
-      old_value: (canonical as unknown as Record<string, unknown>)[FIELD_MAP[field.fieldName]] ?? null,
+      old_value:
+        (canonical as unknown as Record<string, unknown>)[FIELD_MAP[field.fieldName]] ??
+        null,
       new_value: field.newValue,
     }));
 
@@ -62,7 +64,9 @@ export async function createEditRequest(
     throw new CommunityError("Nema validnih polja za izmenu.", "INVALID_REQUEST");
   }
 
-  const { error: fieldError } = await supabase.from("place_edit_suggestions").insert(rows);
+  const { error: fieldError } = await supabase
+    .from("place_edit_suggestions")
+    .insert(rows);
   if (fieldError) {
     throw new CommunityError("Predlog izmene nije poslat.", "INVALID_REQUEST");
   }
@@ -106,11 +110,18 @@ export async function approveEditRequest(
   requestId: string,
   fieldPatches?: Record<string, unknown>,
 ): Promise<void> {
-  const { data: request } = await supabase.from("place_edit_requests").select("*").eq("id", requestId).single();
+  const { data: request } = await supabase
+    .from("place_edit_requests")
+    .select("*")
+    .eq("id", requestId)
+    .single();
   if (!request) {
     throw new CommunityError("Predlog nije pronađen.", "NOT_FOUND", 404);
   }
-  const { data: fields } = await supabase.from("place_edit_suggestions").select("*").eq("request_id", requestId);
+  const { data: fields } = await supabase
+    .from("place_edit_suggestions")
+    .select("*")
+    .eq("request_id", requestId);
   const patch: Record<string, unknown> = {
     last_verified_at: new Date().toISOString(),
     updated_by: adminId,
@@ -123,7 +134,10 @@ export async function approveEditRequest(
     patch[column] = fieldPatches?.[field.field_name as string] ?? field.new_value;
   }
 
-  const { error } = await supabase.from("places").update(patch).eq("id", request.place_id);
+  const { error } = await supabase
+    .from("places")
+    .update(patch)
+    .eq("id", request.place_id);
   if (error) {
     throw new CommunityError("Izmena nije primenjena.", "INVALID_REQUEST");
   }
@@ -148,7 +162,10 @@ export async function rejectEditRequest(
   requestId: string,
   publicNote?: string,
 ): Promise<void> {
-  await supabase.from("place_edit_suggestions").update({ status: "rejected" }).eq("request_id", requestId);
+  await supabase
+    .from("place_edit_suggestions")
+    .update({ status: "rejected" })
+    .eq("request_id", requestId);
   await supabase
     .from("place_edit_requests")
     .update({

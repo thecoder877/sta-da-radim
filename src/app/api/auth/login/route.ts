@@ -12,7 +12,10 @@ export async function POST(request: Request) {
 
   const parsed = loginSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
-    return NextResponse.json({ error: "Neispravan zahtev.", code: "INVALID_REQUEST" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Neispravan zahtev.", code: "INVALID_REQUEST" },
+      { status: 400 },
+    );
   }
   if (isBotSubmission(parsed.data)) {
     return NextResponse.json({ ok: true });
@@ -20,7 +23,10 @@ export async function POST(request: Request) {
 
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
-    return NextResponse.json({ error: "Supabase nije podešen.", code: "SUPABASE_MISSING" }, { status: 503 });
+    return NextResponse.json(
+      { error: "Supabase nije podešen.", code: "SUPABASE_MISSING" },
+      { status: 503 },
+    );
   }
 
   const { error } = await supabase.auth.signInWithPassword({
@@ -28,7 +34,10 @@ export async function POST(request: Request) {
     password: parsed.data.password,
   });
   if (error) {
-    return NextResponse.json({ error: "Pogrešan email ili lozinka.", code: "AUTH_FAILED" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Pogrešan email ili lozinka.", code: "AUTH_FAILED" },
+      { status: 401 },
+    );
   }
   return NextResponse.json({ ok: true });
 }

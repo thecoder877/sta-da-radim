@@ -10,7 +10,13 @@ export async function POST(request: Request) {
     await requireUsername(profile);
     const parsed = placeSubmissionSchema.safeParse(await request.json());
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Neispravan predlog.", code: "INVALID_REQUEST" }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: parsed.error.issues[0]?.message ?? "Neispravan predlog.",
+          code: "INVALID_REQUEST",
+        },
+        { status: 400 },
+      );
     }
     const id = await createPlaceSubmission(supabase, user.id, parsed.data);
     return NextResponse.json({ id });

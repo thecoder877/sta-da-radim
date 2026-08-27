@@ -35,8 +35,17 @@ function currentValues(place: Place, overlay: PlaceFactsOverlay): Record<string,
     short_description: place.shortDescription ?? "",
     category: place.category ?? "",
     family_friendly:
-      overlay.familyFriendly === true ? "true" : overlay.familyFriendly === false ? "false" : "",
-    pet_friendly: overlay.petFriendly === true ? "true" : overlay.petFriendly === false ? "false" : "",
+      overlay.familyFriendly === true
+        ? "true"
+        : overlay.familyFriendly === false
+          ? "false"
+          : "",
+    pet_friendly:
+      overlay.petFriendly === true
+        ? "true"
+        : overlay.petFriendly === false
+          ? "false"
+          : "",
     accessibility_notes: overlay.accessibilityNotes ?? "",
     latitude: String(place.latitude ?? ""),
     longitude: String(place.longitude ?? ""),
@@ -47,7 +56,11 @@ function parseValue(field: string, value: string): unknown {
   if (field === "family_friendly" || field === "pet_friendly") {
     return value === "true";
   }
-  if (field === "estimated_duration_minutes" || field === "latitude" || field === "longitude") {
+  if (
+    field === "estimated_duration_minutes" ||
+    field === "latitude" ||
+    field === "longitude"
+  ) {
     return Number(value);
   }
   return value;
@@ -85,12 +98,12 @@ export function PlaceEditDialog({
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
-    const fields = EDITABLE_PLACE_FIELDS
-      .filter((item) => (values[item.id] ?? "") !== (initial[item.id] ?? ""))
-      .map((item) => ({
-        fieldName: item.id,
-        newValue: parseValue(item.id, values[item.id] ?? ""),
-      }));
+    const fields = EDITABLE_PLACE_FIELDS.filter(
+      (item) => (values[item.id] ?? "") !== (initial[item.id] ?? ""),
+    ).map((item) => ({
+      fieldName: item.id,
+      newValue: parseValue(item.id, values[item.id] ?? ""),
+    }));
     if (fields.length === 0) {
       setMessage("Nisi izmenio nijedno polje.");
       return;
@@ -124,15 +137,25 @@ export function PlaceEditDialog({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-3">
-          {EDITABLE_PLACE_FIELDS.filter((item) => item.id !== "latitude" && item.id !== "longitude").map((item) => (
-            <div key={item.id} className={`space-y-1.5 ${field === item.id ? "rounded-lg ring-2 ring-primary/40 p-2" : ""}`}>
+          {EDITABLE_PLACE_FIELDS.filter(
+            (item) => item.id !== "latitude" && item.id !== "longitude",
+          ).map((item) => (
+            <div
+              key={item.id}
+              className={`space-y-1.5 ${field === item.id ? "rounded-lg ring-2 ring-primary/40 p-2" : ""}`}
+            >
               <Label htmlFor={`edit-${item.id}`}>{item.label}</Label>
               {item.id === "family_friendly" || item.id === "pet_friendly" ? (
                 <select
                   id={`edit-${item.id}`}
                   className="h-10 w-full rounded-lg border border-input bg-background px-2 text-sm"
                   value={values[item.id] ?? ""}
-                  onChange={(event) => setValues((current) => ({ ...current, [item.id]: event.target.value }))}
+                  onChange={(event) =>
+                    setValues((current) => ({
+                      ...current,
+                      [item.id]: event.target.value,
+                    }))
+                  }
                 >
                   <option value="">Nije poznato</option>
                   <option value="true">Da</option>
@@ -142,18 +165,29 @@ export function PlaceEditDialog({
                 <Textarea
                   id={`edit-${item.id}`}
                   value={values[item.id] ?? ""}
-                  onChange={(event) => setValues((current) => ({ ...current, [item.id]: event.target.value }))}
+                  onChange={(event) =>
+                    setValues((current) => ({
+                      ...current,
+                      [item.id]: event.target.value,
+                    }))
+                  }
                 />
               ) : (
                 <Input
                   id={`edit-${item.id}`}
                   value={values[item.id] ?? ""}
                   placeholder={
-                    item.id === "estimated_duration_minutes" && place.estimatedDurationMinutes
+                    item.id === "estimated_duration_minutes" &&
+                    place.estimatedDurationMinutes
                       ? formatDurationMinutes(place.estimatedDurationMinutes)
                       : undefined
                   }
-                  onChange={(event) => setValues((current) => ({ ...current, [item.id]: event.target.value }))}
+                  onChange={(event) =>
+                    setValues((current) => ({
+                      ...current,
+                      [item.id]: event.target.value,
+                    }))
+                  }
                 />
               )}
             </div>
@@ -168,7 +202,9 @@ export function PlaceEditDialog({
             />
           </div>
           {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
-          <Button type="submit" disabled={loading}>Pošalji predlog</Button>
+          <Button type="submit" disabled={loading}>
+            Pošalji predlog
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

@@ -44,8 +44,8 @@ export async function addPlacePhoto(
 
   return {
     id: data.id as string,
-    publicUrl: supabase.storage.from("place-submission-photos").getPublicUrl(storagePath).data
-      .publicUrl,
+    publicUrl: supabase.storage.from("place-submission-photos").getPublicUrl(storagePath)
+      .data.publicUrl,
     caption: caption || undefined,
   };
 }

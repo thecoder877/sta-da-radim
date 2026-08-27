@@ -40,7 +40,13 @@ export async function requireAdmin(): Promise<{
 export function communityResponse(error: unknown) {
   if (error instanceof CommunityError) {
     const mapped = publicError(error.code);
-    return NextResponse.json({ error: mapped.error, code: error.code }, { status: error.status });
+    return NextResponse.json(
+      { error: mapped.error, code: error.code },
+      { status: error.status },
+    );
   }
-  return NextResponse.json({ error: "Akcija nije uspela.", code: "UNKNOWN" }, { status: 400 });
+  return NextResponse.json(
+    { error: "Akcija nije uspela.", code: "UNKNOWN" },
+    { status: 400 },
+  );
 }

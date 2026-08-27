@@ -47,27 +47,36 @@ export function LocationPicker({
       }
       const L = leaflet.default;
       if ("_leaflet_id" in containerRef.current) {
-        delete (containerRef.current as HTMLDivElement & { _leaflet_id?: number })._leaflet_id;
+        delete (containerRef.current as HTMLDivElement & { _leaflet_id?: number })
+          ._leaflet_id;
       }
       const instance = L.map(containerRef.current, { scrollWheelZoom: true }).setView(
         [start.latitude, start.longitude],
         value ? 12 : 7,
       );
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-        attribution: "&copy; OpenStreetMap &copy; CARTO",
-        subdomains: "abcd",
-        maxZoom: 19,
-      }).addTo(instance);
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+        {
+          attribution: "&copy; OpenStreetMap &copy; CARTO",
+          subdomains: "abcd",
+          maxZoom: 19,
+        },
+      ).addTo(instance);
 
       let marker: import("leaflet").Marker | null = value
-        ? L.marker([value.latitude, value.longitude], { draggable: true, icon: pickerIcon(L) }).addTo(instance)
+        ? L.marker([value.latitude, value.longitude], {
+            draggable: true,
+            icon: pickerIcon(L),
+          }).addTo(instance)
         : null;
 
       function placeMarker(lat: number, lng: number) {
         if (marker) {
           marker.setLatLng([lat, lng]);
         } else {
-          marker = L.marker([lat, lng], { draggable: true, icon: pickerIcon(L) }).addTo(instance);
+          marker = L.marker([lat, lng], { draggable: true, icon: pickerIcon(L) }).addTo(
+            instance,
+          );
           marker.on("dragend", () => {
             const next = marker?.getLatLng();
             if (next) {
@@ -107,7 +116,12 @@ export function LocationPicker({
   }, []);
 
   return (
-    <div className={className ?? "h-72 w-full overflow-hidden rounded-2xl bg-[#e7efe4] ring-1 ring-foreground/10"}>
+    <div
+      className={
+        className ??
+        "h-72 w-full overflow-hidden rounded-2xl bg-[#e7efe4] ring-1 ring-foreground/10"
+      }
+    >
       <div ref={containerRef} className="h-full min-h-[18rem] w-full" />
     </div>
   );

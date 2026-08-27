@@ -26,7 +26,10 @@ export default function AdminPlaceEditsPage() {
 
   async function load() {
     const response = await fetch("/api/admin/edits?status=pending");
-    const data = (await response.json()) as { requests?: RequestRow[]; fields?: FieldRow[] };
+    const data = (await response.json()) as {
+      requests?: RequestRow[];
+      fields?: FieldRow[];
+    };
     setRequests(data.requests ?? []);
     setFields(data.fields ?? []);
   }
@@ -61,15 +64,22 @@ export default function AdminPlaceEditsPage() {
       />
       <div className="mt-6 space-y-4">
         {requests.map((item) => (
-          <article key={item.id} className="rounded-2xl bg-card p-4 ring-1 ring-foreground/8">
+          <article
+            key={item.id}
+            className="rounded-2xl bg-card p-4 ring-1 ring-foreground/8"
+          >
             <p className="text-sm text-muted-foreground">{item.place_key}</p>
             {fields
               .filter((field) => field.request_id === item.id)
               .map((field) => (
                 <div key={field.field_name} className="mt-3">
                   <p className="text-sm font-medium">{field.field_name}</p>
-                  <p className="text-xs text-muted-foreground">staro: {String(field.old_value ?? "nije poznato")}</p>
-                  <p className="text-xs text-muted-foreground">novo: {String(field.new_value)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    staro: {String(field.old_value ?? "nije poznato")}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    novo: {String(field.new_value)}
+                  </p>
                   <Input
                     className="mt-1"
                     defaultValue={String(field.new_value ?? "")}
@@ -85,17 +95,33 @@ export default function AdminPlaceEditsPage() {
                   />
                 </div>
               ))}
-            {item.source_note ? <p className="mt-2 text-sm">Izvor: {item.source_note}</p> : null}
+            {item.source_note ? (
+              <p className="mt-2 text-sm">Izvor: {item.source_note}</p>
+            ) : null}
             <div className="mt-3 flex gap-2">
-              <Button size="sm" onClick={() => void act(item.id, "approve")}>Odobri</Button>
-              <Button size="sm" variant="outline" onClick={() => void act(item.id, "approve")}>
+              <Button size="sm" onClick={() => void act(item.id, "approve")}>
+                Odobri
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => void act(item.id, "approve")}
+              >
                 Izmeni i odobri
               </Button>
-              <Button size="sm" variant="ghost" onClick={() => void act(item.id, "reject")}>Odbij</Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => void act(item.id, "reject")}
+              >
+                Odbij
+              </Button>
             </div>
           </article>
         ))}
-        {requests.length === 0 ? <p className="text-sm text-muted-foreground">Nema izmena na čekanju.</p> : null}
+        {requests.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Nema izmena na čekanju.</p>
+        ) : null}
       </div>
     </div>
   );

@@ -9,7 +9,10 @@ export function resolvePlacePrice(
   if (info) {
     return info;
   }
-  if (typeof place.estimatedCostPerPerson === "number" && place.estimatedCostPerPerson > 0) {
+  if (
+    typeof place.estimatedCostPerPerson === "number" &&
+    place.estimatedCostPerPerson > 0
+  ) {
     return formatRsd(place.estimatedCostPerPerson);
   }
   if (place.estimatedCostPerPerson === 0) {

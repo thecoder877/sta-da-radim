@@ -1,5 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { CROWD_OPTIONS, PARKING_OPTIONS, RECOMMENDED_FOR_OPTIONS } from "@/lib/community/constants";
+import {
+  CROWD_OPTIONS,
+  PARKING_OPTIONS,
+  RECOMMENDED_FOR_OPTIONS,
+} from "@/lib/community/constants";
 import { CommunityError } from "@/lib/community/errors";
 import { authorFromProfile } from "@/lib/community/identity";
 import { ensureCanonicalPlace } from "@/lib/places/canonical";
@@ -20,7 +24,10 @@ function emptyAuthor(userId: string): PublicAuthor {
   return { id: userId, username: null, displayName: null, avatarUrl: null };
 }
 
-async function loadAuthors(supabase: SupabaseClient, userIds: string[]): Promise<Map<string, PublicAuthor>> {
+async function loadAuthors(
+  supabase: SupabaseClient,
+  userIds: string[],
+): Promise<Map<string, PublicAuthor>> {
   const unique = [...new Set(userIds)];
   const map = new Map<string, PublicAuthor>();
   if (unique.length === 0) {
@@ -42,7 +49,11 @@ export async function listReviewsForPlace(
   viewerId?: string | null,
   sort: "helpful" | "newest" | "highest" | "lowest" = "helpful",
 ): Promise<{ reviews: PlaceReview[]; summary: ReviewSummary }> {
-  const { data: place } = await supabase.from("places").select("id").eq("place_key", placeKey).maybeSingle();
+  const { data: place } = await supabase
+    .from("places")
+    .select("id")
+    .eq("place_key", placeKey)
+    .maybeSingle();
   if (!place) {
     return { reviews: [], summary: emptySummary() };
   }
@@ -59,13 +70,21 @@ export async function listReviewsForPlace(
 
   const [{ data: photos }, { data: votes }, { data: replies }] = await Promise.all([
     reviewIds.length
-      ? supabase.from("review_photos").select("*").in("review_id", reviewIds).eq("status", "visible")
+      ? supabase
+          .from("review_photos")
+          .select("*")
+          .in("review_id", reviewIds)
+          .eq("status", "visible")
       : Promise.resolve({ data: [] }),
     reviewIds.length
       ? supabase.from("review_votes").select("*").in("review_id", reviewIds)
       : Promise.resolve({ data: [] }),
     reviewIds.length
-      ? supabase.from("review_replies").select("*").in("review_id", reviewIds).eq("status", "published")
+      ? supabase
+          .from("review_replies")
+          .select("*")
+          .in("review_id", reviewIds)
+          .eq("status", "published")
       : Promise.resolve({ data: [] }),
   ]);
 
@@ -84,9 +103,16 @@ export async function listReviewsForPlace(
     photosByReview.set(photo.review_id as string, list);
   }
 
-  const votesByReview = new Map<string, { helpful: number; notHelpful: number; mine: 1 | -1 | null }>();
+  const votesByReview = new Map<
+    string,
+    { helpful: number; notHelpful: number; mine: 1 | -1 | null }
+  >();
   for (const vote of votes ?? []) {
-    const current = votesByReview.get(vote.review_id as string) ?? { helpful: 0, notHelpful: 0, mine: null };
+    const current = votesByReview.get(vote.review_id as string) ?? {
+      helpful: 0,
+      notHelpful: 0,
+      mine: null,
+    };
     if (vote.vote === 1) {
       current.helpful += 1;
     } else {
@@ -107,14 +133,19 @@ export async function listReviewsForPlace(
       content: reply.content as string,
       createdAt: reply.created_at as string,
       updatedAt: reply.updated_at as string,
-      author: authors.get(reply.user_id as string) ?? emptyAuthor(reply.user_id as string),
+      author:
+        authors.get(reply.user_id as string) ?? emptyAuthor(reply.user_id as string),
       isOwner: viewerId === reply.user_id,
     });
     repliesByReview.set(reply.review_id as string, list);
   }
 
   let reviews: PlaceReview[] = reviewsRaw.map((row) => {
-    const vote = votesByReview.get(row.id as string) ?? { helpful: 0, notHelpful: 0, mine: null };
+    const vote = votesByReview.get(row.id as string) ?? {
+      helpful: 0,
+      notHelpful: 0,
+      mine: null,
+    };
     return {
       id: row.id as string,
       placeId: row.place_id as string,
@@ -131,7 +162,9 @@ export async function listReviewsForPlace(
       updatedAt: row.updated_at as string,
       author: authors.get(row.user_id as string) ?? emptyAuthor(row.user_id as string),
       photos: photosByReview.get(row.id as string) ?? [],
-      replies: (repliesByReview.get(row.id as string) ?? []).sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+      replies: (repliesByReview.get(row.id as string) ?? []).sort((a, b) =>
+        a.createdAt.localeCompare(b.createdAt),
+      ),
       helpfulCount: vote.helpful,
       notHelpfulCount: vote.notHelpful,
       viewerVote: vote.mine,
@@ -143,18 +176,27 @@ export async function listReviewsForPlace(
   return { reviews, summary: summarizeReviews(reviews) };
 }
 
-function sortReviews(reviews: PlaceReview[], sort: "helpful" | "newest" | "highest" | "lowest"): PlaceReview[] {
+function sortReviews(
+  reviews: PlaceReview[],
+  sort: "helpful" | "newest" | "highest" | "lowest",
+): PlaceReview[] {
   const copy = [...reviews];
   if (sort === "newest") {
     return copy.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
   if (sort === "highest") {
-    return copy.sort((a, b) => b.rating - a.rating || b.createdAt.localeCompare(a.createdAt));
+    return copy.sort(
+      (a, b) => b.rating - a.rating || b.createdAt.localeCompare(a.createdAt),
+    );
   }
   if (sort === "lowest") {
-    return copy.sort((a, b) => a.rating - b.rating || b.createdAt.localeCompare(a.createdAt));
+    return copy.sort(
+      (a, b) => a.rating - b.rating || b.createdAt.localeCompare(a.createdAt),
+    );
   }
-  return copy.sort((a, b) => b.helpfulCount - a.helpfulCount || b.createdAt.localeCompare(a.createdAt));
+  return copy.sort(
+    (a, b) => b.helpfulCount - a.helpfulCount || b.createdAt.localeCompare(a.createdAt),
+  );
 }
 
 function emptySummary(): ReviewSummary {
@@ -185,7 +227,9 @@ function summarizeReviews(reviews: PlaceReview[]): ReviewSummary {
         (worth.filter((review) => review.worthVisiting).length / worth.length) * 100,
       );
     }
-    const parking = reviews.filter((review) => review.parkingRating && review.parkingRating !== "unknown");
+    const parking = reviews.filter(
+      (review) => review.parkingRating && review.parkingRating !== "unknown",
+    );
     if (parking.length >= 3) {
       const winner = mode(parking.map((review) => review.parkingRating as string));
       summary.parkingSummary = PARKING_OPTIONS.find((item) => item.id === winner)?.label;
@@ -255,7 +299,9 @@ export async function upsertReview(
     removal_reason: null,
   };
 
-  const { error } = await supabase.from("reviews").upsert(payload, { onConflict: "user_id,place_id" });
+  const { error } = await supabase
+    .from("reviews")
+    .upsert(payload, { onConflict: "user_id,place_id" });
   if (error) {
     throw new CommunityError("Recenzija nije sačuvana.", "INVALID_REQUEST", 400);
   }
@@ -288,7 +334,11 @@ export async function setReviewVote(
   vote: 1 | -1 | null,
 ): Promise<void> {
   if (vote === null) {
-    await supabase.from("review_votes").delete().eq("review_id", reviewId).eq("user_id", userId);
+    await supabase
+      .from("review_votes")
+      .delete()
+      .eq("review_id", reviewId)
+      .eq("user_id", userId);
     return;
   }
   const { error } = await supabase.from("review_votes").upsert({

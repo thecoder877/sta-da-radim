@@ -23,7 +23,10 @@ export function TripExport({ trip }: { trip: GeneratedTrip }) {
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap gap-2">
-        <Button variant="outline" render={<a href={link} target="_blank" rel="noreferrer" />}>
+        <Button
+          variant="outline"
+          render={<a href={link} target="_blank" rel="noreferrer" />}
+        >
           <ExternalLink data-icon="inline-start" />
           Otvori u Google Maps
         </Button>

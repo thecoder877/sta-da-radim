@@ -19,11 +19,7 @@ export function PlaceGrid({
           emptyDescription ??
           "Promeni kategoriju, ukloni filtere ili potraži drugi deo Srbije."
         }
-        action={
-          <Button render={<Link href="/add-place" />}>
-            + Dodaj mesto
-          </Button>
-        }
+        action={<Button render={<Link href="/add-place" />}>+ Dodaj mesto</Button>}
       />
     );
   }

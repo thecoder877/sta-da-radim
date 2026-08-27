@@ -7,7 +7,11 @@ export class GenerateTripError extends Error {
   resetsAt?: string;
   quota?: PlanQuota;
 
-  constructor(message: string, code: string, extras?: { resetsAt?: string; quota?: PlanQuota }) {
+  constructor(
+    message: string,
+    code: string,
+    extras?: { resetsAt?: string; quota?: PlanQuota },
+  ) {
     super(message);
     this.code = code;
     this.resetsAt = extras?.resetsAt;
@@ -36,16 +40,22 @@ export async function requestGeneratedTrip(
   };
 
   if (!response.ok || !tripSuccessfullyGenerated(data.trip)) {
-    throw new GenerateTripError(data.error ?? "GENERATE_FAILED", data.code ?? "GENERATE_FAILED", {
-      resetsAt: data.resetsAt,
-      quota: data.quota,
-    });
+    throw new GenerateTripError(
+      data.error ?? "GENERATE_FAILED",
+      data.code ?? "GENERATE_FAILED",
+      {
+        resetsAt: data.resetsAt,
+        quota: data.quota,
+      },
+    );
   }
 
   return data.trip as GeneratedTrip;
 }
 
-export function isQuotaError(error: unknown): error is GenerateTripError & { code: PlanQuotaReason } {
+export function isQuotaError(
+  error: unknown,
+): error is GenerateTripError & { code: PlanQuotaReason } {
   return (
     error instanceof GenerateTripError &&
     (error.code === "QUOTA_MONTH" || error.code === "QUOTA_EDITS")

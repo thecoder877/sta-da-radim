@@ -71,14 +71,20 @@ export function PlaceAddPhoto({
       const uploaded = data.photo;
       added += 1;
       setPhotos((current) =>
-        current.some((item) => item.id === uploaded.id) ? current : [...current, uploaded],
+        current.some((item) => item.id === uploaded.id)
+          ? current
+          : [...current, uploaded],
       );
     }
     setBusy(false);
     if (failed) {
       setError(failed);
     } else if (added > 0) {
-      setMessage(added === 1 ? "Fotografija je dodata i odmah je vidljiva." : "Fotografije su dodate i odmah su vidljive.");
+      setMessage(
+        added === 1
+          ? "Fotografija je dodata i odmah je vidljiva."
+          : "Fotografije su dodate i odmah su vidljive.",
+      );
     }
   }
 
@@ -88,7 +94,8 @@ export function PlaceAddPhoto({
         <div>
           <h2 className="font-heading text-2xl">Fotografije</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Samo stvarne slike ovog mesta. Ako nema fotografije, ostaje prazno dok neko ne doda svoju.
+            Samo stvarne slike ovog mesta. Ako nema fotografije, ostaje prazno dok neko ne
+            doda svoju.
           </p>
         </div>
         <div>
@@ -139,7 +146,9 @@ export function PlaceAddPhoto({
       ) : (
         <div className="mt-4 flex min-h-32 flex-col items-center justify-center gap-2 rounded-2xl bg-muted/60 px-4 text-center">
           <Camera className="size-6 text-muted-foreground" aria-hidden />
-          <p className="text-sm text-muted-foreground">Još nema fotografije ovog mesta.</p>
+          <p className="text-sm text-muted-foreground">
+            Još nema fotografije ovog mesta.
+          </p>
         </div>
       )}
 

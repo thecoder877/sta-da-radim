@@ -26,7 +26,11 @@ export async function proxy(request: NextRequest) {
     const path = request.nextUrl.pathname;
     const rule = WRITE_LIMITS.find((item) => path.startsWith(item.prefix));
     if (rule) {
-      const limited = rateLimit(`${rule.prefix}:${clientIp(request)}`, rule.limit, rule.windowMs);
+      const limited = rateLimit(
+        `${rule.prefix}:${clientIp(request)}`,
+        rule.limit,
+        rule.windowMs,
+      );
       if (!limited.ok) {
         return NextResponse.json(
           { error: "Previše pokušaja. Sačekaj malo.", code: "RATE_LIMITED" },

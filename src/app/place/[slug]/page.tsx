@@ -9,7 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { getCurrentUser } from "@/lib/auth/session";
 import { listReviewsForPlace } from "@/lib/community/reviews";
 import { formatDurationMinutes } from "@/lib/format";
-import { getPlaceRowByKey, listVisiblePlacePhotos, overlayFacts } from "@/lib/places/canonical";
+import {
+  getPlaceRowByKey,
+  listVisiblePlacePhotos,
+  overlayFacts,
+} from "@/lib/places/canonical";
 import { authenticImageUrl, withPlaceImage } from "@/lib/places/placeImage";
 import { resolvePlacePrice } from "@/lib/places/price";
 import { getPlaceRepository } from "@/lib/providers/places";
@@ -32,7 +36,9 @@ export async function generateMetadata({
     openGraph: {
       title: `${place.name} · Šta da radim?`,
       description: place.shortDescription,
-      images: authenticImageUrl(place) ? [{ url: authenticImageUrl(place) as string }] : undefined,
+      images: authenticImageUrl(place)
+        ? [{ url: authenticImageUrl(place) as string }]
+        : undefined,
     },
   };
 }
@@ -54,7 +60,10 @@ export default async function PlacePage({
   const row = supabase ? await getPlaceRowByKey(supabase, place.id) : null;
   const community = supabase
     ? await listReviewsForPlace(supabase, place.id, user?.id)
-    : { reviews: [], summary: { average: 0, count: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } } };
+    : {
+        reviews: [],
+        summary: { average: 0, count: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } },
+      };
   const photos = supabase ? await listVisiblePlacePhotos(supabase, place.id) : [];
   const overlay = row ? overlayFacts(row) : {};
   const catalogImage = authenticImageUrl({
@@ -69,12 +78,7 @@ export default async function PlacePage({
   return (
     <article>
       <div className="relative h-[42vw] min-h-64 max-h-[420px] bg-[linear-gradient(160deg,#c45c26_0%,#8a5a32_45%,#3f4a38_100%)]">
-        <PlacePhoto
-          place={displayPlace}
-          sizes="100vw"
-          priority
-          addHref="#fotografije"
-        />
+        <PlacePhoto place={displayPlace} sizes="100vw" priority addHref="#fotografije" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
       </div>
 

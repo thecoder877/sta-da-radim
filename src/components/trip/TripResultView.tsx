@@ -83,7 +83,9 @@ export function TripResultView({
               onShowOnMap={showOnMap}
             />
             <TripExport trip={currentTrip} />
-            {readOnly ? null : <TripActions trip={currentTrip} onTripChange={setCurrentTrip} />}
+            {readOnly ? null : (
+              <TripActions trip={currentTrip} onTripChange={setCurrentTrip} />
+            )}
           </div>
         ) : (
           <div className="h-[calc(100vh-8.5rem)]">
@@ -108,7 +110,9 @@ export function TripResultView({
             onShowOnMap={setSelectedPlaceId}
           />
           <TripExport trip={currentTrip} />
-          {readOnly ? null : <TripActions trip={currentTrip} onTripChange={setCurrentTrip} />}
+          {readOnly ? null : (
+            <TripActions trip={currentTrip} onTripChange={setCurrentTrip} />
+          )}
         </div>
         <div className="relative sticky top-16 h-[calc(100vh-4rem)] p-4">
           <p className="pointer-events-none absolute bottom-8 left-8 z-10 rounded-full bg-card/95 px-3 py-1 text-xs text-muted-foreground shadow-sm">

@@ -13,7 +13,10 @@ export async function POST(request: Request) {
   const parsed = registerSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.issues[0]?.message ?? "Neispravan zahtev.", code: "INVALID_REQUEST" },
+      {
+        error: parsed.error.issues[0]?.message ?? "Neispravan zahtev.",
+        code: "INVALID_REQUEST",
+      },
       { status: 400 },
     );
   }
@@ -23,7 +26,10 @@ export async function POST(request: Request) {
 
   const supabase = await createServerSupabaseClient();
   if (!supabase) {
-    return NextResponse.json({ error: "Supabase nije podešen.", code: "SUPABASE_MISSING" }, { status: 503 });
+    return NextResponse.json(
+      { error: "Supabase nije podešen.", code: "SUPABASE_MISSING" },
+      { status: 503 },
+    );
   }
 
   const { data, error } = await supabase.auth.signUp({
@@ -39,7 +45,12 @@ export async function POST(request: Request) {
   if (error) {
     const taken = error.message.toLowerCase().includes("already");
     return NextResponse.json(
-      { error: taken ? "Ovaj email je već registrovan." : "Nalog nije napravljen. Pokušaj ponovo.", code: "AUTH_FAILED" },
+      {
+        error: taken
+          ? "Ovaj email je već registrovan."
+          : "Nalog nije napravljen. Pokušaj ponovo.",
+        code: "AUTH_FAILED",
+      },
       { status: taken ? 409 : 400 },
     );
   }

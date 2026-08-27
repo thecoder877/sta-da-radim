@@ -5,8 +5,16 @@ export async function GET() {
   try {
     const { supabase } = await requireAdmin();
     const [{ data: reviews }, { data: places }] = await Promise.all([
-      supabase.from("review_photos").select("*").order("created_at", { ascending: false }).limit(50),
-      supabase.from("place_photos").select("*").order("created_at", { ascending: false }).limit(50),
+      supabase
+        .from("review_photos")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(50),
+      supabase
+        .from("place_photos")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(50),
     ]);
     const withUrl = (
       rows: Record<string, unknown>[] | null,
@@ -14,11 +22,18 @@ export async function GET() {
     ) =>
       (rows ?? []).map((row) => ({
         ...row,
-        publicUrl: supabase.storage.from(bucket).getPublicUrl(row.storage_path as string).data.publicUrl,
+        publicUrl: supabase.storage.from(bucket).getPublicUrl(row.storage_path as string)
+          .data.publicUrl,
       }));
     return NextResponse.json({
-      reviewPhotos: withUrl((reviews ?? []) as Record<string, unknown>[], "review-photos"),
-      placePhotos: withUrl((places ?? []) as Record<string, unknown>[], "place-submission-photos"),
+      reviewPhotos: withUrl(
+        (reviews ?? []) as Record<string, unknown>[],
+        "review-photos",
+      ),
+      placePhotos: withUrl(
+        (places ?? []) as Record<string, unknown>[],
+        "place-submission-photos",
+      ),
     });
   } catch (error) {
     return communityResponse(error);

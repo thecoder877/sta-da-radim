@@ -84,7 +84,9 @@ export function quotaFromUsage(
     unlimited,
     generationsUsed: unlimited ? used : used,
     generationsLimit: MONTHLY_GENERATIONS,
-    generationsRemaining: unlimited ? MONTHLY_GENERATIONS : Math.max(0, MONTHLY_GENERATIONS - used),
+    generationsRemaining: unlimited
+      ? MONTHLY_GENERATIONS
+      : Math.max(0, MONTHLY_GENERATIONS - used),
     editsLimit: EDITS_PER_GENERATION,
     resetsAt: nextMonthResetAt(now).toISOString(),
   };

@@ -17,7 +17,9 @@ interface GenerationRow {
   created_at: string;
 }
 
-export function isUnlimitedAccount(profile: { role?: string | null; plan?: string | null } | null): boolean {
+export function isUnlimitedAccount(
+  profile: { role?: string | null; plan?: string | null } | null,
+): boolean {
   return profile?.role === "admin" || profile?.plan === "plus";
 }
 

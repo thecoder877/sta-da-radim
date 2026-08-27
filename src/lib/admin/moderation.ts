@@ -3,11 +3,27 @@ import type { AdminCounts } from "@/types/community";
 
 export async function getAdminCounts(supabase: SupabaseClient): Promise<AdminCounts> {
   const [places, edits, reports, reviews, photos] = await Promise.all([
-    supabase.from("place_submissions").select("id", { count: "exact", head: true }).eq("status", "pending"),
-    supabase.from("place_edit_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
-    supabase.from("reports").select("id", { count: "exact", head: true }).eq("status", "open"),
-    supabase.from("reviews").select("id", { count: "exact", head: true }).eq("status", "published"),
-    supabase.from("reports").select("id", { count: "exact", head: true }).eq("status", "open").eq("target_type", "photo"),
+    supabase
+      .from("place_submissions")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "pending"),
+    supabase
+      .from("place_edit_requests")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "pending"),
+    supabase
+      .from("reports")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "open"),
+    supabase
+      .from("reviews")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "published"),
+    supabase
+      .from("reports")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "open")
+      .eq("target_type", "photo"),
   ]);
   return {
     pendingPlaces: places.count ?? 0,
@@ -31,7 +47,7 @@ export async function setReviewStatus(
       status,
       removed_at: status === "published" ? null : new Date().toISOString(),
       removed_by: status === "published" ? null : adminId,
-      removal_reason: status === "published" ? null : reason ?? "admin",
+      removal_reason: status === "published" ? null : (reason ?? "admin"),
     })
     .eq("id", reviewId);
 }
@@ -49,7 +65,7 @@ export async function setReplyStatus(
       status,
       removed_at: status === "published" ? null : new Date().toISOString(),
       removed_by: status === "published" ? null : adminId,
-      removal_reason: status === "published" ? null : reason ?? "admin",
+      removal_reason: status === "published" ? null : (reason ?? "admin"),
     })
     .eq("id", replyId);
 }

@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Clock } from "lucide-react";
-import { formatQuotaCountdown, type PlanQuota, type PlanQuotaReason } from "@/lib/access/planQuota";
+import {
+  formatQuotaCountdown,
+  type PlanQuota,
+  type PlanQuotaReason,
+} from "@/lib/access/planQuota";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -37,7 +41,9 @@ export function QuotaLockedDialog({
   }, [open]);
 
   const title =
-    reason === "QUOTA_EDITS" ? "Iskoristio si izmene ovog plana" : "Mesečni limit je popunjen";
+    reason === "QUOTA_EDITS"
+      ? "Iskoristio si izmene ovog plana"
+      : "Mesečni limit je popunjen";
   const description =
     reason === "QUOTA_EDITS"
       ? "Svaki plan možeš da izmeniš tri puta. Novi planovi i izmene se otvaraju početkom sledećeg meseca, ili odmah sa Plus nalogom."
@@ -65,7 +71,11 @@ export function QuotaLockedDialog({
           ) : null}
         </div>
         <DialogFooter>
-          <Button variant="outline" render={<Link href="/saved" />} onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            render={<Link href="/saved" />}
+            onClick={() => onOpenChange(false)}
+          >
             Sačuvani planovi
           </Button>
           <Button render={<Link href="/upgrade" />} onClick={() => onOpenChange(false)}>

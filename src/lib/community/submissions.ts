@@ -72,7 +72,8 @@ export async function listOwnSubmissions(
     facebook: (row.facebook as string | null) ?? undefined,
     priceInfo: (row.price_info as string | null) ?? undefined,
     parkingInfo: (row.parking_info as string | null) ?? undefined,
-    estimatedDurationMinutes: (row.estimated_duration_minutes as number | null) ?? undefined,
+    estimatedDurationMinutes:
+      (row.estimated_duration_minutes as number | null) ?? undefined,
     indoor: (row.indoor as boolean | null) ?? undefined,
     outdoor: (row.outdoor as boolean | null) ?? undefined,
     familyFriendly: (row.family_friendly as boolean | null) ?? undefined,
@@ -132,14 +133,16 @@ export async function approveSubmission(
       facebook: patch?.facebook ?? submission.facebook,
       price_info: patch?.priceInfo ?? submission.price_info,
       parking_info: patch?.parkingInfo ?? submission.parking_info,
-      estimated_duration_minutes: patch?.estimatedDurationMinutes ?? submission.estimated_duration_minutes,
-      environment: (patch?.indoor && patch?.outdoor) || (submission.indoor && submission.outdoor)
-        ? "mixed"
-        : patch?.indoor || submission.indoor
-          ? "indoor"
-          : patch?.outdoor || submission.outdoor
-            ? "outdoor"
-            : null,
+      estimated_duration_minutes:
+        patch?.estimatedDurationMinutes ?? submission.estimated_duration_minutes,
+      environment:
+        (patch?.indoor && patch?.outdoor) || (submission.indoor && submission.outdoor)
+          ? "mixed"
+          : patch?.indoor || submission.indoor
+            ? "indoor"
+            : patch?.outdoor || submission.outdoor
+              ? "outdoor"
+              : null,
       family_friendly: patch?.familyFriendly ?? submission.family_friendly,
       pet_friendly: patch?.petFriendly ?? submission.pet_friendly,
       accessibility_notes: patch?.accessibilityNotes ?? submission.accessibility_notes,

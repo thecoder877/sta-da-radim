@@ -3,10 +3,7 @@ import type { TripRequest, GeneratedTrip } from "@/types/trip";
 const PENDING_ACTION_KEY = "stadardim_pending_action";
 
 export type AuthModalReason =
-  | "generation_limit"
-  | "save_trip"
-  | "protected_action"
-  | "community";
+  "generation_limit" | "save_trip" | "protected_action" | "community";
 
 export type PendingProtectedAction =
   | { type: "generate"; request: TripRequest }

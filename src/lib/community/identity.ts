@@ -10,7 +10,9 @@ export function isValidUsername(value: string): boolean {
   return USERNAME_PATTERN.test(normalizeUsername(value));
 }
 
-export function profileLabel(profile: Pick<UserProfile, "displayName" | "username"> | null | undefined): string {
+export function profileLabel(
+  profile: Pick<UserProfile, "displayName" | "username"> | null | undefined,
+): string {
   return profile?.displayName?.trim() || profile?.username || "Korisnik";
 }
 
@@ -28,6 +30,8 @@ export function authorFromProfile(profile: {
   };
 }
 
-export function handleFromProfile(profile: Pick<UserProfile, "username"> | null | undefined): string | null {
+export function handleFromProfile(
+  profile: Pick<UserProfile, "username"> | null | undefined,
+): string | null {
   return profile?.username ? `@${profile.username}` : null;
 }

@@ -34,7 +34,12 @@ export async function POST(request: Request) {
       action: "remove" | "restore" | "hide";
       note?: string;
     };
-    const status = body.action === "restore" ? "published" : body.action === "hide" ? "hidden" : "removed";
+    const status =
+      body.action === "restore"
+        ? "published"
+        : body.action === "hide"
+          ? "hidden"
+          : "removed";
     if (body.type === "reply") {
       await setReplyStatus(supabase, user.id, body.id, status, body.note);
     } else {

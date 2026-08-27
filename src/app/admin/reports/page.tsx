@@ -39,14 +39,27 @@ export default function AdminReportsPage() {
       <h1 className="font-heading text-3xl">Prijave</h1>
       <div className="mt-6 space-y-3">
         {items.map((item) => (
-          <article key={item.id} className="rounded-2xl bg-card p-4 ring-1 ring-foreground/8">
-            <p className="text-sm font-medium">{item.target_type} · {item.reason} · {item.status}</p>
+          <article
+            key={item.id}
+            className="rounded-2xl bg-card p-4 ring-1 ring-foreground/8"
+          >
+            <p className="text-sm font-medium">
+              {item.target_type} · {item.reason} · {item.status}
+            </p>
             <p className="text-xs text-muted-foreground">{item.target_id}</p>
             {item.details ? <p className="mt-2 text-sm">{item.details}</p> : null}
             {item.status === "open" ? (
               <div className="mt-3 flex gap-2">
-                <Button size="sm" onClick={() => void act(item.id, "resolve")}>Reši</Button>
-                <Button size="sm" variant="outline" onClick={() => void act(item.id, "dismiss")}>Odbaci</Button>
+                <Button size="sm" onClick={() => void act(item.id, "resolve")}>
+                  Reši
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => void act(item.id, "dismiss")}
+                >
+                  Odbaci
+                </Button>
               </div>
             ) : null}
           </article>

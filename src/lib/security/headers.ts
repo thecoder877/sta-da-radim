@@ -32,7 +32,10 @@ export function securityHeaders(production: boolean): Record<string, string> {
   return headers;
 }
 
-export function applySecurityHeaders(headers: Headers, production = process.env.NODE_ENV === "production") {
+export function applySecurityHeaders(
+  headers: Headers,
+  production = process.env.NODE_ENV === "production",
+) {
   for (const [key, value] of Object.entries(securityHeaders(production))) {
     headers.set(key, value);
   }

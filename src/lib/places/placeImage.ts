@@ -44,7 +44,9 @@ export function isDisplayablePlaceImage(url: string | undefined): boolean {
   return isAuthenticPlaceImage(url);
 }
 
-export function imageFromOsmTags(tags: Record<string, string> | undefined): string | undefined {
+export function imageFromOsmTags(
+  tags: Record<string, string> | undefined,
+): string | undefined {
   if (!tags) {
     return undefined;
   }

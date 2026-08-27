@@ -32,7 +32,10 @@ export async function deleteCanonicalPlace(
     throw new CommunityError("Lokacija nije pronađena.", "NOT_FOUND", 404);
   }
   if (data.source !== "community") {
-    throw new CommunityError("Katalog i OSM mesta se skidaju sa sajta, ne brišu se.", "INVALID_REQUEST");
+    throw new CommunityError(
+      "Katalog i OSM mesta se skidaju sa sajta, ne brišu se.",
+      "INVALID_REQUEST",
+    );
   }
   const { error } = await supabase.from("places").delete().eq("id", placeId);
   if (error) {

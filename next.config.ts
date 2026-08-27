@@ -8,9 +8,9 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/:path*",
-        headers: Object.entries(securityHeaders(process.env.NODE_ENV === "production")).map(
-          ([key, value]) => ({ key, value }),
-        ),
+        headers: Object.entries(
+          securityHeaders(process.env.NODE_ENV === "production"),
+        ).map(([key, value]) => ({ key, value })),
       },
     ];
   },

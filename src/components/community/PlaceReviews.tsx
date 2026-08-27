@@ -4,7 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useAuthModal } from "@/components/auth/AuthModalProvider";
 import { ReportDialog } from "@/components/community/ReportDialog";
-import { CROWD_OPTIONS, PARKING_OPTIONS, RECOMMENDED_FOR_OPTIONS } from "@/lib/community/constants";
+import {
+  CROWD_OPTIONS,
+  PARKING_OPTIONS,
+  RECOMMENDED_FOR_OPTIONS,
+} from "@/lib/community/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,8 +41,13 @@ export function PlaceReviews({
   }, []);
 
   async function reload(nextSort = sort) {
-    const response = await fetch(`/api/reviews?placeKey=${encodeURIComponent(place.id)}&sort=${nextSort}`);
-    const data = (await response.json()) as { reviews?: PlaceReview[]; summary?: ReviewSummary };
+    const response = await fetch(
+      `/api/reviews?placeKey=${encodeURIComponent(place.id)}&sort=${nextSort}`,
+    );
+    const data = (await response.json()) as {
+      reviews?: PlaceReview[];
+      summary?: ReviewSummary;
+    };
     setReviews(data.reviews ?? []);
     if (data.summary) {
       setSummary(data.summary);
@@ -62,7 +71,9 @@ export function PlaceReviews({
         <div>
           <h2 className="font-heading text-2xl">Recenzije</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {summary.count > 0 ? `${summary.average} · ${summary.count} recenzija` : "Još nema recenzija."}
+            {summary.count > 0
+              ? `${summary.average} · ${summary.count} recenzija`
+              : "Još nema recenzija."}
           </p>
         </div>
         <Button
@@ -81,10 +92,17 @@ export function PlaceReviews({
           {summary.worthVisitingPercent !== undefined ? (
             <p>{summary.worthVisitingPercent}% kaže da vredi posetiti</p>
           ) : null}
-          {summary.parkingSummary ? <p>Parking: uglavnom {summary.parkingSummary.toLowerCase()}</p> : null}
-          {summary.crowdSummary ? <p>Gužva: {summary.crowdSummary.toLowerCase()}</p> : null}
+          {summary.parkingSummary ? (
+            <p>Parking: uglavnom {summary.parkingSummary.toLowerCase()}</p>
+          ) : null}
+          {summary.crowdSummary ? (
+            <p>Gužva: {summary.crowdSummary.toLowerCase()}</p>
+          ) : null}
           {summary.recommendedFor?.length ? (
-            <p>Najčešće preporučeno za: {summary.recommendedFor.map((item) => item.label).join(", ")}</p>
+            <p>
+              Najčešće preporučeno za:{" "}
+              {summary.recommendedFor.map((item) => item.label).join(", ")}
+            </p>
           ) : null}
         </div>
       ) : null}
@@ -164,7 +182,9 @@ function ReviewForm({
   const [parking, setParking] = useState(existing?.parkingRating ?? "");
   const [crowd, setCrowd] = useState(existing?.crowdLevel ?? "");
   const [worth, setWorth] = useState<boolean | undefined>(existing?.worthVisiting);
-  const [recommended, setRecommended] = useState<string[]>(existing?.recommendedFor ?? []);
+  const [recommended, setRecommended] = useState<string[]>(
+    existing?.recommendedFor ?? [],
+  );
   const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -223,40 +243,80 @@ function ReviewForm({
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="review-title">Naslov</Label>
-        <Input id="review-title" value={title} onChange={(event) => setTitle(event.target.value)} />
+        <Input
+          id="review-title"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+        />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="review-content">Recenzija *</Label>
-        <Textarea id="review-content" rows={5} value={content} onChange={(event) => setContent(event.target.value)} required minLength={10} />
+        <Textarea
+          id="review-content"
+          rows={5}
+          value={content}
+          onChange={(event) => setContent(event.target.value)}
+          required
+          minLength={10}
+        />
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor="visit-date">Datum posete</Label>
-          <Input id="visit-date" type="date" value={visitDate} onChange={(event) => setVisitDate(event.target.value)} />
+          <Input
+            id="visit-date"
+            type="date"
+            value={visitDate}
+            onChange={(event) => setVisitDate(event.target.value)}
+          />
         </div>
         <div className="space-y-1.5">
           <Label>Parking</Label>
-          <select className="h-10 w-full rounded-lg border border-input bg-background px-2 text-sm" value={parking} onChange={(event) => setParking(event.target.value)}>
+          <select
+            className="h-10 w-full rounded-lg border border-input bg-background px-2 text-sm"
+            value={parking}
+            onChange={(event) => setParking(event.target.value)}
+          >
             <option value="">Nije bitno</option>
             {PARKING_OPTIONS.map((option) => (
-              <option key={option.id} value={option.id}>{option.label}</option>
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
             ))}
           </select>
         </div>
         <div className="space-y-1.5">
           <Label>Gužva</Label>
-          <select className="h-10 w-full rounded-lg border border-input bg-background px-2 text-sm" value={crowd} onChange={(event) => setCrowd(event.target.value)}>
+          <select
+            className="h-10 w-full rounded-lg border border-input bg-background px-2 text-sm"
+            value={crowd}
+            onChange={(event) => setCrowd(event.target.value)}
+          >
             <option value="">Nije bitno</option>
             {CROWD_OPTIONS.map((option) => (
-              <option key={option.id} value={option.id}>{option.label}</option>
+              <option key={option.id} value={option.id}>
+                {option.label}
+              </option>
             ))}
           </select>
         </div>
         <div className="space-y-1.5">
           <Label>Da li vredi posetiti?</Label>
           <div className="flex gap-2">
-            <Button type="button" variant={worth === true ? "default" : "outline"} onClick={() => setWorth(true)}>Da</Button>
-            <Button type="button" variant={worth === false ? "default" : "outline"} onClick={() => setWorth(false)}>Ne</Button>
+            <Button
+              type="button"
+              variant={worth === true ? "default" : "outline"}
+              onClick={() => setWorth(true)}
+            >
+              Da
+            </Button>
+            <Button
+              type="button"
+              variant={worth === false ? "default" : "outline"}
+              onClick={() => setWorth(false)}
+            >
+              Ne
+            </Button>
           </div>
         </div>
       </div>
@@ -270,7 +330,9 @@ function ReviewForm({
               className={`rounded-full border px-3 py-1 text-sm ${recommended.includes(option.id) ? "border-primary bg-primary/10" : "border-border"}`}
               onClick={() =>
                 setRecommended((current) =>
-                  current.includes(option.id) ? current.filter((id) => id !== option.id) : [...current, option.id],
+                  current.includes(option.id)
+                    ? current.filter((id) => id !== option.id)
+                    : [...current, option.id],
                 )
               }
             >
@@ -281,12 +343,22 @@ function ReviewForm({
       </fieldset>
       <div className="space-y-1.5">
         <Label htmlFor="review-photos">Fotografije</Label>
-        <Input id="review-photos" type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(event) => setFiles(Array.from(event.target.files ?? []).slice(0, 5))} />
+        <Input
+          id="review-photos"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          multiple
+          onChange={(event) => setFiles(Array.from(event.target.files ?? []).slice(0, 5))}
+        />
       </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       <div className="flex gap-2">
-        <Button type="submit" disabled={loading}>{loading ? "Čuvam..." : existing ? "Sačuvaj izmene" : "Objavi"}</Button>
-        <Button type="button" variant="ghost" onClick={onCancel}>Odustani</Button>
+        <Button type="submit" disabled={loading}>
+          {loading ? "Čuvam..." : existing ? "Sačuvaj izmene" : "Objavi"}
+        </Button>
+        <Button type="button" variant="ghost" onClick={onCancel}>
+          Odustani
+        </Button>
       </div>
     </form>
   );
@@ -312,7 +384,10 @@ function ReviewCard({
   const [reply, setReply] = useState("");
   const [showReply, setShowReply] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
-  const [reportTarget, setReportTarget] = useState<{ type: "review" | "reply"; id: string }>({
+  const [reportTarget, setReportTarget] = useState<{
+    type: "review" | "reply";
+    id: string;
+  }>({
     type: "review",
     id: review.id,
   });
@@ -320,10 +395,14 @@ function ReviewCard({
   const tags = useMemo(() => {
     const items: string[] = [];
     if (review.parkingRating) {
-      items.push(`Parking: ${PARKING_OPTIONS.find((item) => item.id === review.parkingRating)?.label ?? ""}`);
+      items.push(
+        `Parking: ${PARKING_OPTIONS.find((item) => item.id === review.parkingRating)?.label ?? ""}`,
+      );
     }
     if (review.crowdLevel) {
-      items.push(CROWD_OPTIONS.find((item) => item.id === review.crowdLevel)?.label ?? "");
+      items.push(
+        CROWD_OPTIONS.find((item) => item.id === review.crowdLevel)?.label ?? "",
+      );
     }
     if (review.worthVisiting === true) {
       items.push("Vredi posetiti");
@@ -390,28 +469,53 @@ function ReviewCard({
         <div className="flex gap-3">
           {review.author.avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={review.author.avatarUrl} alt="" className="size-10 rounded-full object-cover" />
+            <img
+              src={review.author.avatarUrl}
+              alt=""
+              className="size-10 rounded-full object-cover"
+            />
           ) : (
-            <span className="flex size-10 items-center justify-center rounded-full bg-muted text-sm">{name.slice(0, 1)}</span>
+            <span className="flex size-10 items-center justify-center rounded-full bg-muted text-sm">
+              {name.slice(0, 1)}
+            </span>
           )}
           <div>
-          <p className="font-medium">{name}</p>
-          {review.author.username ? <p className="text-xs text-muted-foreground">@{review.author.username}</p> : null}
-          <p className="mt-1 text-sm">{Array.from({ length: review.rating }, () => "★").join("")}</p>
+            <p className="font-medium">{name}</p>
+            {review.author.username ? (
+              <p className="text-xs text-muted-foreground">@{review.author.username}</p>
+            ) : null}
+            <p className="mt-1 text-sm">
+              {Array.from({ length: review.rating }, () => "★").join("")}
+            </p>
           </div>
         </div>
-        <p className="text-xs text-muted-foreground">{new Date(review.createdAt).toLocaleDateString("sr-Latn")}</p>
+        <p className="text-xs text-muted-foreground">
+          {new Date(review.createdAt).toLocaleDateString("sr-Latn")}
+        </p>
       </div>
       {editing ? (
-        <ReviewForm place={place} existing={review} onDone={() => void onChanged()} onCancel={onCancelEdit} />
+        <ReviewForm
+          place={place}
+          existing={review}
+          onDone={() => void onChanged()}
+          onCancel={onCancelEdit}
+        />
       ) : null}
-      {!editing && review.title ? <h3 className="mt-3 font-medium">{review.title}</h3> : null}
-      {!editing ? <p className="mt-2 text-sm leading-6 text-muted-foreground">{review.content}</p> : null}
-      {review.visitDate ? <p className="mt-2 text-xs text-muted-foreground">Poseta: {review.visitDate}</p> : null}
+      {!editing && review.title ? (
+        <h3 className="mt-3 font-medium">{review.title}</h3>
+      ) : null}
+      {!editing ? (
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">{review.content}</p>
+      ) : null}
+      {review.visitDate ? (
+        <p className="mt-2 text-xs text-muted-foreground">Poseta: {review.visitDate}</p>
+      ) : null}
       {tags.length ? (
         <div className="mt-3 flex flex-wrap gap-2">
           {tags.map((tag) => (
-            <span key={tag} className="rounded-full bg-muted px-2 py-0.5 text-xs">{tag}</span>
+            <span key={tag} className="rounded-full bg-muted px-2 py-0.5 text-xs">
+              {tag}
+            </span>
           ))}
         </div>
       ) : null}
@@ -419,40 +523,74 @@ function ReviewCard({
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
           {review.photos.map((photo) => (
             // eslint-disable-next-line @next/next/no-img-element
-            <img key={photo.id} src={photo.publicUrl} alt={photo.caption ?? "Fotografija recenzije"} className="h-28 w-full rounded-lg object-cover" />
+            <img
+              key={photo.id}
+              src={photo.publicUrl}
+              alt={photo.caption ?? "Fotografija recenzije"}
+              className="h-28 w-full rounded-lg object-cover"
+            />
           ))}
         </div>
       ) : null}
       <div className="mt-4 flex flex-wrap gap-2 text-sm">
-        <Button size="sm" variant={review.viewerVote === 1 ? "default" : "outline"} onClick={() => void vote(1)}>
+        <Button
+          size="sm"
+          variant={review.viewerVote === 1 ? "default" : "outline"}
+          onClick={() => void vote(1)}
+        >
           👍 Korisno {review.helpfulCount}
         </Button>
-        <Button size="sm" variant={review.viewerVote === -1 ? "default" : "outline"} onClick={() => void vote(-1)}>
+        <Button
+          size="sm"
+          variant={review.viewerVote === -1 ? "default" : "outline"}
+          onClick={() => void vote(-1)}
+        >
           👎 Nije korisno {review.notHelpfulCount}
         </Button>
-        <Button size="sm" variant="ghost" onClick={() => setShowReply((value) => !value)}>Odgovori</Button>
-        <Button size="sm" variant="ghost" onClick={() => report()}>Prijavi</Button>
+        <Button size="sm" variant="ghost" onClick={() => setShowReply((value) => !value)}>
+          Odgovori
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => report()}>
+          Prijavi
+        </Button>
         {review.isOwner ? (
           <>
-            <Button size="sm" variant="ghost" onClick={onEdit}>Izmeni</Button>
-            <Button size="sm" variant="ghost" onClick={() => void remove()}>Obriši</Button>
+            <Button size="sm" variant="ghost" onClick={onEdit}>
+              Izmeni
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => void remove()}>
+              Obriši
+            </Button>
           </>
         ) : null}
       </div>
       {showReply ? (
         <form onSubmit={sendReply} className="mt-3 flex gap-2">
-          <Input value={reply} onChange={(event) => setReply(event.target.value)} placeholder="Napiši odgovor" required />
-          <Button type="submit" size="sm">Pošalji</Button>
+          <Input
+            value={reply}
+            onChange={(event) => setReply(event.target.value)}
+            placeholder="Napiši odgovor"
+            required
+          />
+          <Button type="submit" size="sm">
+            Pošalji
+          </Button>
         </form>
       ) : null}
       {review.replies.length ? (
         <div className="mt-4 space-y-2 border-t border-border pt-3">
           {review.replies.map((item) => (
             <div key={item.id}>
-              <p className="text-xs font-medium">{item.author.displayName || item.author.username || "Korisnik"}</p>
+              <p className="text-xs font-medium">
+                {item.author.displayName || item.author.username || "Korisnik"}
+              </p>
               <p className="text-sm text-muted-foreground">{item.content}</p>
               <div className="mt-1 flex gap-2">
-                <button type="button" className="text-xs text-muted-foreground underline" onClick={() => report("reply", item.id)}>
+                <button
+                  type="button"
+                  className="text-xs text-muted-foreground underline"
+                  onClick={() => report("reply", item.id)}
+                >
                   Prijavi
                 </button>
                 {item.isOwner ? (
@@ -481,7 +619,11 @@ function ReviewCard({
         onOpenChange={setReportOpen}
         targetType={reportTarget.type}
         targetId={reportTarget.id}
-        onSubmitted={() => void onChanged("Prijava je poslata. Sadržaj ostaje vidljiv dok moderator ne odluči.")}
+        onSubmitted={() =>
+          void onChanged(
+            "Prijava je poslata. Sadržaj ostaje vidljiv dok moderator ne odluči.",
+          )
+        }
       />
     </article>
   );
