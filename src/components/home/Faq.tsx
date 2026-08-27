@@ -43,7 +43,7 @@ export function Faq() {
                 <span>{item.question}</span>
                 <ChevronDown
                   aria-hidden
-                  className="size-5 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180"
+                  className="size-5 shrink-0 text-muted-foreground transition-transform duration-200 ease-out-emph group-open:rotate-180"
                 />
               </summary>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">

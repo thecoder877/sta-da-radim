@@ -10,7 +10,7 @@ export function FloatingContact() {
       href={`mailto:${CONTACT_EMAIL}`}
       aria-label="Kontaktiraj nas"
       title="Kontakt"
-      className="fixed bottom-6 left-6 z-50 flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg transition hover:opacity-90 print:hidden"
+      className="fixed bottom-6 left-6 z-50 flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg transition-[transform,opacity] duration-[160ms] ease-out-emph active:scale-[0.97] print:hidden [@media(hover:hover)_and_(pointer:fine)]:hover:opacity-90"
     >
       <Mail className="size-4" aria-hidden />
       <span className="hidden sm:inline">Kontakt</span>

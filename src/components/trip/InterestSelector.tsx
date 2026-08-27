@@ -29,7 +29,7 @@ export function InterestSelector({
             onClick={() => toggle(interest.id)}
             aria-pressed={selected}
             className={cn(
-              "rounded-full border px-3 py-1.5 text-sm transition",
+              "rounded-full border px-3 py-1.5 text-sm transition-[transform,background-color,border-color,color] duration-[160ms] ease-out-emph active:scale-[0.97]",
               selected
                 ? "border-primary bg-primary text-primary-foreground"
                 : "border-border bg-card text-foreground hover:border-primary/40",

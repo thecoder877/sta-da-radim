@@ -15,7 +15,7 @@ export function LoadingState({
       aria-live="polite"
     >
       <div
-        className="size-8 animate-spin rounded-full border-2 border-primary/20 border-t-primary"
+        className="size-8 motion-spin animate-spin rounded-full border-2 border-primary/20 border-t-primary"
         aria-hidden
       />
       <p className="text-sm text-muted-foreground">{message}</p>
@@ -31,7 +31,7 @@ export function TripGeneratingOverlay({ message }: { message: string }) {
       aria-live="polite"
     >
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-lg">
-        <div className="mx-auto size-10 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
+        <div className="mx-auto size-10 motion-spin animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
         <p className="mt-5 font-heading text-2xl">{message}</p>
         <p className="mt-2 text-sm text-muted-foreground">
           Ovo traje kratko. Ne prikazujemo lažne procente.

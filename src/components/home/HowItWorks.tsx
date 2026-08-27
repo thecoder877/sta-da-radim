@@ -25,7 +25,7 @@ export function HowItWorks() {
       <Container>
         <p className="text-sm text-primary">Kako funkcioniše</p>
         <h2 className="mt-1 font-heading text-3xl sm:text-4xl">Tri koraka do izleta</h2>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="motion-stagger mt-10 grid gap-6 md:grid-cols-3">
           {steps.map((step, index) => (
             <div
               key={step.title}

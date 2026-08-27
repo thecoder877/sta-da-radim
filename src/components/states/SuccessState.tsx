@@ -13,7 +13,7 @@ export function SuccessState({
   return (
     <div
       role="status"
-      className="rounded-2xl border border-primary/25 bg-primary/5 px-6 py-8 text-center"
+      className="motion-enter rounded-2xl border border-primary/25 bg-primary/5 px-6 py-8 text-center"
     >
       <CheckCircle2 className="mx-auto mb-3 size-6 text-primary" aria-hidden />
       <p className="font-heading text-xl">{title}</p>

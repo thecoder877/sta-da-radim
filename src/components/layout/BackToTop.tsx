@@ -26,7 +26,7 @@ export function BackToTop() {
       aria-label="Nazad na vrh"
       title="Nazad na vrh"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      className="fixed bottom-6 right-6 z-50 flex size-11 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-lg transition hover:bg-muted print:hidden"
+      className="fixed bottom-6 right-6 z-50 flex size-11 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-lg transition-[transform,background-color,opacity] duration-[160ms] ease-out-emph starting:scale-95 starting:opacity-0 hover:bg-muted active:scale-[0.97] print:hidden"
     >
       <ArrowUp className="size-5" aria-hidden />
     </button>

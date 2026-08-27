@@ -21,7 +21,7 @@ export function PopularDestinations() {
             Vidi sva mesta
           </Link>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="motion-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {POPULAR_DESTINATIONS.map((destination) => (
             <Link
               key={destination.slug}
@@ -33,7 +33,7 @@ export function PopularDestinations() {
                   src={destination.imageUrl}
                   alt={destination.name}
                   fill
-                  className="object-cover transition duration-500 group-hover:scale-[1.03]"
+                  className="object-cover transition-transform duration-[200ms] ease-out-emph motion-reduce:transition-none [@media(hover:hover)_and_(pointer:fine)]:group-hover:scale-[1.03]"
                   sizes="(max-width: 768px) 100vw, 25vw"
                 />
               </div>

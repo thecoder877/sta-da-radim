@@ -47,6 +47,9 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --ease-out-emph: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-emph: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 :root {
@@ -111,7 +114,7 @@
   }
 
   html {
-    @apply font-sans scroll-smooth;
+    @apply font-sans scroll-smooth motion-reduce:scroll-auto;
   }
 
   body {
@@ -123,6 +126,75 @@
   h3,
   .font-heading {
     font-family: var(--font-heading), ui-serif, Georgia, serif;
+  }
+}
+
+@layer components {
+  .motion-spin {
+    animation-duration: 0.65s;
+  }
+
+  .motion-enter {
+    animation: motion-rise 280ms var(--ease-out-emph) backwards;
+  }
+
+  .motion-stagger > * {
+    animation: motion-rise 280ms var(--ease-out-emph) backwards;
+    pointer-events: auto;
+  }
+
+  .motion-stagger > *:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  .motion-stagger > *:nth-child(2) {
+    animation-delay: 40ms;
+  }
+  .motion-stagger > *:nth-child(3) {
+    animation-delay: 80ms;
+  }
+  .motion-stagger > *:nth-child(4) {
+    animation-delay: 120ms;
+  }
+  .motion-stagger > *:nth-child(5) {
+    animation-delay: 160ms;
+  }
+  .motion-stagger > *:nth-child(6) {
+    animation-delay: 200ms;
+  }
+  .motion-stagger > *:nth-child(n + 7) {
+    animation-delay: 240ms;
+  }
+}
+
+@keyframes motion-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-enter,
+  .motion-stagger > * {
+    animation: none;
+  }
+
+  .motion-spin {
+    animation-duration: 1.2s;
+  }
+
+  [data-slot="dialog-content"],
+  [data-slot="dialog-overlay"],
+  [data-slot="sheet-content"],
+  [data-slot="sheet-overlay"],
+  [data-slot="popover-content"],
+  [data-slot="select-content"] {
+    transition-property: opacity;
+    transform: none;
   }
 }
 

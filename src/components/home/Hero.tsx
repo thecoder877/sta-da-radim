@@ -20,7 +20,7 @@ export function Hero() {
       </div>
 
       <Container className="relative py-20 sm:py-28">
-        <div className="max-w-2xl text-white">
+        <div className="motion-enter max-w-2xl text-white">
           <p className="text-sm uppercase tracking-[0.2em] text-white/75">
             Putovanja po Srbiji
           </p>

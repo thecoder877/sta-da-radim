@@ -27,7 +27,7 @@ export function BudgetSelector({
               aria-pressed={selected}
               onClick={() => onPresetChange(option.id)}
               className={cn(
-                "rounded-full border px-3 py-1.5 text-sm",
+                "rounded-full border px-3 py-1.5 text-sm transition-[transform,background-color,border-color,color] duration-[160ms] ease-out-emph active:scale-[0.97]",
                 selected
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-border bg-card hover:border-primary/40",

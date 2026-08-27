@@ -38,7 +38,7 @@ export function CookieBanner() {
     <div
       role="dialog"
       aria-label="Obaveštenje o kolačićima"
-      className="fixed inset-x-3 bottom-3 z-[70] mx-auto max-w-2xl rounded-2xl border border-border bg-card p-4 shadow-lg print:hidden sm:inset-x-auto sm:right-6 sm:bottom-6 sm:left-auto sm:w-96"
+      className="fixed inset-x-3 bottom-3 z-[70] mx-auto max-w-2xl rounded-2xl border border-border bg-card p-4 shadow-lg transition-[opacity,transform] duration-[250ms] ease-out-emph starting:translate-y-4 starting:opacity-0 print:hidden sm:inset-x-auto sm:right-6 sm:bottom-6 sm:left-auto sm:w-96"
     >
       <p className="text-sm leading-6 text-muted-foreground">
         Koristimo neophodne kolačiće da bi sajt radio (npr. prijava i besplatni plan).

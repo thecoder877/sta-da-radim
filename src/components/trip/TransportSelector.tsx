@@ -32,7 +32,7 @@ export function TransportSelector({
             aria-pressed={selected}
             onClick={() => onChange(option.id)}
             className={cn(
-              "flex flex-col items-center gap-2 rounded-xl border px-3 py-3 text-sm transition",
+              "flex flex-col items-center gap-2 rounded-xl border px-3 py-3 text-sm transition-[transform,background-color,border-color,color] duration-[160ms] ease-out-emph active:scale-[0.97]",
               selected
                 ? "border-primary bg-primary/8 text-foreground"
                 : "border-border bg-card hover:border-primary/40",
