@@ -1,41 +1,30 @@
 import { addDays, format, parseISO } from "date-fns";
 import { SERBIA_CENTER } from "@/lib/constants";
 import { calculateDistanceKm, estimateTravelMinutes } from "@/lib/geo/distance";
-import {
-  dailyTravelBudgetKm,
-  effectiveSearchRadiusKm,
-} from "@/lib/geo/travelTime";
+import { dailyTravelBudgetKm, effectiveSearchRadiusKm } from "@/lib/geo/travelTime";
 import { resolveStartCoordinates } from "@/lib/locations";
 import { slugify } from "@/lib/format";
 import { withPlaceImage } from "@/lib/places/placeImage";
 import {
+  MIN_STOPS,
+  STOP_COUNT_BY_PRESET,
+  STOPS_PER_DAY,
+  TRAVEL_STYLE_STOP_DELTA,
+} from "@/lib/tripPlanner/config";
+import {
   filterPlacesByBudget,
   filterPlacesByDistance,
+  filterPlacesByInterests,
 } from "@/lib/tripPlanner/filtering";
 import { rankPlacesForTrip } from "@/lib/tripPlanner/scoring";
+import { addMinutesToTime } from "@/lib/tripPlanner/time";
 import type { Coordinates, Place } from "@/types/place";
-import type {
-  GeneratedTrip,
-  TripDay,
-  TripRequest,
-  TripStop,
-} from "@/types/trip";
+import type { GeneratedTrip, TripDay, TripRequest, TripStop } from "@/types/trip";
 
 function targetStopCount(request: TripRequest): number {
-  const preset = request.durationPreset;
-  let base = request.days * 4;
-
-  if (preset === "hours") {
-    base = 3;
-  } else if (preset === "1") {
-    base = 5;
-  } else if (preset === "2") {
-    base = 8;
-  } else if (preset === "3") {
-    base = 11;
-  } else if (preset === "4plus") {
-    base = 13;
-  }
+  let base = request.durationPreset
+    ? STOP_COUNT_BY_PRESET[request.durationPreset]
+    : request.days * STOPS_PER_DAY;
 
   if (request.transport === "walk") {
     base = Math.min(base, request.days * 3);
@@ -43,13 +32,8 @@ function targetStopCount(request: TripRequest): number {
     base = Math.min(base, request.days * 4);
   }
 
-  if (request.travelStyle === "relaxed") {
-    return Math.max(2, base - 2);
-  }
-  if (request.travelStyle === "packed") {
-    return base + 2;
-  }
-  return base;
+  const target = base + TRAVEL_STYLE_STOP_DELTA[request.travelStyle];
+  return request.travelStyle === "relaxed" ? Math.max(MIN_STOPS, target) : target;
 }
 
 function trimPlacesToPathBudget(
@@ -81,10 +65,7 @@ function trimPlacesToPathBudget(
   return kept.length >= 2 ? kept : places.slice(0, 2);
 }
 
-function orderByNearestNeighbor(
-  origin: Coordinates,
-  places: Place[],
-): Place[] {
+function orderByNearestNeighbor(origin: Coordinates, places: Place[]): Place[] {
   const remaining = [...places];
   const ordered: Place[] = [];
   let current = origin;
@@ -113,17 +94,10 @@ function orderByNearestNeighbor(
   return ordered;
 }
 
-function addMinutesToTime(time: string, minutes: number): string {
-  const [hours, mins] = time.split(":").map(Number);
-  const total = hours * 60 + mins + minutes;
-  const wrapped = ((total % (24 * 60)) + 24 * 60) % (24 * 60);
-  const nextHours = Math.floor(wrapped / 60);
-  const nextMins = wrapped % 60;
-  return `${String(nextHours).padStart(2, "0")}:${String(nextMins).padStart(2, "0")}`;
-}
-
 function buildTitle(places: Place[], startLocation: string): string {
-  const regions = [...new Set(places.map((place) => place.city ?? place.region).filter(Boolean))];
+  const regions = [
+    ...new Set(places.map((place) => place.city ?? place.region).filter(Boolean)),
+  ];
   if (regions.length >= 2) {
     return `${regions[0]} & ${regions[1]}`;
   }
@@ -134,9 +108,7 @@ function buildTitle(places: Place[], startLocation: string): string {
 }
 
 function buildReason(place: Place, request: TripRequest): string {
-  const matched = place.tags.filter((tag) =>
-    request.interests.includes(tag),
-  );
+  const matched = place.tags.filter((tag) => request.interests.includes(tag));
   if (place.category === "Hrana") {
     return "Pauza za ručak i lokalnu hranu, da dan ne bude samo u hodu.";
   }
@@ -152,10 +124,7 @@ function buildReason(place: Place, request: TripRequest): string {
   return place.shortDescription;
 }
 
-export function generateMockTrip(
-  request: TripRequest,
-  catalog: Place[],
-): GeneratedTrip {
+export function generateMockTrip(request: TripRequest, catalog: Place[]): GeneratedTrip {
   const origin =
     request.startLocation.coordinates ??
     resolveStartCoordinates(request.startLocation.name) ??
@@ -192,11 +161,21 @@ export function generateMockTrip(
     request.budget,
     request.numberOfPeople,
   );
-  const ranked = rankPlacesForTrip(byBudget, request, origin).filter(
+
+  // Interests must be a real constraint, not just a scoring hint. Keep only
+  // places that match a selected interest, but fall back to the wider budget
+  // pool when interests would leave too few candidates to build a plan.
+  const minCandidates = Math.max(2, Math.min(targetStopCount(request), 4));
+  const byInterests = filterPlacesByInterests(byBudget, request.interests);
+  const interestPool = byInterests.length >= minCandidates ? byInterests : byBudget;
+
+  const ranked = rankPlacesForTrip(interestPool, request, origin).filter(
     (item) => item.score > 0 || request.interests.length === 0,
   );
 
-  const usable = (ranked.length > 0 ? ranked : rankPlacesForTrip(byDistance, request, origin))
+  const usable = (
+    ranked.length > 0 ? ranked : rankPlacesForTrip(byDistance, request, origin)
+  )
     .map((item) => item.place)
     .filter((place) => place.category !== "Smeštaj");
 
@@ -253,10 +232,8 @@ export function generateMockTrip(
       totalTravel += travel;
 
       const duration =
-        place.estimatedDurationMinutes ??
-        (request.travelStyle === "relaxed" ? 90 : 60);
-      const cost =
-        (place.estimatedCostPerPerson ?? 0) * request.numberOfPeople;
+        place.estimatedDurationMinutes ?? (request.travelStyle === "relaxed" ? 90 : 60);
+      const cost = (place.estimatedCostPerPerson ?? 0) * request.numberOfPeople;
       totalCost += cost;
 
       const stop: TripStop = {

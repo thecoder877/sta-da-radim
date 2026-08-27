@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import { describe, it } from "vitest";
 import {
   ANONYMOUS_GENERATION_KEY,
   getGenerationAccess,
@@ -7,7 +7,7 @@ import {
   markAnonymousGenerationUsed,
   tripSuccessfullyGenerated,
   type GenerationAccessStore,
-} from "./generationAccess.ts";
+} from "./generationAccess";
 
 class MemoryStore implements GenerationAccessStore {
   private readonly values = new Map<string, string>();
@@ -34,10 +34,13 @@ describe("generation access", () => {
       allowed: false,
       reason: "AUTH_REQUIRED",
     });
-    assert.equal(store.getItem(ANONYMOUS_GENERATION_KEY), JSON.stringify({
-      used: true,
-      usedAt: "2026-08-24T00:00:00.000Z",
-    }));
+    assert.equal(
+      store.getItem(ANONYMOUS_GENERATION_KEY),
+      JSON.stringify({
+        used: true,
+        usedAt: "2026-08-24T00:00:00.000Z",
+      }),
+    );
   });
 
   it("ignores the anonymous flag for authenticated users", () => {

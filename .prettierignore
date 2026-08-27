@@ -1,0 +1,11 @@
+.next
+node_modules
+out
+build
+coverage
+package-lock.json
+src/data/osmPlaces.json
+
+# Managed by `next dev` (agent rules block) — do not reformat.
+AGENTS.md
+CLAUDE.md

@@ -1,20 +1,37 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { getTripRoute } from "@/lib/providers/routing";
-import type { Coordinates } from "@/types/place";
-import type { TransportType } from "@/types/trip";
+import { rateLimitOrResponse } from "@/lib/security/apiGuards";
+
+const coordinateSchema = z.object({
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+});
+
+const routesBodySchema = z.object({
+  points: z.array(coordinateSchema).min(2).max(25),
+  transport: z.enum(["car", "bus", "train", "walk", "bike"]).optional(),
+});
 
 export async function POST(request: Request) {
+  const limited = rateLimitOrResponse(request, "routes", {
+    limit: 60,
+    windowMs: 60_000,
+  });
+  if (limited) {
+    return limited;
+  }
+
   try {
-    const body = (await request.json()) as {
-      points?: Coordinates[];
-      transport?: TransportType;
-    };
-    const points = body.points ?? [];
-    if (points.length < 2) {
-      return NextResponse.json({ route: null });
+    const parsed = routesBodySchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json(
+        { route: null, error: "Neispravne koordinate.", code: "INVALID_REQUEST" },
+        { status: 400 },
+      );
     }
 
-    const route = await getTripRoute(points, body.transport ?? "car");
+    const route = await getTripRoute(parsed.data.points, parsed.data.transport ?? "car");
     return NextResponse.json({ route });
   } catch {
     return NextResponse.json({ route: null }, { status: 200 });

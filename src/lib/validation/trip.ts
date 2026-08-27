@@ -2,10 +2,7 @@ import { z } from "zod";
 
 export const tripRequestSchema = z.object({
   startLocation: z.object({
-    name: z
-      .string()
-      .trim()
-      .min(2, "Unesi mesto sa kog krećeš."),
+    name: z.string().trim().min(2, "Unesi mesto sa kog krećeš."),
     coordinates: z
       .object({
         latitude: z.number().min(-90).max(90),
@@ -15,9 +12,7 @@ export const tripRequestSchema = z.object({
   }),
   startDate: z.string().min(1, "Izaberi datum polaska."),
   days: z.number().int().min(1).max(14),
-  durationPreset: z
-    .enum(["hours", "1", "2", "3", "4plus"])
-    .optional(),
+  durationPreset: z.enum(["hours", "1", "2", "3", "4plus"]).optional(),
   numberOfPeople: z
     .number()
     .int()
@@ -32,25 +27,3 @@ export const tripRequestSchema = z.object({
 });
 
 export type TripRequestInput = z.infer<typeof tripRequestSchema>;
-
-export const aiItinerarySchema = z.object({
-  title: z.string().min(2),
-  summary: z.string().min(2),
-  days: z
-    .array(
-      z.object({
-        dayNumber: z.number().int().min(1),
-        stops: z
-          .array(
-            z.object({
-              placeId: z.string().min(1),
-              arrivalTime: z.string().min(4),
-              durationMinutes: z.number().int().positive(),
-              reason: z.string().optional(),
-            }),
-          )
-          .min(1),
-      }),
-    )
-    .min(1),
-});

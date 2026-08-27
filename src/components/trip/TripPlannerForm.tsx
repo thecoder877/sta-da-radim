@@ -29,9 +29,18 @@ import {
 import { canStartGeneration, type PlanQuotaReason } from "@/lib/access/planQuota";
 import { QuotaLockedDialog } from "@/components/access/QuotaLockedDialog";
 import { isQuotaError, requestGeneratedTrip } from "@/lib/trips/generateClient";
-import { persistGeneratedTrip, persistLastTripRequest, readLastTripRequest } from "@/lib/trips/storage";
+import {
+  persistGeneratedTrip,
+  persistLastTripRequest,
+  readLastTripRequest,
+} from "@/lib/trips/storage";
 import { tripRequestSchema } from "@/lib/validation/trip";
-import type { DurationPreset, TransportType, TravelStyle, TripRequest } from "@/types/trip";
+import type {
+  DurationPreset,
+  TransportType,
+  TravelStyle,
+  TripRequest,
+} from "@/types/trip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -66,7 +75,9 @@ function formValuesFromRequest(request: TripRequest): FormValues {
   const budgetMatch = BUDGET_OPTIONS.find(
     (item) => typeof item.value === "number" && item.value === request.budget,
   );
-  const distanceMatch = DISTANCE_OPTIONS.find((item) => item.value === request.maxDistanceKm);
+  const distanceMatch = DISTANCE_OPTIONS.find(
+    (item) => item.value === request.maxDistanceKm,
+  );
 
   return {
     startName: request.startLocation.name,
@@ -142,7 +153,11 @@ export function TripPlannerForm() {
   }, [form, transport]);
 
   useEffect(() => {
-    if (searchParams.get("from") || searchParams.get("date") || searchParams.get("duration")) {
+    if (
+      searchParams.get("from") ||
+      searchParams.get("date") ||
+      searchParams.get("duration")
+    ) {
       return;
     }
     const lastRequest = readLastTripRequest();
@@ -312,6 +327,7 @@ export function TripPlannerForm() {
                   <button
                     key={option.id}
                     type="button"
+                    aria-pressed={field.value === option.id}
                     onClick={() => field.onChange(option.id)}
                     className={`rounded-full border px-3 py-1.5 text-sm ${
                       field.value === option.id
@@ -364,6 +380,7 @@ export function TripPlannerForm() {
                   <button
                     key={option.id}
                     type="button"
+                    aria-pressed={field.value === option.id}
                     onClick={() => field.onChange(option.id)}
                     className={`rounded-full border px-3 py-1.5 text-sm ${
                       field.value === option.id
@@ -401,6 +418,7 @@ export function TripPlannerForm() {
                   <button
                     key={option.id}
                     type="button"
+                    aria-pressed={field.value === option.id}
                     onClick={() => field.onChange(option.id)}
                     className={`rounded-2xl border p-4 text-left ${
                       field.value === option.id
@@ -463,7 +481,8 @@ export function TripPlannerForm() {
           ) : null}
           {user && quota && !quota.unlimited ? (
             <p className="text-center text-xs text-muted-foreground">
-              {quota.generationsRemaining}/{quota.generationsLimit} generisanja ostalo ovog meseca
+              {quota.generationsRemaining}/{quota.generationsLimit} generisanja ostalo
+              ovog meseca
             </p>
           ) : null}
         </div>

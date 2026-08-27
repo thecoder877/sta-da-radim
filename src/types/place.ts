@@ -1,4 +1,4 @@
-export type PlaceSource = "internal" | "community" | "google" | "mapbox" | "osm";
+export type PlaceSource = "internal" | "community" | "google" | "osm";
 
 export type PlaceEnvironment = "indoor" | "outdoor" | "mixed";
 

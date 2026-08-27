@@ -38,14 +38,16 @@ The planner, Explore, maps, and the first anonymous trip work without Supabase. 
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
+APP_SECRET=
 
-NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
 GOOGLE_MAPS_API_KEY=
 OPENAI_API_KEY=
 ```
 
 `NEXT_PUBLIC_SUPABASE_*` are the public anon keys. Never put `SUPABASE_SERVICE_ROLE_KEY` or `OPENAI_API_KEY` in a `NEXT_PUBLIC_` variable. `.env.local` is gitignored. Passwords are hashed by Supabase Auth. Community writes go through server auth, Zod validation, and RLS.
+
+The service-role key is optional for Auth, save, and sharing. `APP_SECRET` is an optional server-only secret used to sign the anonymous generation-quota cookie. `GOOGLE_MAPS_API_KEY` is server-only (Directions + lodging); `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` enables the in-browser Google map.
 
 ## What works now
 

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { PlaceFilters } from "@/components/places/PlaceFilters";
 import { PlaceGrid } from "@/components/places/PlaceGrid";
+import { PlaceGridSkeleton } from "@/components/places/PlaceGridSkeleton";
 import { LoadingState } from "@/components/states/LoadingState";
 import { Button } from "@/components/ui/button";
 import { searchCatalogExplore } from "@/lib/providers/places";
@@ -13,28 +14,24 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Istraži Srbiju",
-  description:
-    "Pregledaj jezera, tvrđave, manastire i skrivena mesta širom Srbije.",
+  description: "Pregledaj jezera, tvrđave, manastire i skrivena mesta širom Srbije.",
 };
 
-export default async function ExplorePage({
-  searchParams,
-}: {
-  searchParams: Promise<{
-    q?: string;
-    category?: string;
-    region?: string;
-    free?: string;
-    paid?: string;
-    outdoor?: string;
-    indoor?: string;
-    children?: string;
-    romantic?: string;
-    hidden?: string;
-    page?: string;
-  }>;
-}) {
-  const params = await searchParams;
+type ExploreParams = {
+  q?: string;
+  category?: string;
+  region?: string;
+  free?: string;
+  paid?: string;
+  outdoor?: string;
+  indoor?: string;
+  children?: string;
+  romantic?: string;
+  hidden?: string;
+  page?: string;
+};
+
+async function ExploreResults({ params }: { params: ExploreParams }) {
   const environment: PlaceEnvironment | undefined = params.outdoor
     ? "outdoor"
     : params.indoor
@@ -77,14 +74,56 @@ export default async function ExplorePage({
   }
 
   return (
+    <div>
+      <p className="mb-4 text-sm text-muted-foreground">
+        {places.length} {places.length === 1 ? "mesto" : "mesta"}
+        {aroundLabel ? ` u okolini — ${aroundLabel}` : ""}
+        {totalPages > 1 ? ` · strana ${currentPage} / ${totalPages}` : ""}
+      </p>
+      <PlaceGrid
+        places={pagePlaces}
+        emptyDescription="Probaj grad (Ruma, Beograd), vrstu mesta (bazen, manastir, jezero) ili tačan naziv."
+      />
+      {totalPages > 1 ? (
+        <nav
+          className="mt-8 flex items-center justify-between gap-3 text-sm"
+          aria-label="Stranice"
+        >
+          {currentPage > 1 ? (
+            <Link href={pageHref(currentPage - 1)} className="hover:underline">
+              Prethodna
+            </Link>
+          ) : (
+            <span />
+          )}
+          {currentPage < totalPages ? (
+            <Link href={pageHref(currentPage + 1)} className="hover:underline">
+              Sledeća
+            </Link>
+          ) : (
+            <span />
+          )}
+        </nav>
+      ) : null}
+    </div>
+  );
+}
+
+export default async function ExplorePage({
+  searchParams,
+}: {
+  searchParams: Promise<ExploreParams>;
+}) {
+  const params = await searchParams;
+
+  return (
     <Container className="py-10 sm:py-14">
       <p className="text-sm text-primary">Istraži Srbiju</p>
       <h1 className="mt-1 font-heading text-4xl">Mesta vredna puta</h1>
       <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
         <p className="max-w-2xl text-muted-foreground">
-          Pretraži kao na mapi: ukucaj grad (Ruma, Beograd), vrstu mesta
-          (bazen, manastir, jezero) ili tačan naziv. Rezultati dolaze iz naše
-          baze i otvorene mape Srbije.
+          Pretraži kao na mapi: ukucaj grad (Ruma, Beograd), vrstu mesta (bazen, manastir,
+          jezero) ili tačan naziv. Rezultati dolaze iz naše baze i otvorene mape Srbije.
         </p>
         <Button render={<Link href="/add-place" />} size="sm">
           + Dodaj mesto
@@ -94,35 +133,9 @@ export default async function ExplorePage({
         <Suspense fallback={<LoadingState message="Učitavamo filtere..." />}>
           <PlaceFilters />
         </Suspense>
-        <div>
-          <p className="mb-4 text-sm text-muted-foreground">
-            {places.length} {places.length === 1 ? "mesto" : "mesta"}
-            {aroundLabel ? ` u okolini — ${aroundLabel}` : ""}
-            {totalPages > 1 ? ` · strana ${currentPage} / ${totalPages}` : ""}
-          </p>
-          <PlaceGrid
-            places={pagePlaces}
-            emptyDescription="Probaj grad (Ruma, Beograd), vrstu mesta (bazen, manastir, jezero) ili tačan naziv."
-          />
-          {totalPages > 1 ? (
-            <nav className="mt-8 flex items-center justify-between gap-3 text-sm" aria-label="Stranice">
-              {currentPage > 1 ? (
-                <Link href={pageHref(currentPage - 1)} className="hover:underline">
-                  Prethodna
-                </Link>
-              ) : (
-                <span />
-              )}
-              {currentPage < totalPages ? (
-                <Link href={pageHref(currentPage + 1)} className="hover:underline">
-                  Sledeća
-                </Link>
-              ) : (
-                <span />
-              )}
-            </nav>
-          ) : null}
-        </div>
+        <Suspense key={JSON.stringify(params)} fallback={<PlaceGridSkeleton />}>
+          <ExploreResults params={params} />
+        </Suspense>
       </div>
     </Container>
   );

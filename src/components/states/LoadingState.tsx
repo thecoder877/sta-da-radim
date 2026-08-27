@@ -9,8 +9,15 @@ export function LoadingState({
   className?: string;
 }) {
   return (
-    <div className={cn("flex flex-col items-center justify-center gap-3 py-16", className)}>
-      <div className="size-8 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
+    <div
+      className={cn("flex flex-col items-center justify-center gap-3 py-16", className)}
+      role="status"
+      aria-live="polite"
+    >
+      <div
+        className="size-8 animate-spin rounded-full border-2 border-primary/20 border-t-primary"
+        aria-hidden
+      />
       <p className="text-sm text-muted-foreground">{message}</p>
     </div>
   );

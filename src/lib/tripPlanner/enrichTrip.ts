@@ -1,21 +1,16 @@
 import { findLodgingNearby, pickFallbackLodging } from "@/lib/providers/lodging";
 import { getTripRoute } from "@/lib/providers/routing";
+import { addMinutesToTime } from "@/lib/tripPlanner/time";
 import { drivingWaypoints } from "@/lib/trips/routeWaypoints";
 import type { Coordinates } from "@/types/place";
 import type { GeneratedTrip, TripRequest, TripStop } from "@/types/trip";
 
-function addMinutesToTime(time: string, minutes: number): string {
-  const [hours, mins] = time.split(":").map(Number);
-  const total = hours * 60 + mins + minutes;
-  const wrapped = ((total % (24 * 60)) + 24 * 60) % (24 * 60);
-  const nextHours = Math.floor(wrapped / 60);
-  const nextMins = wrapped % 60;
-  return `${String(nextHours).padStart(2, "0")}:${String(nextMins).padStart(2, "0")}`;
-}
-
 function lastVisitStop(stops: TripStop[]): TripStop | undefined {
   return [...stops].reverse().find((stop) => stop.kind !== "lodging");
 }
+
+const LODGING_LOOKUP_TIMEOUT_MS = 6000;
+const DEFAULT_LODGING_COST_PER_PERSON = 5000;
 
 export async function insertLodgingStops(
   trip: GeneratedTrip,
@@ -25,37 +20,56 @@ export async function insertLodgingStops(
     return trip;
   }
 
-  const usedIds = new Set<string>();
-  let extraCost = 0;
-
   const nightCount = Math.max(0, trip.days - 1);
+  const nights: { day: (typeof trip.daysPlan)[number]; last: TripStop }[] = [];
   for (let index = 0; index < nightCount; index += 1) {
     const day = trip.daysPlan[Math.min(index, trip.daysPlan.length - 1)];
     if (day.stops.some((stop) => stop.kind === "lodging")) {
       continue;
     }
     const last = lastVisitStop(day.stops);
-    if (!last) {
-      continue;
+    if (last) {
+      nights.push({ day, last });
     }
+  }
 
-    const near = {
-      latitude: last.place.latitude,
-      longitude: last.place.longitude,
-    };
-    const lodging =
-      (await Promise.race([
-        findLodgingNearby(near, usedIds),
+  if (nights.length === 0) {
+    return trip;
+  }
+
+  // Fetch each night's lodging concurrently. Dedup is resolved afterwards so
+  // the parallel calls do not need to share a used-id set.
+  const candidates = await Promise.all(
+    nights.map(({ last }) =>
+      Promise.race([
+        findLodgingNearby(
+          { latitude: last.place.latitude, longitude: last.place.longitude },
+          new Set<string>(),
+        ),
         new Promise<null>((resolve) => {
-          setTimeout(() => resolve(null), 6000);
+          setTimeout(() => resolve(null), LODGING_LOOKUP_TIMEOUT_MS);
         }),
-      ])) ?? pickFallbackLodging(near, usedIds);
+      ]),
+    ),
+  );
+
+  const usedIds = new Set<string>();
+  let extraCost = 0;
+
+  nights.forEach(({ day, last }, index) => {
+    const near = { latitude: last.place.latitude, longitude: last.place.longitude };
+    let lodging = candidates[index];
+    if (!lodging || usedIds.has(lodging.id)) {
+      lodging = pickFallbackLodging(near, usedIds);
+    }
     if (!lodging) {
-      continue;
+      return;
     }
 
     usedIds.add(lodging.id);
-    const cost = (lodging.estimatedCostPerPerson ?? 5000) * request.numberOfPeople;
+    const cost =
+      (lodging.estimatedCostPerPerson ?? DEFAULT_LODGING_COST_PER_PERSON) *
+      request.numberOfPeople;
     extraCost += cost;
     const arrival = last.departureTime
       ? addMinutesToTime(last.departureTime, 30)
@@ -74,7 +88,7 @@ export async function insertLodgingStops(
 
     day.stops.push(stop);
     trip.stops.push(stop);
-  }
+  });
 
   if (extraCost > 0) {
     trip.estimatedTotalCost = Math.round((trip.estimatedTotalCost ?? 0) + extraCost);

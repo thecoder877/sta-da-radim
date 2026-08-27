@@ -14,7 +14,10 @@ export function PopularDestinations() {
               Gde ljudi najčešće kreću
             </h2>
           </div>
-          <Link href="/explore" className="hidden text-sm text-muted-foreground hover:text-foreground sm:block">
+          <Link
+            href="/explore"
+            className="hidden text-sm text-muted-foreground hover:text-foreground sm:block"
+          >
             Vidi sva mesta
           </Link>
         </div>

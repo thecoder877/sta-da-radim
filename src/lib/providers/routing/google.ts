@@ -1,8 +1,12 @@
+import { fetchWithTimeout } from "@/lib/providers/http";
 import type { Coordinates } from "@/types/place";
 import type { RouteGeometry } from "@/lib/providers/types";
 
 function googleMapsKey(): string | undefined {
-  return process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  // Server-only key. Never fall back to the NEXT_PUBLIC_ key here: doing so
+  // would turn this server route into an unauthenticated billing vector for
+  // whoever can read the public bundle.
+  return process.env.GOOGLE_MAPS_API_KEY;
 }
 
 function toLatLng(point: Coordinates): string {
@@ -55,7 +59,8 @@ export async function getGoogleRoute(
   const origin = points[0];
   const destination = points[points.length - 1];
   const waypoints = points.slice(1, -1).slice(0, 23);
-  const mode = profile === "walking" ? "walking" : profile === "cycling" ? "bicycling" : "driving";
+  const mode =
+    profile === "walking" ? "walking" : profile === "cycling" ? "bicycling" : "driving";
   const params = new URLSearchParams({
     origin: toLatLng(origin),
     destination: toLatLng(destination),
@@ -66,7 +71,7 @@ export async function getGoogleRoute(
     params.set("waypoints", waypoints.map(toLatLng).join("|"));
   }
 
-  const response = await fetch(
+  const response = await fetchWithTimeout(
     `https://maps.googleapis.com/maps/api/directions/json?${params.toString()}`,
     { cache: "no-store" },
   );

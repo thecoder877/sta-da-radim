@@ -10,7 +10,9 @@ declare global {
       maps: {
         Map: new (el: HTMLElement, opts: Record<string, unknown>) => GoogleMap;
         Marker: new (opts: Record<string, unknown>) => GoogleMarker;
-        Polyline: new (opts: Record<string, unknown>) => { setMap: (map: GoogleMap | null) => void };
+        Polyline: new (opts: Record<string, unknown>) => {
+          setMap: (map: GoogleMap | null) => void;
+        };
         LatLngBounds: new () => GoogleBounds;
       };
     };
@@ -150,7 +152,10 @@ export function GoogleTripMap({
       });
       marker.addListener("click", () => onSelectRef.current?.(point.id));
       markersRef.current.push(marker);
-      bounds.extend({ lat: point.coordinates.latitude, lng: point.coordinates.longitude });
+      bounds.extend({
+        lat: point.coordinates.latitude,
+        lng: point.coordinates.longitude,
+      });
     });
 
     const line =

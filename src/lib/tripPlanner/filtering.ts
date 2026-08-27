@@ -1,4 +1,5 @@
 import { calculateDistanceKm } from "@/lib/geo/distance";
+import { BUDGET_HEADROOM_FACTOR } from "@/lib/tripPlanner/config";
 import type { Coordinates, Place } from "@/types/place";
 
 export function filterPlacesByDistance(
@@ -32,14 +33,11 @@ export function filterPlacesByBudget(
 
   return places.filter((place) => {
     const cost = place.estimatedCostPerPerson ?? 0;
-    return cost <= perPersonBudget * 0.7;
+    return cost <= perPersonBudget * BUDGET_HEADROOM_FACTOR;
   });
 }
 
-export function filterPlacesByInterests(
-  places: Place[],
-  interests: string[],
-): Place[] {
+export function filterPlacesByInterests(places: Place[], interests: string[]): Place[] {
   if (interests.length === 0) {
     return places;
   }

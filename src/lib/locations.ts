@@ -1,9 +1,7 @@
 import type { Coordinates } from "@/types/place";
 import { START_CITIES } from "./constants.ts";
 
-export function resolveStartCoordinates(
-  name: string,
-): Coordinates | undefined {
+export function resolveStartCoordinates(name: string): Coordinates | undefined {
   const normalized = name.trim().toLowerCase();
   const exact = START_CITIES.find((city) => city.name.toLowerCase() === normalized);
   if (exact) {

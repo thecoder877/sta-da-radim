@@ -57,14 +57,14 @@ export function TripStopCard({
             </span>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" variant="outline" render={<Link href={`/place/${stop.place.slug}`} />}>
-              Detalji
-            </Button>
             <Button
               size="sm"
-              variant="ghost"
-              onClick={() => onShowOnMap?.(stop.placeId)}
+              variant="outline"
+              render={<Link href={`/place/${stop.place.slug}`} />}
             >
+              Detalji
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => onShowOnMap?.(stop.placeId)}>
               Prikaži na mapi
             </Button>
           </div>

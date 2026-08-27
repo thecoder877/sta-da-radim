@@ -6,13 +6,17 @@ import type { Place, PlaceFilters } from "@/types/place";
 function matchesFilters(place: Place, filters: PlaceFilters): boolean {
   if (filters.query) {
     const q = filters.query.toLowerCase();
-    const blob = `${place.name} ${place.city ?? ""} ${place.region ?? ""} ${place.shortDescription} ${place.tags.join(" ")}`.toLowerCase();
+    const blob =
+      `${place.name} ${place.city ?? ""} ${place.region ?? ""} ${place.shortDescription} ${place.tags.join(" ")}`.toLowerCase();
     if (!blob.includes(q)) {
       return false;
     }
   }
 
-  if (filters.category && place.category.toLowerCase() !== filters.category.toLowerCase()) {
+  if (
+    filters.category &&
+    place.category.toLowerCase() !== filters.category.toLowerCase()
+  ) {
     return false;
   }
 
@@ -28,7 +32,11 @@ function matchesFilters(place: Place, filters: PlaceFilters): boolean {
     return false;
   }
 
-  if (filters.environment && place.environment !== filters.environment && place.environment !== "mixed") {
+  if (
+    filters.environment &&
+    place.environment !== filters.environment &&
+    place.environment !== "mixed"
+  ) {
     return false;
   }
 

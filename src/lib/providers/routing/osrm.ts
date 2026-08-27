@@ -1,10 +1,13 @@
+import { fetchWithTimeout } from "@/lib/providers/http";
 import type { Coordinates } from "@/types/place";
 import type { RouteGeometry } from "@/lib/providers/types";
 
 const FOSSGIS_OSRM = "https://routing.openstreetmap.de";
 const PROJECT_OSRM = "https://router.project-osrm.org";
 
-function fossgisProfile(profile: "driving" | "walking" | "cycling"): "car" | "foot" | "bike" {
+function fossgisProfile(
+  profile: "driving" | "walking" | "cycling",
+): "car" | "foot" | "bike" {
   if (profile === "walking") {
     return "foot";
   }
@@ -64,7 +67,7 @@ export async function getOsrmRoute(
     }
 
     try {
-      const response = await fetch(url, {
+      const response = await fetchWithTimeout(url, {
         headers: { Accept: "application/json" },
         cache: "no-store",
       });

@@ -24,6 +24,7 @@ export function BudgetSelector({
             <button
               key={option.id}
               type="button"
+              aria-pressed={selected}
               onClick={() => onPresetChange(option.id)}
               className={cn(
                 "rounded-full border px-3 py-1.5 text-sm",
@@ -47,7 +48,9 @@ export function BudgetSelector({
             className="h-10 max-w-xs"
             aria-label="Budžet u dinarima"
           />
-          <p className="mt-1 text-xs text-muted-foreground">Iznos u RSD, za celu grupu.</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Iznos u RSD, za celu grupu.
+          </p>
         </div>
       ) : null}
     </div>

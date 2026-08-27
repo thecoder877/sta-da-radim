@@ -1,4 +1,5 @@
 import { slugify } from "@/lib/format";
+import { fetchWithTimeout } from "@/lib/providers/http";
 import type { AmenityKind } from "@/lib/places/amenityKeywords";
 import { imageFromOsmTags, withPlaceImage } from "@/lib/places/placeImage";
 import type { Place, PlaceEnvironment, PlaceSource } from "@/types/place";
@@ -55,7 +56,11 @@ function mapCategory(tags: Record<string, string>): { category: string; tags: st
   if (tags.leisure === "spa" || tags.amenity === "spa" || tags.leisure === "sauna") {
     return { category: "Wellness", tags: ["spa", "wellness"] };
   }
-  if (tags.amenity === "restaurant" || tags.amenity === "fast_food" || tags.amenity === "food_court") {
+  if (
+    tags.amenity === "restaurant" ||
+    tags.amenity === "fast_food" ||
+    tags.amenity === "food_court"
+  ) {
     return { category: "Hrana", tags: ["restorani"] };
   }
   if (tags.amenity === "cafe" || tags.amenity === "bar" || tags.amenity === "pub") {
@@ -64,7 +69,11 @@ function mapCategory(tags: Record<string, string>): { category: string; tags: st
   if (tags.leisure === "park" || tags.leisure === "garden") {
     return { category: "Priroda", tags: ["park", "šetnja"] };
   }
-  if (tags.leisure === "sports_centre" || tags.leisure === "stadium" || tags.leisure === "pitch") {
+  if (
+    tags.leisure === "sports_centre" ||
+    tags.leisure === "stadium" ||
+    tags.leisure === "pitch"
+  ) {
     return { category: "Avantura", tags: ["sport"] };
   }
   if (tags.natural === "beach") {
@@ -84,7 +93,11 @@ function mapCategory(tags: Record<string, string>): { category: string; tags: st
   ) {
     return { category: "Istorija", tags: ["istorija", "fotografija"] };
   }
-  if (tags.tourism === "viewpoint" || tags.natural === "peak" || tags.natural === "cliff") {
+  if (
+    tags.tourism === "viewpoint" ||
+    tags.natural === "peak" ||
+    tags.natural === "cliff"
+  ) {
     return { category: "Priroda", tags: ["vidikovci", "priroda", "fotografija"] };
   }
   if (tags.natural === "cave_entrance") {
@@ -106,7 +119,11 @@ function mapCategory(tags: Record<string, string>): { category: string; tags: st
   ) {
     return { category: "Smeštaj", tags: ["hotel", "prenociste"] };
   }
-  if (tags.amenity === "cinema" || tags.amenity === "theatre" || tags.amenity === "arts_centre") {
+  if (
+    tags.amenity === "cinema" ||
+    tags.amenity === "theatre" ||
+    tags.amenity === "arts_centre"
+  ) {
     return { category: "Istorija", tags: ["kultura"] };
   }
   if (tags.amenity === "nightclub" || tags.amenity === "bar") {
@@ -119,7 +136,11 @@ function environmentFor(tags: Record<string, string>): PlaceEnvironment {
   if (isPoolTags(tags)) {
     return tags.covered === "yes" || tags.indoor === "yes" ? "indoor" : "mixed";
   }
-  if (tags.tourism === "museum" || tags.tourism === "gallery" || tags.amenity === "cinema") {
+  if (
+    tags.tourism === "museum" ||
+    tags.tourism === "gallery" ||
+    tags.amenity === "cinema"
+  ) {
     return "indoor";
   }
   if (tags.amenity === "restaurant" || tags.amenity === "cafe") {
@@ -128,7 +149,10 @@ function environmentFor(tags: Record<string, string>): PlaceEnvironment {
   return "outdoor";
 }
 
-function resolveName(tags: Record<string, string>, allowUnnamedPools: boolean): string | null {
+function resolveName(
+  tags: Record<string, string>,
+  allowUnnamedPools: boolean,
+): string | null {
   const named =
     tags.name?.trim() ||
     tags["name:sr-Latn"]?.trim() ||
@@ -192,7 +216,8 @@ export function placesFromOverpassElements(
       source: "osm" as PlaceSource,
       verified: Boolean(tags.wikipedia || tags.wikidata),
       environment: environmentFor(tags),
-      suitableForChildren: isPoolTags(tags) || tags.tourism === "zoo" || tags.leisure === "park",
+      suitableForChildren:
+        isPoolTags(tags) || tags.tourism === "zoo" || tags.leisure === "park",
     });
 
     const key = `${place.name.toLowerCase()}|${place.latitude.toFixed(3)}|${place.longitude.toFixed(3)}`;
@@ -234,7 +259,10 @@ function amenitySelectors(amenity?: AmenityKind, includeLocalFood = false): stri
     ];
   }
   if (amenity === "monastery") {
-    return ['nwr["historic"="monastery"]["name"]', 'nwr["amenity"="place_of_worship"]["name"]'];
+    return [
+      'nwr["historic"="monastery"]["name"]',
+      'nwr["amenity"="place_of_worship"]["name"]',
+    ];
   }
   if (amenity === "museum") {
     return ['nwr["tourism"~"museum|gallery"]["name"]'];
@@ -255,10 +283,7 @@ function amenitySelectors(amenity?: AmenityKind, includeLocalFood = false): stri
     return ['nwr["amenity"~"bar|pub|nightclub"]["name"]'];
   }
   if (amenity === "sport") {
-    return [
-      'nwr["leisure"="sports_centre"]["name"]',
-      'nwr["leisure"="stadium"]["name"]',
-    ];
+    return ['nwr["leisure"="sports_centre"]["name"]', 'nwr["leisure"="stadium"]["name"]'];
   }
 
   const core = [
@@ -277,15 +302,21 @@ function amenitySelectors(amenity?: AmenityKind, includeLocalFood = false): stri
 async function overpassQuery(query: string): Promise<OverpassElement[]> {
   for (const url of OVERPASS_URLS) {
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-          "User-Agent": "StaDaRadim/1.0 (serbia travel planner)",
+      const response = await fetchWithTimeout(
+        url,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "User-Agent": "StaDaRadim/1.0 (serbia travel planner)",
+          },
+          body: `data=${encodeURIComponent(query)}`,
+          cache: "no-store",
         },
-        body: `data=${encodeURIComponent(query)}`,
-        cache: "no-store",
-      });
+        // Overpass QL queries carry their own server-side timeout (25-90s); give
+        // the network call generous headroom before we abort and try a mirror.
+        95_000,
+      );
       if (response.ok) {
         const payload = (await response.json()) as OverpassResponse;
         return payload.elements ?? [];
@@ -375,9 +406,13 @@ out center tags;
 `.trim();
 
   const elements = await overpassQuery(query);
-  let places = placesFromOverpassElements(elements, { allowUnnamedPools: amenity === "pool" });
+  let places = placesFromOverpassElements(elements, {
+    allowUnnamedPools: amenity === "pool",
+  });
   if (amenity === "pool") {
-    places = clusterUnnamedPools(places).filter((place) => !place.name.startsWith("Bazen") || place.name.includes("·"));
+    places = clusterUnnamedPools(places).filter(
+      (place) => !place.name.startsWith("Bazen") || place.name.includes("·"),
+    );
   }
 
   liveCache.set(key, { places, fetchedAt: Date.now() });

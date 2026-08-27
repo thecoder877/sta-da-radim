@@ -91,14 +91,17 @@ function placeFromStop(stop: TripStopRow): Place {
     shortDescription:
       typeof metadata.shortDescription === "string"
         ? metadata.shortDescription
-        : stop.reason ?? stop.name,
-    description: typeof metadata.description === "string" ? metadata.description : undefined,
+        : (stop.reason ?? stop.name),
+    description:
+      typeof metadata.description === "string" ? metadata.description : undefined,
     latitude: stop.latitude,
     longitude: stop.longitude,
     city: typeof metadata.city === "string" ? metadata.city : undefined,
     region: typeof metadata.region === "string" ? metadata.region : undefined,
     category: typeof metadata.category === "string" ? metadata.category : "Srbija",
-    tags: Array.isArray(metadata.tags) ? metadata.tags.filter((tag): tag is string => typeof tag === "string") : [],
+    tags: Array.isArray(metadata.tags)
+      ? metadata.tags.filter((tag): tag is string => typeof tag === "string")
+      : [],
     website: typeof metadata.website === "string" ? metadata.website : undefined,
     imageUrl: isDisplayablePlaceImage(
       typeof metadata.imageUrl === "string" ? metadata.imageUrl : undefined,
@@ -109,8 +112,7 @@ function placeFromStop(stop: TripStopRow): Place {
       metadata.source === "osm" ||
       metadata.source === "google" ||
       metadata.source === "internal" ||
-      metadata.source === "community" ||
-      metadata.source === "mapbox"
+      metadata.source === "community"
         ? metadata.source
         : "internal",
     verified: Boolean(metadata.verified),
@@ -197,7 +199,9 @@ export function mapDatabaseTripToGeneratedTrip(
   const daysPlan: TripDay[] = [...days]
     .sort((a, b) => a.day_number - b.day_number)
     .map((day) => {
-      const dayStops = (stopsByDay.get(day.id) ?? []).sort((a, b) => a.position - b.position);
+      const dayStops = (stopsByDay.get(day.id) ?? []).sort(
+        (a, b) => a.position - b.position,
+      );
       return {
         dayNumber: day.day_number,
         date: day.date,
@@ -216,6 +220,9 @@ export function mapDatabaseTripToGeneratedTrip(
     });
 
   const allStops = daysPlan.flatMap((day) => day.stops);
+  const isOwner = Boolean(
+    options?.currentUserId && options.currentUserId === trip.user_id,
+  );
 
   return {
     id: trip.id,
@@ -238,17 +245,22 @@ export function mapDatabaseTripToGeneratedTrip(
     createdAt: trip.created_at,
     shareSlug: trip.share_slug ?? undefined,
     isPublic: trip.is_public,
-    request: trip.request_snapshot ?? undefined,
+    // Only expose the raw request snapshot (which can contain free-text
+    // preferences / PII) to the trip owner. Public and cross-user views omit it.
+    request: isOwner ? (trip.request_snapshot ?? undefined) : undefined,
     generationId:
-      trip.request_snapshot && typeof (trip.request_snapshot as { generationId?: string }).generationId === "string"
+      trip.request_snapshot &&
+      typeof (trip.request_snapshot as { generationId?: string }).generationId ===
+        "string"
         ? (trip.request_snapshot as { generationId?: string }).generationId
         : undefined,
     editCount:
-      trip.request_snapshot && typeof (trip.request_snapshot as { editCount?: number }).editCount === "number"
+      trip.request_snapshot &&
+      typeof (trip.request_snapshot as { editCount?: number }).editCount === "number"
         ? (trip.request_snapshot as { editCount?: number }).editCount
         : undefined,
     persisted: true,
-    isOwner: Boolean(options?.currentUserId && options.currentUserId === trip.user_id),
+    isOwner,
   };
 }
 

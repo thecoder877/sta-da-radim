@@ -16,9 +16,15 @@ export function HeroPlanner() {
   const [coordinates, setCoordinates] = useState<Coordinates | undefined>();
   const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [duration, setDuration] = useState("1");
+  const [error, setError] = useState<string | null>(null);
 
   function onSubmit(event: React.FormEvent) {
     event.preventDefault();
+    if (from.trim().length < 2) {
+      setError("Unesi mesto sa kog krećeš.");
+      return;
+    }
+    setError(null);
     const params = new URLSearchParams({
       from,
       date,
@@ -41,7 +47,11 @@ export function HeroPlanner() {
         onChange={(name, nextCoordinates) => {
           setFrom(name);
           setCoordinates(nextCoordinates);
+          if (name.trim().length >= 2) {
+            setError(null);
+          }
         }}
+        error={error ?? undefined}
         inputClassName="h-10 bg-background pr-11 text-foreground"
       />
       <div className="space-y-1.5">

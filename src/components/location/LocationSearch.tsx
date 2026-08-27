@@ -32,7 +32,9 @@ export function LocationSearch({
   const listId = useId();
   const [open, setOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([]);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const [searching, setSearching] = useState(false);
+  const optionId = (index: number) => `${listId}-option-${index}`;
   const [detecting, setDetecting] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const skipSearch = useRef(false);
@@ -61,9 +63,12 @@ export function LocationSearch({
     const timer = window.setTimeout(async () => {
       setSearching(true);
       try {
-        const response = await fetch(`/api/geocode/search?q=${encodeURIComponent(query)}`);
+        const response = await fetch(
+          `/api/geocode/search?q=${encodeURIComponent(query)}`,
+        );
         const data = (await response.json()) as { suggestions?: LocationSuggestion[] };
         setSuggestions(data.suggestions ?? []);
+        setActiveIndex(-1);
         setOpen(true);
       } catch {
         setSuggestions([]);
@@ -92,7 +97,9 @@ export function LocationSearch({
             lng: String(position.coords.longitude),
           });
           const response = await fetch(`/api/geocode/reverse?${params.toString()}`);
-          const data = (await response.json()) as { suggestion?: LocationSuggestion | null };
+          const data = (await response.json()) as {
+            suggestion?: LocationSuggestion | null;
+          };
           const suggestion = data.suggestion;
           skipSearch.current = true;
           if (suggestion) {
@@ -113,7 +120,9 @@ export function LocationSearch({
       },
       () => {
         setDetecting(false);
-        setStatus("Dozvoli lokaciju ili ukucaj mesto — predlozi se pojavljuju dok kucaš.");
+        setStatus(
+          "Dozvoli lokaciju ili ukucaj mesto — predlozi se pojavljuju dok kucaš.",
+        );
       },
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 60_000 },
     );
@@ -123,8 +132,36 @@ export function LocationSearch({
     skipSearch.current = true;
     onChange(suggestion.name, suggestion.coordinates);
     setSuggestions([]);
+    setActiveIndex(-1);
     setOpen(false);
     setStatus(null);
+  }
+
+  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    const canOpen = suggestions.length > 0;
+    if (event.key === "ArrowDown") {
+      if (!canOpen) {
+        return;
+      }
+      event.preventDefault();
+      setOpen(true);
+      setActiveIndex((index) => (index + 1) % suggestions.length);
+    } else if (event.key === "ArrowUp") {
+      if (!canOpen) {
+        return;
+      }
+      event.preventDefault();
+      setOpen(true);
+      setActiveIndex((index) => (index <= 0 ? suggestions.length - 1 : index - 1));
+    } else if (event.key === "Enter") {
+      if (open && activeIndex >= 0 && suggestions[activeIndex]) {
+        event.preventDefault();
+        choose(suggestions[activeIndex]);
+      }
+    } else if (event.key === "Escape") {
+      setOpen(false);
+      setActiveIndex(-1);
+    }
   }
 
   return (
@@ -136,10 +173,16 @@ export function LocationSearch({
           value={value}
           placeholder={placeholder}
           autoComplete="off"
+          role="combobox"
+          aria-autocomplete="list"
           aria-invalid={Boolean(error)}
           aria-expanded={open}
           aria-controls={listId}
+          aria-activedescendant={
+            open && activeIndex >= 0 ? optionId(activeIndex) : undefined
+          }
           className={inputClassName ?? "h-11 pr-11"}
+          onKeyDown={handleKeyDown}
           onFocus={() => {
             if (suggestions.length > 0) {
               setOpen(true);
@@ -170,13 +213,23 @@ export function LocationSearch({
       {open && value.trim().length >= 2 && suggestions.length > 0 ? (
         <ul
           id={listId}
+          role="listbox"
           className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-border bg-card shadow-lg"
         >
-          {suggestions.map((suggestion) => (
-            <li key={`${suggestion.name}-${suggestion.coordinates.latitude}`}>
+          {suggestions.map((suggestion, index) => (
+            <li
+              key={`${suggestion.name}-${suggestion.coordinates.latitude}`}
+              role="presentation"
+            >
               <button
                 type="button"
-                className="flex w-full items-start gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
+                id={optionId(index)}
+                role="option"
+                aria-selected={index === activeIndex}
+                className={`flex w-full items-start gap-2 px-3 py-2 text-left text-sm hover:bg-muted ${
+                  index === activeIndex ? "bg-muted" : ""
+                }`}
+                onMouseEnter={() => setActiveIndex(index)}
                 onMouseDown={(event) => {
                   event.preventDefault();
                   choose(suggestion);

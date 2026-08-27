@@ -18,12 +18,16 @@ import {
   rememberPlaces,
 } from "@/lib/places/placeMemory";
 import { mockPlaceRepository } from "@/lib/providers/places/mockPlaceRepository";
-import { fetchOverpassByOsmId, fetchOverpassPlaces } from "@/lib/providers/places/overpass";
+import {
+  fetchOverpassByOsmId,
+  fetchOverpassPlaces,
+} from "@/lib/providers/places/overpass";
 import type { PlaceRepository } from "@/lib/providers/types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Place, PlaceFilters } from "@/types/place";
 
-function isNearDuplicate(candidate: Place, existing: Place): boolean {
+// Merge-time dedup: drop an OSM place that overlaps a curated MOCK place.
+function isCatalogNearDuplicate(candidate: Place, existing: Place): boolean {
   if (candidate.name.toLowerCase() === existing.name.toLowerCase()) {
     return true;
   }
@@ -70,7 +74,18 @@ async function withOverlay(place: Place | null): Promise<Place | null> {
   }
 }
 
-async function listCatalog(): Promise<Place[]> {
+// Merging MOCK_PLACES with the OSM snapshot is O(n*m); cache the OSM+mock
+// result so repeated trip generations and Explore searches do not rebuild it
+// every call. Community places and cover photos stay uncached so new
+// submissions show up without waiting for the OSM window.
+const CATALOG_CACHE_MS = 1000 * 60 * 60 * 12;
+let catalogCache: { places: Place[]; fetchedAt: number } | null = null;
+
+async function listOsmAndMock(): Promise<Place[]> {
+  if (catalogCache && Date.now() - catalogCache.fetchedAt < CATALOG_CACHE_MS) {
+    return catalogCache.places;
+  }
+
   let osmPlaces: Place[] = [];
   try {
     osmPlaces = await fetchOverpassPlaces();
@@ -80,14 +95,23 @@ async function listCatalog(): Promise<Place[]> {
 
   const merged = [...MOCK_PLACES];
   for (const place of osmPlaces) {
-    const duplicate = merged.some((existing) => isNearDuplicate(place, existing));
+    const duplicate = merged.some((existing) => isCatalogNearDuplicate(place, existing));
     if (!duplicate) {
       merged.push(place);
     }
   }
+
+  catalogCache = { places: merged, fetchedAt: Date.now() };
+  return merged;
+}
+
+async function listCatalog(): Promise<Place[]> {
+  const merged = [...(await listOsmAndMock())];
   const community = await listCommunityPlaces();
   for (const place of community) {
-    const duplicate = merged.some((existing) => existing.id === place.id || isNearDuplicate(place, existing));
+    const duplicate = merged.some(
+      (existing) => existing.id === place.id || isCatalogNearDuplicate(place, existing),
+    );
     if (!duplicate) {
       merged.push(place);
     }
@@ -107,7 +131,10 @@ async function listCatalog(): Promise<Place[]> {
   }
 }
 
-async function lookupRememberedOrOsm(value: string, by: "id" | "slug"): Promise<Place | null> {
+async function lookupRememberedOrOsm(
+  value: string,
+  by: "id" | "slug",
+): Promise<Place | null> {
   const remembered = by === "id" ? recallPlaceById(value) : recallPlaceBySlug(value);
   if (remembered) {
     return remembered;

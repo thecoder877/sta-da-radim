@@ -20,9 +20,14 @@ import {
   saveTripToAccount,
   updateTripSharing,
 } from "@/lib/trips/clientApi";
-import { persistGeneratedTrip, persistLastTripRequest, readLastTripRequest } from "@/lib/trips/storage";
+import {
+  persistGeneratedTrip,
+  persistLastTripRequest,
+  readLastTripRequest,
+} from "@/lib/trips/storage";
 import type { GeneratedTrip } from "@/types/trip";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import {
   Dialog,
   DialogContent,
@@ -47,7 +52,11 @@ export function TripActions({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [quotaReason, setQuotaReason] = useState<PlanQuotaReason | null>(null);
   const persisted = Boolean(trip.persisted);
-  const owner = Boolean(trip.isOwner || (user && persisted));
+  const owner = trip.isOwner === true;
+  const shareUrl =
+    typeof window !== "undefined" && trip.shareSlug
+      ? `${window.location.origin}/trip/share/${trip.shareSlug}`
+      : "";
 
   async function saveTrip() {
     if (!user) {
@@ -117,7 +126,9 @@ export function TripActions({
     setBusy(true);
     setMessage(null);
     try {
-      const next = await requestGeneratedTrip(request, { generationId: trip.generationId });
+      const next = await requestGeneratedTrip(request, {
+        generationId: trip.generationId,
+      });
       if (!tripSuccessfullyGenerated(next)) {
         setMessage("Novi plan nije spreman. Pokušaj ponovo.");
         return;
@@ -162,8 +173,22 @@ export function TripActions({
         </p>
       ) : null}
       {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
+      {owner && persisted && trip.isPublic && shareUrl ? (
+        <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
+          <span className="truncate text-xs text-muted-foreground">{shareUrl}</span>
+          <CopyButton
+            value={shareUrl}
+            label="Kopiraj link"
+            className="ml-auto shrink-0"
+          />
+        </div>
+      ) : null}
       <div className="flex flex-wrap gap-2">
-        <Button variant="outline" onClick={() => void saveTrip()} disabled={busy || persisted}>
+        <Button
+          variant="outline"
+          onClick={() => void saveTrip()}
+          disabled={busy || persisted}
+        >
           <Bookmark data-icon="inline-start" />
           {persisted ? "Sačuvano" : "Sačuvaj"}
         </Button>
@@ -179,7 +204,11 @@ export function TripActions({
           </Button>
         )}
         {owner && persisted ? (
-          <Button variant="destructive" onClick={() => setConfirmDelete(true)} disabled={busy}>
+          <Button
+            variant="destructive"
+            onClick={() => setConfirmDelete(true)}
+            disabled={busy}
+          >
             <Trash2 data-icon="inline-start" />
             Obriši
           </Button>
@@ -194,7 +223,8 @@ export function TripActions({
       </div>
       {user && trip.generationId && !quota?.unlimited ? (
         <p className="text-xs text-muted-foreground">
-          Još {Math.max(0, EDITS_PER_GENERATION - (trip.editCount ?? 0))} izmena ovog plana
+          Još {Math.max(0, EDITS_PER_GENERATION - (trip.editCount ?? 0))} izmena ovog
+          plana
         </p>
       ) : null}
 
@@ -208,7 +238,11 @@ export function TripActions({
             <Button variant="outline" onClick={() => setConfirmDelete(false)}>
               Odustani
             </Button>
-            <Button variant="destructive" onClick={() => void removeTrip()} disabled={busy}>
+            <Button
+              variant="destructive"
+              onClick={() => void removeTrip()}
+              disabled={busy}
+            >
               Obriši
             </Button>
           </DialogFooter>

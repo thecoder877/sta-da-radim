@@ -29,6 +29,7 @@ export function TransportSelector({
           <button
             key={option.id}
             type="button"
+            aria-pressed={selected}
             onClick={() => onChange(option.id)}
             className={cn(
               "flex flex-col items-center gap-2 rounded-xl border px-3 py-3 text-sm transition",

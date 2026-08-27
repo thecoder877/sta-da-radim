@@ -1,6 +1,6 @@
+import { fetchWithTimeout } from "@/lib/providers/http";
 import { foldSerbian } from "../../format.ts";
 import { suggestStartCities } from "../../locations.ts";
-import type { GeocodingProvider } from "@/lib/providers/types";
 import type { Coordinates } from "@/types/place";
 
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org";
@@ -127,19 +127,13 @@ export function formatSuggestion(item: NominatimSearchItem): GeocodeSuggestion {
     "Lokacija";
 
   const settlement =
-    address.village ??
-    address.hamlet ??
-    address.town ??
-    address.city ??
-    address.suburb;
+    address.village ?? address.hamlet ?? address.town ?? address.city ?? address.suburb;
   const detail = uniqueParts([
     address.road,
     settlement,
     address.municipality,
     address.county ?? address.state,
-  ]).filter(
-    (part) => foldSerbian(part) !== foldSerbian(title),
-  );
+  ]).filter((part) => foldSerbian(part) !== foldSerbian(title));
 
   return {
     name: title,
@@ -214,7 +208,7 @@ export function mergeStartLocationSuggestions(
 }
 
 async function nominatimGet(path: string): Promise<unknown> {
-  const response = await fetch(`${NOMINATIM_URL}${path}`, {
+  const response = await fetchWithTimeout(`${NOMINATIM_URL}${path}`, {
     headers: {
       Accept: "application/json",
       "User-Agent": USER_AGENT,
@@ -270,13 +264,11 @@ export async function reverseGeocode(
     zoom: "16",
   });
 
-  const data = (await nominatimGet(`/reverse?${params.toString()}`)) as NominatimSearchItem;
+  const data = (await nominatimGet(
+    `/reverse?${params.toString()}`,
+  )) as NominatimSearchItem;
   if (!data?.lat) {
     return null;
   }
   return formatSuggestion(data);
 }
-
-export const nominatimGeocodingProvider: GeocodingProvider = {
-  search: searchLocations,
-};

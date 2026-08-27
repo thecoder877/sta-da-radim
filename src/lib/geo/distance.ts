@@ -1,4 +1,6 @@
+import { TRAVEL_SPEED_KMH } from "@/lib/tripPlanner/config";
 import type { Coordinates } from "@/types/place";
+import type { TransportType } from "@/types/trip";
 
 const EARTH_RADIUS_KM = 6371;
 
@@ -11,10 +13,7 @@ function toRadians(degrees: number): number {
  * This is not driving distance. Later routing APIs should replace it
  * when a real travel path is needed.
  */
-export function calculateDistanceKm(
-  pointA: Coordinates,
-  pointB: Coordinates,
-): number {
+export function calculateDistanceKm(pointA: Coordinates, pointB: Coordinates): number {
   const lat1 = toRadians(pointA.latitude);
   const lat2 = toRadians(pointB.latitude);
   const deltaLat = toRadians(pointB.latitude - pointA.latitude);
@@ -30,22 +29,12 @@ export function calculateDistanceKm(
 
 export function estimateTravelMinutes(
   distanceKm: number,
-  transport: "car" | "bus" | "train" | "walk" | "bike",
+  transport: TransportType,
 ): number {
-  const kmPerHour = {
-    car: 55,
-    bus: 40,
-    train: 50,
-    walk: 4.5,
-    bike: 14,
-  }[transport];
-
+  const kmPerHour = TRAVEL_SPEED_KMH[transport];
   return Math.round((distanceKm / kmPerHour) * 60);
 }
 
-export function toCoordinates(
-  latitude: number,
-  longitude: number,
-): Coordinates {
+export function toCoordinates(latitude: number, longitude: number): Coordinates {
   return { latitude, longitude };
 }

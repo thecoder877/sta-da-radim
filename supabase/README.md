@@ -15,11 +15,11 @@ In the project sidebar open **Project Settings → API**.
 
 Copy these into `.env.local` in the app repo:
 
-| Variable | Where it is | Browser? |
-| --- | --- | --- |
-| `NEXT_PUBLIC_SUPABASE_URL` | Project URL | yes |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `anon` `public` key | yes |
-| `SUPABASE_SERVICE_ROLE_KEY` | `service_role` key | **never** |
+| Variable                        | Where it is         | Browser?  |
+| ------------------------------- | ------------------- | --------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Project URL         | yes       |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `anon` `public` key | yes       |
+| `SUPABASE_SERVICE_ROLE_KEY`     | `service_role` key  | **never** |
 
 The service-role key can unlock every row. This app does not need it for v0.2. If you store it, keep it server-only and never prefix it with `NEXT_PUBLIC_`.
 
@@ -73,7 +73,7 @@ Registration then creates a session immediately. The app can resume a pending sa
 
 Leave **Confirm email** on.
 
-After registration the user sees: *Nalog je uspešno napravljen. Proveri email da potvrdiš adresu, pa se prijavi.* They must confirm, then log in. Pending save/generate stays in `sessionStorage` until that login.
+After registration the user sees: _Nalog je uspešno napravljen. Proveri email da potvrdiš adresu, pa se prijavi._ They must confirm, then log in. Pending save/generate stays in `sessionStorage` until that login.
 
 Use the dashboard **Authentication → Users** page if you need to confirm a user by hand.
 
@@ -92,7 +92,7 @@ Use two accounts, for example `ana@example.com` and `bora@example.com`.
 1. Log in as Ana, generate a trip, click **Sačuvaj**. Leave it private.
 2. Copy Ana’s trip URL, `/trip/<uuid>`.
 3. Log out. Open that URL, or log in as Bora and open it.
-4. Expected: *Putovanje nije pronađeno*. The API returns 404. Guessing the UUID must not reveal the itinerary.
+4. Expected: _Putovanje nije pronađeno_. The API returns 404. Guessing the UUID must not reveal the itinerary.
 5. As Ana, click **Podeli** and copy `/trip/share/<slug>`.
 6. Open that public URL while logged out. The itinerary and map should load. No email or user id should appear.
 7. As Ana, click **Isključi deljenje**. Reload the old public URL. Expected: the trip is hidden.

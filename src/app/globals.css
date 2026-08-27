@@ -142,3 +142,16 @@
   margin: 10px 12px;
   font-size: 13px;
 }
+
+@media print {
+  /* Print-friendly output: drop chrome, expand collapsibles, save ink. */
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  /* Expand any collapsed FAQ/accordion so its content prints. */
+  details > *:not(summary) {
+    display: block !important;
+  }
+}

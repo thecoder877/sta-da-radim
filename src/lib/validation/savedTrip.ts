@@ -19,7 +19,7 @@ const placeSchema = z.object({
   tags: z.array(z.string()).default([]),
   website: z.string().optional(),
   imageUrl: z.string().optional(),
-  source: z.enum(["internal", "community", "google", "mapbox", "osm"]),
+  source: z.enum(["internal", "community", "google", "osm"]),
   verified: z.boolean().default(false),
 });
 

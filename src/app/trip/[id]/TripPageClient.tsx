@@ -77,9 +77,7 @@ function StoredTripView({ id }: { id: string }) {
         <ErrorState
           title="Putovanje nije pronađeno"
           description="Ovaj plan nije dostupan. Ako je bio privremen, napravi novi. Ako je sačuvan, prijavi se nalogom koji ga poseduje."
-          action={
-            <Button render={<Link href="/plan" />}>Planiraj putovanje</Button>
-          }
+          action={<Button render={<Link href="/plan" />}>Planiraj putovanje</Button>}
         />
       </div>
     );

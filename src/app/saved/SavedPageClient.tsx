@@ -11,7 +11,13 @@ import { ErrorState } from "@/components/states/ErrorState";
 import { LoadingState } from "@/components/states/LoadingState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -159,7 +165,8 @@ export function SavedPageClient() {
         <div>
           <h1 className="font-heading text-4xl">Moja putovanja</h1>
           <p className="mt-3 max-w-xl text-muted-foreground">
-            Sačuvani planovi ostaju na tvom nalogu i možeš ih otvoriti sa bilo kog uređaja.
+            Sačuvani planovi ostaju na tvom nalogu i možeš ih otvoriti sa bilo kog
+            uređaja.
           </p>
         </div>
         <Button render={<Link href="/plan" />}>Isplaniraj putovanje</Button>
@@ -235,7 +242,10 @@ export function SavedPageClient() {
         ))}
       </div>
 
-      <Dialog open={Boolean(deleteId)} onOpenChange={(open) => !open && setDeleteId(null)}>
+      <Dialog
+        open={Boolean(deleteId)}
+        onOpenChange={(open) => !open && setDeleteId(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Obriši putovanje?</DialogTitle>
@@ -245,7 +255,11 @@ export function SavedPageClient() {
             <Button variant="outline" onClick={() => setDeleteId(null)}>
               Odustani
             </Button>
-            <Button variant="destructive" onClick={() => void removeTrip()} disabled={Boolean(busyId)}>
+            <Button
+              variant="destructive"
+              onClick={() => void removeTrip()}
+              disabled={Boolean(busyId)}
+            >
               Obriši
             </Button>
           </DialogFooter>

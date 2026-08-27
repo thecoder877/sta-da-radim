@@ -124,7 +124,11 @@ export async function getSavedTripById(
   id: string,
   currentUserId?: string | null,
 ): Promise<GeneratedTrip | null> {
-  const { data, error } = await supabase.from("trips").select("*").eq("id", id).maybeSingle();
+  const { data, error } = await supabase
+    .from("trips")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
   if (error) {
     throw new Error("TRIP_LOAD_FAILED");
   }
@@ -165,7 +169,9 @@ export async function setTripSharing(
     return null;
   }
 
-  const shareSlug = makePublic ? existing.shareSlug ?? createShareSlug(existing.title) : existing.shareSlug;
+  const shareSlug = makePublic
+    ? (existing.shareSlug ?? createShareSlug(existing.title))
+    : existing.shareSlug;
   const { data, error } = await supabase
     .from("trips")
     .update({
