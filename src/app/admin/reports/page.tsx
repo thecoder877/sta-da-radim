@@ -22,7 +22,18 @@ export default function AdminReportsPage() {
   }
 
   useEffect(() => {
-    void load();
+    let cancelled = false;
+    void fetch("/api/admin/reports")
+      .then((response) => response.json())
+      .then((data: { reports?: ReportRow[] }) => {
+        if (cancelled) {
+          return;
+        }
+        setItems(data.reports ?? []);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function act(id: string, action: "resolve" | "dismiss") {

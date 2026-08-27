@@ -28,7 +28,20 @@ export default function AdminPlacesPage() {
   }
 
   useEffect(() => {
-    void load();
+    let cancelled = false;
+    void fetch(`/api/admin/listings?published=${published}&q=${encodeURIComponent(q)}`)
+      .then((response) => response.json())
+      .then((data: { places?: PlaceRow[] }) => {
+        if (cancelled) {
+          return;
+        }
+        setItems(data.places ?? []);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // Initial list only; later loads come from search/filter actions.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function act(id: string, action: "unpublish" | "publish" | "delete") {

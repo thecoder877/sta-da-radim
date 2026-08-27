@@ -72,7 +72,19 @@ export default function AdminPhotosPage() {
   }
 
   useEffect(() => {
-    void load();
+    let cancelled = false;
+    void fetch("/api/admin/photos")
+      .then((response) => response.json())
+      .then((data: { reviewPhotos?: PhotoRow[]; placePhotos?: PhotoRow[] }) => {
+        if (cancelled) {
+          return;
+        }
+        setReviewPhotos(data.reviewPhotos ?? []);
+        setPlacePhotos(data.placePhotos ?? []);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function act(id: string, kind: "review" | "place", action: "remove" | "restore") {

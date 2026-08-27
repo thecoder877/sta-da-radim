@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { EDITABLE_PLACE_FIELDS } from "@/lib/community/constants";
 import { formatDurationMinutes } from "@/lib/format";
 import { resolvePlacePrice } from "@/lib/places/price";
@@ -79,22 +79,27 @@ export function PlaceEditDialog({
   field?: string;
   onOpenChange: (open: boolean) => void;
 }) {
-  const [values, setValues] = useState<Record<string, string>>({});
-  const [initial, setInitial] = useState<Record<string, string>>({});
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {open ? <PlaceEditForm place={place} overlay={overlay} field={field} /> : null}
+    </Dialog>
+  );
+}
+
+function PlaceEditForm({
+  place,
+  overlay,
+  field,
+}: {
+  place: Place;
+  overlay: PlaceFactsOverlay;
+  field?: string;
+}) {
+  const [values, setValues] = useState(() => currentValues(place, overlay));
+  const [initial] = useState(values);
   const [note, setNote] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-    const next = currentValues(place, overlay);
-    setValues(next);
-    setInitial(next);
-    setNote("");
-    setMessage(null);
-  }, [open, place, overlay]);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -128,85 +133,83 @@ export function PlaceEditDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Predloži izmenu</DialogTitle>
-          <DialogDescription>
-            Trenutni podaci su već uneti. Izmeni samo ono što treba da se ispravi.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={onSubmit} className="space-y-3">
-          {EDITABLE_PLACE_FIELDS.filter(
-            (item) => item.id !== "latitude" && item.id !== "longitude",
-          ).map((item) => (
-            <div
-              key={item.id}
-              className={`space-y-1.5 ${field === item.id ? "rounded-lg ring-2 ring-primary/40 p-2" : ""}`}
-            >
-              <Label htmlFor={`edit-${item.id}`}>{item.label}</Label>
-              {item.id === "family_friendly" || item.id === "pet_friendly" ? (
-                <select
-                  id={`edit-${item.id}`}
-                  className="h-10 w-full rounded-lg border border-input bg-background px-2 text-sm"
-                  value={values[item.id] ?? ""}
-                  onChange={(event) =>
-                    setValues((current) => ({
-                      ...current,
-                      [item.id]: event.target.value,
-                    }))
-                  }
-                >
-                  <option value="">Nije poznato</option>
-                  <option value="true">Da</option>
-                  <option value="false">Ne</option>
-                </select>
-              ) : item.id === "description" || item.id === "accessibility_notes" ? (
-                <Textarea
-                  id={`edit-${item.id}`}
-                  value={values[item.id] ?? ""}
-                  onChange={(event) =>
-                    setValues((current) => ({
-                      ...current,
-                      [item.id]: event.target.value,
-                    }))
-                  }
-                />
-              ) : (
-                <Input
-                  id={`edit-${item.id}`}
-                  value={values[item.id] ?? ""}
-                  placeholder={
-                    item.id === "estimated_duration_minutes" &&
-                    place.estimatedDurationMinutes
-                      ? formatDurationMinutes(place.estimatedDurationMinutes)
-                      : undefined
-                  }
-                  onChange={(event) =>
-                    setValues((current) => ({
-                      ...current,
-                      [item.id]: event.target.value,
-                    }))
-                  }
-                />
-              )}
-            </div>
-          ))}
-          <div className="space-y-1.5">
-            <Label htmlFor="edit-note">Izvor / napomena</Label>
-            <Textarea
-              id="edit-note"
-              value={note}
-              onChange={(event) => setNote(event.target.value)}
-              placeholder="Bio sam danas. / Podatak je sa zvaničnog sajta."
-            />
+    <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+      <DialogHeader>
+        <DialogTitle>Predloži izmenu</DialogTitle>
+        <DialogDescription>
+          Trenutni podaci su već uneti. Izmeni samo ono što treba da se ispravi.
+        </DialogDescription>
+      </DialogHeader>
+      <form onSubmit={onSubmit} className="space-y-3">
+        {EDITABLE_PLACE_FIELDS.filter(
+          (item) => item.id !== "latitude" && item.id !== "longitude",
+        ).map((item) => (
+          <div
+            key={item.id}
+            className={`space-y-1.5 ${field === item.id ? "rounded-lg ring-2 ring-primary/40 p-2" : ""}`}
+          >
+            <Label htmlFor={`edit-${item.id}`}>{item.label}</Label>
+            {item.id === "family_friendly" || item.id === "pet_friendly" ? (
+              <select
+                id={`edit-${item.id}`}
+                className="h-10 w-full rounded-lg border border-input bg-background px-2 text-sm"
+                value={values[item.id] ?? ""}
+                onChange={(event) =>
+                  setValues((current) => ({
+                    ...current,
+                    [item.id]: event.target.value,
+                  }))
+                }
+              >
+                <option value="">Nije poznato</option>
+                <option value="true">Da</option>
+                <option value="false">Ne</option>
+              </select>
+            ) : item.id === "description" || item.id === "accessibility_notes" ? (
+              <Textarea
+                id={`edit-${item.id}`}
+                value={values[item.id] ?? ""}
+                onChange={(event) =>
+                  setValues((current) => ({
+                    ...current,
+                    [item.id]: event.target.value,
+                  }))
+                }
+              />
+            ) : (
+              <Input
+                id={`edit-${item.id}`}
+                value={values[item.id] ?? ""}
+                placeholder={
+                  item.id === "estimated_duration_minutes" &&
+                  place.estimatedDurationMinutes
+                    ? formatDurationMinutes(place.estimatedDurationMinutes)
+                    : undefined
+                }
+                onChange={(event) =>
+                  setValues((current) => ({
+                    ...current,
+                    [item.id]: event.target.value,
+                  }))
+                }
+              />
+            )}
           </div>
-          {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
-          <Button type="submit" disabled={loading}>
-            Pošalji predlog
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+        ))}
+        <div className="space-y-1.5">
+          <Label htmlFor="edit-note">Izvor / napomena</Label>
+          <Textarea
+            id="edit-note"
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+            placeholder="Bio sam danas. / Podatak je sa zvaničnog sajta."
+          />
+        </div>
+        {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
+        <Button type="submit" disabled={loading}>
+          Pošalji predlog
+        </Button>
+      </form>
+    </DialogContent>
   );
 }

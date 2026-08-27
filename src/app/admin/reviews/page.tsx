@@ -26,7 +26,20 @@ export default function AdminReviewsPage() {
   }
 
   useEffect(() => {
-    void load();
+    let cancelled = false;
+    void fetch(`/api/admin/reviews?status=${status}&q=${encodeURIComponent(q)}`)
+      .then((response) => response.json())
+      .then((data: { reviews?: ReviewRow[] }) => {
+        if (cancelled) {
+          return;
+        }
+        setItems(data.reviews ?? []);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // Initial list only; later loads come from search/filter actions.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function act(id: string, action: "remove" | "restore") {

@@ -36,6 +36,8 @@ export function PlaceReviews({
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("review") === "1") {
+      // Deep-link from auth redirect; window is only available after mount.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setWriting(true);
     }
   }, []);

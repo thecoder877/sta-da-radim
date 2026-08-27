@@ -35,7 +35,19 @@ export default function AdminPlaceEditsPage() {
   }
 
   useEffect(() => {
-    void load();
+    let cancelled = false;
+    void fetch("/api/admin/edits?status=pending")
+      .then((response) => response.json())
+      .then((data: { requests?: RequestRow[]; fields?: FieldRow[] }) => {
+        if (cancelled) {
+          return;
+        }
+        setRequests(data.requests ?? []);
+        setFields(data.fields ?? []);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function act(id: string, action: "approve" | "reject") {

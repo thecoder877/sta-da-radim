@@ -35,7 +35,18 @@ export default function AdminPlaceSubmissionsPage() {
   }
 
   useEffect(() => {
-    void load();
+    let cancelled = false;
+    void fetch("/api/admin/places?status=pending")
+      .then((response) => response.json())
+      .then((data: { submissions?: Submission[] }) => {
+        if (cancelled) {
+          return;
+        }
+        setItems(data.submissions ?? []);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function act(id: string, action: "approve" | "reject" | "edit_approve") {

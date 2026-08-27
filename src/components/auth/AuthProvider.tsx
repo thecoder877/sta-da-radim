@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import type { User } from "@supabase/supabase-js";
 import type { PlanQuota } from "@/lib/access/planQuota";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
@@ -37,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [quota, setQuota] = useState<PlanQuota | null>(null);
   const [ready, setReady] = useState(!configured);
 
-  async function refresh() {
+  const refresh = useCallback(async () => {
     if (!configured) {
       setUser(null);
       setProfile(null);
@@ -62,10 +69,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setProfile(data.profile ?? null);
     setQuota(data.quota ?? null);
     setReady(true);
-  }
+  }, [configured]);
 
   useEffect(() => {
-    void refresh();
+    if (!configured) {
+      return;
+    }
+    let cancelled = false;
+    void fetch("/api/auth/me", { cache: "no-store" })
+      .then(async (response) => {
+        if (cancelled) {
+          return;
+        }
+        if (!response.ok) {
+          setUser(null);
+          setProfile(null);
+          setQuota(null);
+          setReady(true);
+          return;
+        }
+        const data = (await response.json()) as {
+          user?: { id: string } | null;
+          profile?: UserProfile | null;
+          quota?: PlanQuota | null;
+        };
+        if (cancelled) {
+          return;
+        }
+        setUser(data.user?.id ? asUser(data.user.id) : null);
+        setProfile(data.profile ?? null);
+        setQuota(data.quota ?? null);
+        setReady(true);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setUser(null);
+          setProfile(null);
+          setQuota(null);
+          setReady(true);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [configured]);
 
   const value = useMemo<AuthContextValue>(
@@ -83,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setQuota(null);
       },
     }),
-    [user, profile, quota, ready, configured],
+    [user, profile, quota, ready, configured, refresh],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

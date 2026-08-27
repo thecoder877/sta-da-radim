@@ -21,7 +21,20 @@ export default function AdminUsersPage() {
   }
 
   useEffect(() => {
-    void load();
+    let cancelled = false;
+    void fetch(`/api/admin/users?q=${encodeURIComponent(q)}`)
+      .then((response) => response.json())
+      .then((data: { users?: UserRow[] }) => {
+        if (cancelled) {
+          return;
+        }
+        setItems(data.users ?? []);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // Initial list only; later loads come from the search action.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

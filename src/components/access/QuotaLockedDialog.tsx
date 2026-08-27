@@ -29,7 +29,10 @@ export function QuotaLockedDialog({
   reason: PlanQuotaReason;
   quota?: PlanQuota | null;
 }) {
-  const resetsAt = quota?.resetsAt ?? new Date(Date.now() + 86_400_000).toISOString();
+  const [fallbackResetsAt] = useState(() =>
+    new Date(Date.now() + 86_400_000).toISOString(),
+  );
+  const resetsAt = quota?.resetsAt ?? fallbackResetsAt;
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
