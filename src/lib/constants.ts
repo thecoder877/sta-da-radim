@@ -3,6 +3,11 @@ import type { Coordinates } from "@/types/place";
 
 export const APP_NAME = "Šta da radim?";
 
+export const CONTACT_EMAIL = "podrska@stadaradim.rs";
+
+// Shown in the footer as the "last updated" date. Bump when the site changes.
+export const SITE_LAST_UPDATED = "2026-08-27";
+
 export const SERBIA_CENTER: Coordinates = {
   latitude: 44.2,
   longitude: 20.8,

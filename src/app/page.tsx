@@ -1,4 +1,5 @@
 import { CategoryGrid } from "@/components/home/CategoryGrid";
+import { Faq } from "@/components/home/Faq";
 import { Hero } from "@/components/home/Hero";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { PlannerCta } from "@/components/home/PlannerCta";
@@ -11,6 +12,7 @@ export default function HomePage() {
       <PopularDestinations />
       <HowItWorks />
       <CategoryGrid />
+      <Faq />
       <PlannerCta />
     </>
   );

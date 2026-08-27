@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
+import { SuccessState } from "@/components/states/SuccessState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +25,7 @@ export function AuthForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -115,18 +118,33 @@ export function AuthForm({
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="auth-password">Lozinka</Label>
-        <Input
-          id="auth-password"
-          type="password"
-          autoComplete={mode === "login" ? "current-password" : "new-password"}
-          className="h-11"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          required
-        />
+        <div className="relative">
+          <Input
+            id="auth-password"
+            type={showPassword ? "text" : "password"}
+            autoComplete={mode === "login" ? "current-password" : "new-password"}
+            className="h-11 pr-11"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((value) => !value)}
+            aria-label={showPassword ? "Sakrij lozinku" : "Prikaži lozinku"}
+            aria-pressed={showPassword}
+            className="absolute top-1/2 right-2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+          >
+            {showPassword ? (
+              <EyeOff className="size-4" aria-hidden />
+            ) : (
+              <Eye className="size-4" aria-hidden />
+            )}
+          </button>
+        </div>
       </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
-      {info ? <p className="text-sm text-muted-foreground">{info}</p> : null}
+      {info ? <SuccessState title="Gotovo" description={info} /> : null}
       <Button type="submit" className="h-11 w-full" disabled={loading}>
         {loading ? "Sačekaj..." : mode === "login" ? "Prijavi se" : "Napravi nalog"}
       </Button>

@@ -25,6 +25,7 @@ import {
 } from "@/lib/trips/storage";
 import type { GeneratedTrip } from "@/types/trip";
 import { Button } from "@/components/ui/button";
+import { CopyButton } from "@/components/ui/copy-button";
 import {
   Dialog,
   DialogContent,
@@ -49,6 +50,10 @@ export function TripActions({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const persisted = Boolean(trip.persisted);
   const owner = trip.isOwner === true;
+  const shareUrl =
+    typeof window !== "undefined" && trip.shareSlug
+      ? `${window.location.origin}/trip/share/${trip.shareSlug}`
+      : "";
 
   async function saveTrip() {
     if (!user) {
@@ -155,6 +160,16 @@ export function TripActions({
         </p>
       ) : null}
       {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
+      {owner && persisted && trip.isPublic && shareUrl ? (
+        <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
+          <span className="truncate text-xs text-muted-foreground">{shareUrl}</span>
+          <CopyButton
+            value={shareUrl}
+            label="Kopiraj link"
+            className="ml-auto shrink-0"
+          />
+        </div>
+      ) : null}
       <div className="flex flex-wrap gap-2">
         <Button
           variant="outline"

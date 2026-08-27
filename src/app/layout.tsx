@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
 import { Fraunces, Geist, Geist_Mono } from "next/font/google";
+import { UtmTracker } from "@/components/analytics/UtmTracker";
 import { AuthModalProvider } from "@/components/auth/AuthModalProvider";
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { BackToTop } from "@/components/layout/BackToTop";
+import { CookieBanner } from "@/components/layout/CookieBanner";
+import { FloatingContact } from "@/components/layout/FloatingContact";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { ScrollProgress } from "@/components/layout/ScrollProgress";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { APP_NAME } from "@/lib/constants";
 import "./globals.css";
 
@@ -42,6 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="sr-Latn"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
@@ -51,15 +58,22 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Preskoči na sadržaj
         </a>
-        <AuthProvider>
-          <AuthModalProvider>
-            <Navbar />
-            <main id="main-content" className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </AuthModalProvider>
-        </AuthProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ScrollProgress />
+          <AuthProvider>
+            <AuthModalProvider>
+              <Navbar />
+              <main id="main-content" className="flex-1">
+                {children}
+              </main>
+              <Footer />
+              <BackToTop />
+              <FloatingContact />
+              <CookieBanner />
+            </AuthModalProvider>
+          </AuthProvider>
+          <UtmTracker />
+        </ThemeProvider>
       </body>
     </html>
   );
