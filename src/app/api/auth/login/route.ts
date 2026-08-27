@@ -18,7 +18,10 @@ export async function POST(request: Request) {
     );
   }
   if (isBotSubmission(parsed.data)) {
-    return NextResponse.json({ ok: true });
+    return NextResponse.json(
+      { error: "Prijava trenutno nije dostupna.", code: "INVALID_REQUEST" },
+      { status: 400 },
+    );
   }
 
   const supabase = await createServerSupabaseClient();

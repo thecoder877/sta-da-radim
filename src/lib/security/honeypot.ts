@@ -1,15 +1,12 @@
+/**
+ * Only the hidden company field is a bot signal.
+ * A short elapsed time used to look like a bot, but password managers
+ * autofill and submit well under 800ms and were treated as a successful
+ * login without a session.
+ */
 export function isBotSubmission(input: {
   company?: string | null;
   startedAt?: number | null;
 }): boolean {
-  if (input.company && input.company.trim()) {
-    return true;
-  }
-  if (typeof input.startedAt === "number") {
-    const elapsed = Date.now() - input.startedAt;
-    if (elapsed >= 0 && elapsed < 800) {
-      return true;
-    }
-  }
-  return false;
+  return Boolean(input.company && input.company.trim());
 }

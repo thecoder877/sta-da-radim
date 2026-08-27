@@ -8,6 +8,7 @@ import { SuccessState } from "@/components/states/SuccessState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { authFetchSignal } from "@/lib/http/authFetch";
 
 export type AuthFormMode = "login" | "register";
 
@@ -17,7 +18,7 @@ export function AuthForm({
   onModeChange,
 }: {
   mode: AuthFormMode;
-  onSuccess?: () => void;
+  onSuccess?: () => void | Promise<void>;
   onModeChange?: (mode: AuthFormMode) => void;
 }) {
   const { refresh } = useAuth();
@@ -57,6 +58,8 @@ export function AuthForm({
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          signal: authFetchSignal(20_000),
           body: JSON.stringify({
             email: email.trim(),
             password,
@@ -78,11 +81,24 @@ export function AuthForm({
         );
         return;
       }
-      await refresh();
+      const signedIn = await refresh();
       setInfo(mode === "register" ? "Nalog je uspešno napravljen." : null);
-      onSuccess?.();
-    } catch {
-      setError("Prijava trenutno nije dostupna.");
+      if (!signedIn) {
+        setError("Prijava je uspela, ali nalog nije učitan. Osveži stranicu.");
+        return;
+      }
+      await onSuccess?.();
+    } catch (error) {
+      console.error("Prijava nije uspela.", error);
+      const timedOut =
+        error instanceof DOMException
+          ? error.name === "TimeoutError" || error.name === "AbortError"
+          : error instanceof Error && /timed out|aborted/i.test(error.message);
+      setError(
+        timedOut
+          ? "Prijava traje predugo. Pokušaj ponovo."
+          : "Prijava trenutno nije dostupna.",
+      );
     } finally {
       setLoading(false);
     }

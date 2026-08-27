@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { applySecurityHeaders } from "@/lib/security/headers";
 import { clientIp, rateLimit } from "@/lib/security/rateLimit";
 import { updateSession } from "@/lib/supabase/middleware";
+import { shouldRefreshAuthSession } from "@/lib/supabase/sessionRefresh";
 
 const WRITE_LIMITS: { prefix: string; limit: number; windowMs: number }[] = [
   { prefix: "/api/auth/login", limit: 5, windowMs: 10 * 60 * 1000 },
@@ -40,7 +41,9 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  const response = await updateSession(request);
+  const response = shouldRefreshAuthSession(request.nextUrl.pathname)
+    ? await updateSession(request)
+    : NextResponse.next({ request });
   applySecurityHeaders(response.headers);
   return response;
 }

@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AuthForm, type AuthFormMode } from "@/components/auth/AuthForm";
-import { useAuth } from "@/components/auth/AuthProvider";
 import {
   setPendingProtectedAction,
   type AuthModalReason,
@@ -56,7 +55,6 @@ const COPY: Record<AuthModalReason, { title: string; description: string }> = {
 
 export function AuthModalProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { refresh } = useAuth();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState<AuthModalReason>("generation_limit");
   const [mode, setMode] = useState<AuthFormMode>("register");
@@ -127,7 +125,6 @@ export function AuthModalProvider({ children }: { children: React.ReactNode }) {
             mode={mode}
             onModeChange={setMode}
             onSuccess={async () => {
-              await refresh();
               setOpen(false);
               await resumePending();
             }}
