@@ -27,7 +27,7 @@ export function ScrollProgress() {
       aria-hidden
     >
       <div
-        className="h-full origin-left bg-primary"
+        className="h-full w-full origin-left bg-primary"
         style={{ transform: `scaleX(${progress})` }}
       />
     </div>
