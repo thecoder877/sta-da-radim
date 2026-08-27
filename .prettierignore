@@ -9,3 +9,6 @@ src/data/osmPlaces.json
 # Managed by `next dev` (agent rules block) — do not reformat.
 AGENTS.md
 CLAUDE.md
+
+# Third-party agent skills (npx skills add …)
+.agents
